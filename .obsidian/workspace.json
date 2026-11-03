@@ -11,14 +11,10 @@
             "id": "55ab55394af1c64d",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Footprinting/3-Hard/Footprinting Lab - Hard.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Footprinting Lab - Hard"
+              "title": "New tab"
             }
           }
         ]
@@ -198,21 +194,18 @@
   },
   "active": "55ab55394af1c64d",
   "lastOpenFiles": [
-    "Footprinting/2-Medium/Footprinting Lab - Medium.md",
-    "Footprinting/3-Hard/Footprinting Lab - Hard.md",
-    "Footprinting/3-Hard/screens",
-    "Footprinting/3-Hard",
+    "Footprinting/Medium/Footprinting Lab - Medium.md",
     "README.md",
-    "Footprinting/1-Easy/Footprinting Lab - Easy.md",
-    "Footprinting/2-Medium/screens/4.png",
-    "Footprinting/2-Medium/screens/3.png",
-    "Footprinting/2-Medium/screens/2.png",
-    "Footprinting/2-Medium/screens/1.png",
-    "Footprinting/2-Medium/screens",
-    "Footprinting/2-Medium",
+    "Footprinting/Easy/Footprinting Lab - Easy.md",
+    "Footprinting/Medium/screens/4.png",
+    "Footprinting/Medium/screens/3.png",
+    "Footprinting/Medium/screens/2.png",
+    "Footprinting/Medium/screens/1.png",
+    "Footprinting/Medium/screens",
+    "Footprinting/Medium",
     "Footprinting/Easy/Untitled",
     "Welcome.md",
-    "Footprinting/1-Easy",
+    "Footprinting/Easy",
     "Footprinting"
   ]
 }
