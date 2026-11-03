@@ -8,6 +8,20 @@ Additionally, our teammates have found the following credentials "ceil:qwer1234"
 
 The administrators have stored a `flag.txt` file on this server to track our progress and measure success. Fully enumerate the target and submit the contents of this file as proof.
 
+---
+
+
+## Attack Summary
+
+| Step | Vector                                  | Outcome                                                            |
+| ---- | --------------------------------------- | ------------------------------------------------------------------ |
+| 1    | Nmap service/version scan               | Identified 4 open services, leaked hostname & username via banners |
+| 2    | FTP (port 2121) login w/ provided creds | Full read access to `ceil`'s home directory                        |
+| 3    | FTP file retrieval of `.ssh/id_rsa`     | Private key exfiltrated despite restrictive local file permissions |
+| 4    | SSH key-based authentication            | Shell access as `ceil`                                             |
+| 5    | Filesystem search                       | `flag.txt` located and read                                        |
+
+
 ## Nmap Scan
 
 ```bash
@@ -112,24 +126,3 @@ ceil@NIXEASY:~$ cat /home/flag/flag.txt
 ```
 HTB{REDACTED}
 ```
-
-
----
-
-## Attack Summary
-
-```mermaid
-graph TD
-    A[Nmap Scan] -->|Reveals port 2121 'Ceil's FTP' banner| B[FTP Login with ceil:qwer1234]
-    B -->|.ssh directory accessible, bypasses file perms| C[Download id_rsa private key]
-    C -->|chmod 600 + ssh -i| D[SSH Access as ceil]
-    D --> E[Locate and read flag.txt]
-```
-
-| Step | Vector                                  | Outcome                                                            |
-| ---- | --------------------------------------- | ------------------------------------------------------------------ |
-| 1    | Nmap service/version scan               | Identified 4 open services, leaked hostname & username via banners |
-| 2    | FTP (port 2121) login w/ provided creds | Full read access to `ceil`'s home directory                        |
-| 3    | FTP file retrieval of `.ssh/id_rsa`     | Private key exfiltrated despite restrictive local file permissions |
-| 4    | SSH key-based authentication            | Shell access as `ceil`                                             |
-| 5    | Filesystem search                       | `flag.txt` located and read                                        |
