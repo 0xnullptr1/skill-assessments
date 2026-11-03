@@ -4,6 +4,24 @@ This second server is a server that everyone on the internal network has access 
 
 Our customer agreed to this and added this server to our scope. Here, too, the goal remains the same. We need to find out as much information as possible about this server and find ways to use it against the server itself. For the proof and protection of customer data, a user named `HTB` has been created. Accordingly, we need to obtain the credentials of this user as proof.
 
+---
+
+> Q1: Enumerate the server carefully and find the username "HTB" and its password. Then, submit this user's password as the answer.
+
+## Attack Summary
+
+|Step|Vector|Outcome|
+|---|---|---|
+|1|Nmap scan|Identified Windows host + open NFS export|
+|2|NFS mount, UID 0 bypass|Read access to `/TechSupport` ticket files|
+|3|Ticket file review|Leaked SMTP credentials for `alex`|
+|4|SMB login as `alex`|Access to `devshare` (read/write)|
+|5|`important.txt` on `devshare`|Leaked `sa` MSSQL credentials|
+|6|RDP as `alex` + SSMS login as `sa`|Full admin access to SQL Server|
+|7|Query `accounts.dbo.devsacc`|Recovered `HTB` user's password|
+
+---
+
 ## Nmap Scan
 
 ```bash
@@ -37,7 +55,7 @@ sudo nmap --script nfs* -sV -p111,2049 10.129.156.150
 |_  /TechSupport
 ```
 
-One exported NFS share, `/TechSupport` is found.
+One exported NFS share, `/TechSupport`, is found.
 
 ---
 
@@ -56,7 +74,7 @@ $ cd TechSupport
 cd: permission denied: TechSupport
 ```
 
-Directory listed but not readable as the current user. Escalating locally to `root` (to assume UID 0, which NFS typically trusts) resolved access:
+The directory is listed but not readable as the current user. Escalating locally to `root` (to assume UID 0, which NFS typically trusts) resolves access:
 
 ```bash
 sudo su
@@ -71,7 +89,7 @@ ticket4238791283650.txt
 ticket4238791283801.txt
 ```
 
-Some support ticket text files are found. Dumping them all revealed a support chat log referencing an SMTP config:
+Some support ticket text files are found. Dumping them all reveals a support chat log referencing an SMTP config:
 
 ```bash
 cat *
@@ -157,7 +175,7 @@ SMB  10.129.156.150  445  WINMEDIUM  IPC$        READ          Remote IPC
 SMB  10.129.156.150  445  WINMEDIUM  Users       READ
 ```
 
-Credentials valid over SMB. `devshare` grants read/write access.
+Credentials are valid over SMB. `devshare` grants read/write access.
 
 ```bash
 smbclient -U alex --password 'lol123!mD' //10.129.156.150/devshare
@@ -176,7 +194,7 @@ smb: \> more important.txt
 sa:87N1ns@slls83
 ```
 
-MSSQL `sa` (system administrator) credentials recovered: `sa : 87N1ns@slls83`
+MSSQL `sa` (system administrator) credentials are recovered: `sa : 87N1ns@slls83`
 
 ---
 
@@ -186,21 +204,21 @@ MSSQL `sa` (system administrator) credentials recovered: `sa : 87N1ns@slls83`
 KRB5_CONFIG=/dev/null xfreerdp3 /v:10.129.156.150 /u:alex /p:'lol123!mD' /cert:ignore
 ```
 
-RDP session established as `alex`. SQL Server Management Studio was available on the host, but access initally failed despite having the credentials:
+An RDP session is established as `alex`. SQL Server Management Studio is available on the host, but a login attempt as `sa` initially fails:
 
 ![](./screens/1.png)
 
-Its possible connected using the recovered `sa` credentials launching the app as Administrator:
+Launching the application as Administrator allows the connection with the `sa` credentials to succeed:
 
 ![](./screens/2.png)
 
 Authenticated successfully as `WINMEDIUM\Administrator` via `sa`.
 
-Browsing the `accounts` database revealed a `dbo.devsacc` table storing `id`, `name`, and `password` columns:
+Browsing the `accounts` database reveals a `dbo.devsacc` table storing `id`, `name`, and `password` columns:
 
 ![](./screens/3.png)
 
-Opening the table surfaced the `HTB` user's row:
+Browsing the table's rows surfaces the `HTB` user's entry:
 
 ![](./screens/4.png)
 
@@ -210,24 +228,10 @@ Opening the table surfaced the `HTB` user's row:
 
 ---
 
-## Attack Summary
+## Answer
 
-```mermaid
-graph TD
-    A[Nmap Scan] -->|NFS export found: /TechSupport| B[Mount NFS share]
-    B -->|root bypasses UID restriction| C[Read support tickets]
-    C -->|SMTP config leaks alex's password| D[SMB login as alex]
-    D -->|devshare: important.txt| E[Recover sa MSSQL credentials]
-    E -->|RDP as alex + SSMS as sa| F[Query accounts.dbo.devsacc]
-    F --> G[Recover HTB user password]
+**Q1 — `HTB` user's password:**
+
 ```
-
-| Step | Vector                             | Outcome                                    |
-| ---- | ---------------------------------- | ------------------------------------------ |
-| 1    | Nmap scan                          | Identified Windows host + open NFS export  |
-| 2    | NFS mount, UID 0 bypass            | Read-access to `/TechSupport` ticket files |
-| 3    | Ticket file review                 | Leaked SMTP credentials for `alex`         |
-| 4    | SMB login as `alex`                | Access to `devshare` (read/write)          |
-| 5    | `important.txt` on `devshare`      | Leaked `sa` MSSQL credentials              |
-| 6    | RDP as `alex` + SSMS login as `sa` | Full admin access to SQL Server            |
-| 7    | Query `accounts.dbo.devsacc`       | Recovered `HTB` user's password            |
+Inch7ehrdn4...
+```
