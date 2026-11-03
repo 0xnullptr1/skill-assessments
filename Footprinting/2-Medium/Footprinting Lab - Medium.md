@@ -206,21 +206,21 @@ KRB5_CONFIG=/dev/null xfreerdp3 /v:10.129.156.150 /u:alex /p:'lol123!mD' /cert:i
 
 An RDP session is established as `alex`. SQL Server Management Studio is available on the host, but a login attempt as `sa` initially fails:
 
-![](./screens/1.png)
+![](1.png)
 
 Launching the application as Administrator allows the connection with the `sa` credentials to succeed:
 
-![](./screens/2.png)
+![](2.png)
 
 Authenticated successfully as `WINMEDIUM\Administrator` via `sa`.
 
 Browsing the `accounts` database reveals a `dbo.devsacc` table storing `id`, `name`, and `password` columns:
 
-![](./screens/3.png)
+![](3.png)
 
 Browsing the table's rows surfaces the `HTB` user's entry:
 
-![](./screens/4.png)
+![](4.png)
 
 |id|name|password|
 |---|---|---|
