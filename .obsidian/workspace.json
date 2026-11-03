@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Footprinting/Easy/Footprinting Lab - Easy.md",
+                "file": "Footprinting/Medium/Footprinting Lab - Medium.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Footprinting Lab - Easy"
+              "title": "Footprinting Lab - Medium"
             }
           }
         ]
@@ -198,8 +198,8 @@
   },
   "active": "55ab55394af1c64d",
   "lastOpenFiles": [
-    "Footprinting/Medium/Footprinting Lab - Medium.md",
     "Footprinting/Easy/Footprinting Lab - Easy.md",
+    "Footprinting/Medium/Footprinting Lab - Medium.md",
     "Footprinting/Medium/screens/4.png",
     "Footprinting/Medium/screens/3.png",
     "Footprinting/Medium/screens/2.png",

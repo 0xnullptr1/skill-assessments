@@ -10,18 +10,19 @@ The administrators have stored a `flag.txt` file on this server to track our pro
 
 ---
 
->Q1: Enumerate the server carefully and find the flag.txt file. Submit the contents of this file as the answer.
+> Q1: Enumerate the server carefully and find the flag.txt file. Submit the contents of this file as the answer.
 
 ## Attack Summary
 
-| Step | Vector                                  | Outcome                                                            |
-| ---- | --------------------------------------- | ------------------------------------------------------------------ |
-| 1    | Nmap service/version scan               | Identified 4 open services, leaked hostname & username via banners |
-| 2    | FTP (port 2121) login w/ provided creds | Full read access to `ceil`'s home directory                        |
-| 3    | FTP file retrieval of `.ssh/id_rsa`     | Private key exfiltrated despite restrictive local file permissions |
-| 4    | SSH key-based authentication            | Shell access as `ceil`                                             |
-| 5    | Filesystem search                       | `flag.txt` located and read                                        |
+|Step|Vector|Outcome|
+|---|---|---|
+|1|Nmap service/version scan|4 open services, hostname and username leaked via banners|
+|2|FTP (port 2121) login with given creds|Read access to `ceil`'s home directory|
+|3|FTP download of `.ssh/id_rsa`|Private key of `ceil` retrieved|
+|4|SSH key-based authentication|Shell access as `ceil`|
+|5|Filesystem search|`flag.txt` located and read|
 
+---
 
 ## Nmap Scan
 
@@ -37,13 +38,13 @@ PORT     STATE SERVICE VERSION
 2121/tcp open  ftp      ProFTPD (Ceil's FTP)
 ```
 
-Banner grabbing revealed a username (`ceil`) tied to a non-standard FTP port.
+The banner of the second FTP service on port 2121 leaks the username `ceil`. It matches the credentials provided in the task.
 
 ---
 
 ## FTP Enumeration (Port 2121)
 
-It's possible to login with the supplied credentials against the non-standard FTP port identified during the scan:
+The supplied credentials work against the non-standard FTP port.
 
 ```bash
 ftp ceil@10.129.42.195 -P 2121
@@ -70,7 +71,7 @@ drwx------   2 ceil ceil  4096 Nov 10  2021 .ssh
 -rw-------   1 ceil ceil   759 Nov 10  2021 .viminfo
 ```
 
-The presence of a `.ssh` directory hinted at the presence of a private rsa key.
+The FTP root is `ceil`'s home directory. The `.ssh` folder suggests a private key might be stored there, which matches the hint about SSH keys.
 
 ### `.ssh` Directory Contents
 
@@ -80,7 +81,7 @@ The presence of a `.ssh` directory hinted at the presence of a private rsa key.
 -rw-r--r--   1 ceil ceil   738 Nov 10  2021 id_rsa.pub
 ```
 
-The private key is downloaded locally.
+The session is authenticated as `ceil`, so the private key is readable and can be downloaded.
 
 ```bash
 ftp> get id_rsa
@@ -90,7 +91,13 @@ ftp> get id_rsa
 
 ## SSH access as ceil
 
-Setting permissions:
+The key text is copied and pasted into a new file named `ceil.key`.
+
+```bash
+nano ceil.key
+```
+
+SSH refuses keys with loose permissions, so the key is restricted first.
 
 ```bash
 chmod 600 ceil.key
@@ -104,12 +111,12 @@ ssh ceil@10.129.42.195 -i ceil.key
 
 ```
 Welcome to Ubuntu 20.04.1 LTS (GNU/Linux 5.4.0-90-generic x86_64)
-...
+[...]
 Last login: Wed Nov 10 05:48:02 2021 from 10.10.14.20
 ceil@NIXEASY:~$
 ```
 
-Access obtained as the `ceil` user via the SSH private key.
+The key is accepted and a shell as `ceil` is obtained.
 
 ---
 
