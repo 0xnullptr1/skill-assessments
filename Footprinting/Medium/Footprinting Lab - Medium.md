@@ -227,11 +227,3 @@ Browsing the table's rows surfaces the `HTB` user's entry:
 |157|HTB|`Inch7ehrdn4...`|
 
 ---
-
-## Answer
-
-**Q1 — `HTB` user's password:**
-
-```
-Inch7ehrdn4...
-```
