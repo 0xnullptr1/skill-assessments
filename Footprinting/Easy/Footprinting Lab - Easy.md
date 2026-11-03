@@ -36,13 +36,13 @@ PORT     STATE SERVICE VERSION
 2121/tcp open  ftp      ProFTPD (Ceil's FTP)
 ```
 
-Banner grabbing revealed a username (`ceil`) tied to a non-standard FTP port, narrowing the attack path.
+Banner grabbing revealed a username (`ceil`) tied to a non-standard FTP port.
 
 ---
 
 ## FTP Enumeration (Port 2121)
 
-Logged in with the supplied credentials against the non-standard FTP port identified during the scan.
+It's possible to login with the supplied credentials against the non-standard FTP port identified during the scan:
 
 ```bash
 ftp ceil@10.129.42.195 -P 2121
