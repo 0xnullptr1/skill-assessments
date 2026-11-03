@@ -10,6 +10,7 @@ The administrators have stored a `flag.txt` file on this server to track our pro
 
 ---
 
+>Q1: Enumerate the server carefully and find the flag.txt file. Submit the contents of this file as the answer.
 
 ## Attack Summary
 
