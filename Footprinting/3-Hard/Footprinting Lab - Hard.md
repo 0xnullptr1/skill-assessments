@@ -251,3 +251,15 @@ LOGIN BAD First parameter in line is IMAP's command tag, not the command name. A
 
 
 ```
+
+```
+LITERAL+ NOTIFY SPECIAL-USE] Logged in
+1a LIST "" *
+* LIST (\HasNoChildren) "." Notes
+* LIST (\HasNoChildren) "." Meetings
+* LIST (\HasNoChildren \UnMarked) "." Important
+* LIST (\HasNoChildren) "." INBOX
+1a OK List completed (0.017 + 0.000 + 0.016 secs).
+
+
+```
