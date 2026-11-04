@@ -76,6 +76,7 @@ PORT    STATE SERVICE
 Nmap done: 1 IP address (1 host up) scanned in 22.11 seconds
  ```
 
+
 ```
 telnet 10.129.202.20 110                         
 Trying 10.129.202.20...
@@ -105,7 +106,7 @@ LIST BAD Error in IMAP command received by server.
 
 ```
 
-## snmp enum
+## UDP port enum
 
 ```
 nmap -sU 10.129.202.20 -T4                     
@@ -442,26 +443,56 @@ select\040*\040from\040users;
 
 
 ```
-tom@NIXHARD:~$ find / -name "mysql" 2>/dev/null
-/snap/core20/1169/etc/apparmor.d/abstractions/mysql
-/snap/core20/1169/usr/share/bash-completion/completions/mysql
-/snap/core20/1081/etc/apparmor.d/abstractions/mysql
-/snap/core20/1081/usr/share/bash-completion/completions/mysql
-/snap/core18/2246/etc/apparmor.d/abstractions/mysql
-/snap/core18/2246/usr/share/bash-completion/completions/mysql
-/snap/core18/2128/etc/apparmor.d/abstractions/mysql
-/snap/core18/2128/usr/share/bash-completion/completions/mysql
-/var/lib/mysql
-/var/log/mysql
-/etc/init.d/mysql
-/etc/mysql
-/etc/apparmor.d/abstractions/mysql
-/usr/lib/mysql
-/usr/share/mysql
-/usr/share/bash-completion/completions/mysql
-/usr/bin/mysql
 tom@NIXHARD:~$ ps aux | grep mysql
 mysql        981  0.3 18.7 2142948 382468 ?      Ssl  08:29   0:15 /usr/sbin/mysqld
 tom         3729  0.0  0.0   6432   740 pts/0    S+   09:49   0:00 grep --color=auto mysql
+
+```
+
+```
+tom@NIXHARD:~$ mysql -u tom -p -h 127.0.0.1
+Enter password: # NMds732Js2761
+
+```
+
+```
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| users              |
++--------------------+
+5 rows in set (0.01 sec)
+
+mysql> use users
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> show tables;
++-----------------+
+| Tables_in_users |
++-----------------+
+| users           |
++-----------------+
+1 row in set (0.00 sec)
+
+```
+
+```
+mysql> select * from users where username = HTB;
+ERROR 1054 (42S22): Unknown column 'HTB' in 'where clause'
+mysql> select * from users where username = 'HTB';
++------+----------+------------------------------+
+| id   | username | password                     |
++------+----------+------------------------------+
+|  150 | HTB      | cr3n4o7rzse7rzhnckhssncif7ds |
++------+----------+------------------------------+
+1 row in set (0.01 sec)
+
 
 ```
