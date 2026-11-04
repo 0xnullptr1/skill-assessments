@@ -58,3 +58,49 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 19.07 seconds
 
 ```
+
+ ```
+ nmap -p- 10.129.202.20 --open
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-11-04 03:33 EST
+Nmap scan report for 10.129.202.20
+Host is up (0.054s latency).
+Not shown: 65255 closed tcp ports (reset), 275 filtered tcp ports (no-response)
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+PORT    STATE SERVICE
+22/tcp  open  ssh
+110/tcp open  pop3
+143/tcp open  imap
+993/tcp open  imaps
+995/tcp open  pop3s
+
+Nmap done: 1 IP address (1 host up) scanned in 22.11 seconds
+ ```
+
+```
+telnet 10.129.202.20 110                         
+Trying 10.129.202.20...
+Connected to 10.129.202.20.
+Escape character is '^]'.
++OK Dovecot (Ubuntu) ready.
+HELO
+-ERR Unknown command.
+LIST *
+-ERR Unknown command.
+LIST
+-ERR Unknown command.
+-ERR Too many invalid bad commands.
+Connection closed by foreign host.
+                                                                                                                    
+┌──(kali㉿kali)-[~/labs/footprinting/hard]
+└─$ telnet 10.129.202.20 143
+Trying 10.129.202.20...
+Connected to 10.129.202.20.
+Escape character is '^]'.
+* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ STARTTLS AUTH=PLAIN] Dovecot (Ubuntu) ready.
+a1 LIST "" *
+a1 BAD Error in IMAP command received by server.
+LIST "" *
+LIST BAD Error in IMAP command received by server.
+
+
+```
