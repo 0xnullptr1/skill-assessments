@@ -346,49 +346,6 @@ XvSb8cNlUIWdRwAAAAt0b21ATklYSEFSRAECAwQFBg==
 
 ## ssh access as tom
 
-
-
-
-## services enum
-
-```
-tom@NIXHARD:~$ ss -tlpn
-State        Recv-Q       Send-Q             Local Address:Port               Peer Address:Port       Process       
-LISTEN       0            4096               127.0.0.53%lo:53                      0.0.0.0:*                        
-LISTEN       0            128                      0.0.0.0:22                      0.0.0.0:*                        
-LISTEN       0            100                      0.0.0.0:993                     0.0.0.0:*                        
-LISTEN       0            100                      0.0.0.0:995                     0.0.0.0:*                        
-LISTEN       0            70                     127.0.0.1:33060                   0.0.0.0:*                        
-LISTEN       0            151                    127.0.0.1:3306                    0.0.0.0:*                        
-LISTEN       0            100                      0.0.0.0:110                     0.0.0.0:*                        
-LISTEN       0            100                      0.0.0.0:143                     0.0.0.0:*  
-```
-
-```tom@NIXHARD:~$ ls -la
-total 48
-drwxr-xr-x 6 tom  tom  4096 Nov 10  2021 .
-drwxr-xr-x 5 root root 4096 Nov 10  2021 ..
--rw------- 1 tom  tom   532 Nov 10  2021 .bash_history
--rw-r--r-- 1 tom  tom   220 Nov 10  2021 .bash_logout
--rw-r--r-- 1 tom  tom  3771 Nov 10  2021 .bashrc
-drwx------ 2 tom  tom  4096 Nov 10  2021 .cache
-drwx------ 3 tom  tom  4096 Nov 10  2021 mail
-drwx------ 8 tom  tom  4096 Nov  4 09:22 Maildir
--rw------- 1 tom  tom   169 Nov 10  2021 .mysql_history
--rw-r--r-- 1 tom  tom   807 Nov 10  2021 .profile
-drwx------ 2 tom  tom  4096 Nov 10  2021 .ssh
--rw------- 1 tom  tom  2018 Nov 10  2021 .viminfo
-tom@NIXHARD:~$ cat .mysql_history
-_HiStOrY_V2_
-show\040databases;
-select\040*\040from\040users;
-use\040users;
-select\040*\040from\040users;
-show\040databases;
-use\040users;
-select\040*\040from\040users;
-```
-
 ```
 ┌──(kali㉿kali)-[~/labs/footprinting/hard]
 └─$ nano id_rsa    
@@ -439,5 +396,72 @@ applicable law.
 Last login: Wed Nov 10 02:51:52 2021 from 10.10.14.20
 tom@NIXHARD:~$ ls
 mail  Maildir
+
+```
+
+
+## services enum
+
+```
+tom@NIXHARD:~$ ss -tlpn
+State        Recv-Q       Send-Q             Local Address:Port               Peer Address:Port       Process       
+LISTEN       0            4096               127.0.0.53%lo:53                      0.0.0.0:*                        
+LISTEN       0            128                      0.0.0.0:22                      0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:993                     0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:995                     0.0.0.0:*                        
+LISTEN       0            70                     127.0.0.1:33060                   0.0.0.0:*                        
+LISTEN       0            151                    127.0.0.1:3306                    0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:110                     0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:143                     0.0.0.0:*  
+```
+
+```tom@NIXHARD:~$ ls -la
+total 48
+drwxr-xr-x 6 tom  tom  4096 Nov 10  2021 .
+drwxr-xr-x 5 root root 4096 Nov 10  2021 ..
+-rw------- 1 tom  tom   532 Nov 10  2021 .bash_history
+-rw-r--r-- 1 tom  tom   220 Nov 10  2021 .bash_logout
+-rw-r--r-- 1 tom  tom  3771 Nov 10  2021 .bashrc
+drwx------ 2 tom  tom  4096 Nov 10  2021 .cache
+drwx------ 3 tom  tom  4096 Nov 10  2021 mail
+drwx------ 8 tom  tom  4096 Nov  4 09:22 Maildir
+-rw------- 1 tom  tom   169 Nov 10  2021 .mysql_history
+-rw-r--r-- 1 tom  tom   807 Nov 10  2021 .profile
+drwx------ 2 tom  tom  4096 Nov 10  2021 .ssh
+-rw------- 1 tom  tom  2018 Nov 10  2021 .viminfo
+tom@NIXHARD:~$ cat .mysql_history
+_HiStOrY_V2_
+show\040databases;
+select\040*\040from\040users;
+use\040users;
+select\040*\040from\040users;
+show\040databases;
+use\040users;
+select\040*\040from\040users;
+```
+
+
+```
+tom@NIXHARD:~$ find / -name "mysql" 2>/dev/null
+/snap/core20/1169/etc/apparmor.d/abstractions/mysql
+/snap/core20/1169/usr/share/bash-completion/completions/mysql
+/snap/core20/1081/etc/apparmor.d/abstractions/mysql
+/snap/core20/1081/usr/share/bash-completion/completions/mysql
+/snap/core18/2246/etc/apparmor.d/abstractions/mysql
+/snap/core18/2246/usr/share/bash-completion/completions/mysql
+/snap/core18/2128/etc/apparmor.d/abstractions/mysql
+/snap/core18/2128/usr/share/bash-completion/completions/mysql
+/var/lib/mysql
+/var/log/mysql
+/etc/init.d/mysql
+/etc/mysql
+/etc/apparmor.d/abstractions/mysql
+/usr/lib/mysql
+/usr/share/mysql
+/usr/share/bash-completion/completions/mysql
+/usr/bin/mysql
+tom@NIXHARD:~$ ps aux | grep mysql
+mysql        981  0.3 18.7 2142948 382468 ?      Ssl  08:29   0:15 /usr/sbin/mysqld
+tom         3729  0.0  0.0   6432   740 pts/0    S+   09:49   0:00 grep --color=auto mysql
 
 ```
