@@ -328,16 +328,6 @@ show tables;
 ```
 
 ```sql
-select * from users where username = HTB;
-```
-
-```
-ERROR 1054 (42S22): Unknown column 'HTB' in 'where clause'
-```
-
-The value needs to be quoted as a string.
-
-```sql
 select * from users where username = 'HTB';
 ```
 
@@ -351,17 +341,3 @@ select * from users where username = 'HTB';
 ```
 
 The `users` table in the `users` database contains the `HTB` account and its password.
-
----
-
-## Answer
-
-```sql
-select * from users where username = 'HTB';
-```
-
-**Answer (HTB's password):**
-
-```
-cr3n4o7rzse7rzhnckhssncif7ds
-```
