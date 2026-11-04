@@ -263,3 +263,16 @@ LITERAL+ NOTIFY SPECIAL-USE] Logged in
 
 
 ```
+
+```
+1a SELECT INBOX
+* OK [CLOSED] Previous mailbox closed.
+* FLAGS (\Answered \Flagged \Deleted \Seen \Draft)
+* OK [PERMANENTFLAGS (\Answered \Flagged \Deleted \Seen \Draft \*)] Flags permitted.
+* 1 EXISTS
+* 0 RECENT
+* OK [UIDVALIDITY 1636509064] UIDs valid
+* OK [UIDNEXT 2] Predicted next UID
+1a OK [READ-WRITE] Select completed (0.001 + 0.000 secs).
+
+```
