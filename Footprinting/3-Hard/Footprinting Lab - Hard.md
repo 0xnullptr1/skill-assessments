@@ -6,7 +6,7 @@ The third server is an MX and management server for the internal network. Subseq
 
 > Q1: Enumerate the server carefully and find the username "HTB" and its password. Then, submit HTB's password as the answer.
 
-## Attack Summary j
+## Attack Summary
 
 |Step|Vector|Outcome|
 |---|---|---|
