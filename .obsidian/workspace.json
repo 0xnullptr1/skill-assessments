@@ -99,7 +99,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Footprinting/3-Hard/Footprinting Lab - Hard.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +117,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Footprinting/3-Hard/Footprinting Lab - Hard.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -161,7 +159,6 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Footprinting/3-Hard/Footprinting Lab - Hard.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -199,7 +196,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a93e10c5f473c432",
+  "active": "55ab55394af1c64d",
   "lastOpenFiles": [
     "Footprinting/Medium/Footprinting Lab - Medium.md",
     "README.md",
