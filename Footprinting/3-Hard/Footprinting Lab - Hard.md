@@ -209,24 +209,52 @@ ss -tlpn
 ```
 
 ```
+State        Recv-Q       Send-Q             Local Address:Port               Peer Address:Port       Process       
+LISTEN       0            4096               127.0.0.53%lo:53                      0.0.0.0:*                        
+LISTEN       0            128                      0.0.0.0:22                      0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:993                     0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:995                     0.0.0.0:*                        
 LISTEN       0            70                     127.0.0.1:33060                   0.0.0.0:*                        
-LISTEN       0            151                    127.0.0.1:3306                    0.0.0.0:*  
+LISTEN       0            151                    127.0.0.1:3306                    0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:110                     0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:143                     0.0.0.0:*  
 ```
 
-A MySQL instance is bound to loopback only (127.0.0.1:3306).
+A MySQL instance is bound to loopback only (127.0.0.1:3306), alongside the mail services and a MySQL X Protocol port (33060).
 
 ```bash
 ls -la
+```
+
+```
+total 48
+drwxr-xr-x 6 tom  tom  4096 Nov 10  2021 .
+drwxr-xr-x 5 root root 4096 Nov 10  2021 ..
+-rw------- 1 tom  tom   532 Nov 10  2021 .bash_history
+-rw-r--r-- 1 tom  tom   220 Nov 10  2021 .bash_logout
+-rw-r--r-- 1 tom  tom  3771 Nov 10  2021 .bashrc
+drwx------ 2 tom  tom  4096 Nov 10  2021 .cache
+drwx------ 3 tom  tom  4096 Nov 10  2021 mail
+drwx------ 8 tom  tom  4096 Nov  4 09:22 Maildir
+-rw------- 1 tom  tom   169 Nov 10  2021 .mysql_history
+-rw-r--r-- 1 tom  tom   807 Nov 10  2021 .profile
+drwx------ 2 tom  tom  4096 Nov 10  2021 .ssh
+-rw------- 1 tom  tom  2018 Nov 10  2021 .viminfo
+```
+
+The home directory enumeration reveals a readable `.mysql_history` file.
+
+```bash
 cat .mysql_history
 ```
 
 ```
--rw------- 1 tom  tom   169 Nov 10  2021 .mysql_history
-```
-
-```
+_HiStOrY_V2_
 show\040databases;
 select\040*\040from\040users;
+use\040users;
+select\040*\040from\040users;
+show\040databases;
 use\040users;
 select\040*\040from\040users;
 ```
@@ -239,6 +267,7 @@ ps aux | grep mysql
 
 ```
 mysql        981  0.3 18.7 2142948 382468 ?      Ssl  08:29   0:15 /usr/sbin/mysqld
+tom         3729  0.0  0.0   6432   740 pts/0    S+   09:49   0:00 grep --color=auto mysql
 ```
 
 This confirms `mysqld` is running locally.
@@ -251,13 +280,14 @@ This confirms `mysqld` is running locally.
 mysql -u tom -p -h 127.0.0.1
 ```
 
+```
+Enter password: # NMds732Js2761
+```
+
 The same password recovered from SNMP (`NMds732Js2761`) grants MySQL access as `tom`.
 
 ```sql
 show databases;
-use users;
-show tables;
-select * from users where username = 'HTB';
 ```
 
 ```
@@ -270,18 +300,54 @@ select * from users where username = 'HTB';
 | sys                |
 | users              |
 +--------------------+
+5 rows in set (0.01 sec)
+```
 
+```sql
+use users;
+```
+
+```
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+```
+
+```sql
+show tables;
+```
+
+```
 +-----------------+
 | Tables_in_users |
 +-----------------+
 | users           |
 +-----------------+
+1 row in set (0.00 sec)
+```
 
+```sql
+select * from users where username = HTB;
+```
+
+```
+ERROR 1054 (42S22): Unknown column 'HTB' in 'where clause'
+```
+
+The value needs to be quoted as a string.
+
+```sql
+select * from users where username = 'HTB';
+```
+
+```
 +------+----------+------------------------------+
 | id   | username | password                     |
 +------+----------+------------------------------+
 |  150 | HTB      | cr3n4o7rzse7rzhnckhssncif7ds |
 +------+----------+------------------------------+
+1 row in set (0.01 sec)
 ```
 
 The `users` table in the `users` database contains the `HTB` account and its password.
