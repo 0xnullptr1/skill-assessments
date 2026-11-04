@@ -343,3 +343,101 @@ XvSb8cNlUIWdRwAAAAt0b21ATklYSEFSRAECAwQFBg==
 
 
 ```
+
+## ssh access as tom
+
+
+
+
+## services enum
+
+```
+tom@NIXHARD:~$ ss -tlpn
+State        Recv-Q       Send-Q             Local Address:Port               Peer Address:Port       Process       
+LISTEN       0            4096               127.0.0.53%lo:53                      0.0.0.0:*                        
+LISTEN       0            128                      0.0.0.0:22                      0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:993                     0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:995                     0.0.0.0:*                        
+LISTEN       0            70                     127.0.0.1:33060                   0.0.0.0:*                        
+LISTEN       0            151                    127.0.0.1:3306                    0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:110                     0.0.0.0:*                        
+LISTEN       0            100                      0.0.0.0:143                     0.0.0.0:*  
+```
+
+```tom@NIXHARD:~$ ls -la
+total 48
+drwxr-xr-x 6 tom  tom  4096 Nov 10  2021 .
+drwxr-xr-x 5 root root 4096 Nov 10  2021 ..
+-rw------- 1 tom  tom   532 Nov 10  2021 .bash_history
+-rw-r--r-- 1 tom  tom   220 Nov 10  2021 .bash_logout
+-rw-r--r-- 1 tom  tom  3771 Nov 10  2021 .bashrc
+drwx------ 2 tom  tom  4096 Nov 10  2021 .cache
+drwx------ 3 tom  tom  4096 Nov 10  2021 mail
+drwx------ 8 tom  tom  4096 Nov  4 09:22 Maildir
+-rw------- 1 tom  tom   169 Nov 10  2021 .mysql_history
+-rw-r--r-- 1 tom  tom   807 Nov 10  2021 .profile
+drwx------ 2 tom  tom  4096 Nov 10  2021 .ssh
+-rw------- 1 tom  tom  2018 Nov 10  2021 .viminfo
+tom@NIXHARD:~$ cat .mysql_history
+_HiStOrY_V2_
+show\040databases;
+select\040*\040from\040users;
+use\040users;
+select\040*\040from\040users;
+show\040databases;
+use\040users;
+select\040*\040from\040users;
+```
+
+```
+┌──(kali㉿kali)-[~/labs/footprinting/hard]
+└─$ nano id_rsa    
+                                                                                                                    
+┌──(kali㉿kali)-[~/labs/footprinting/hard]
+└─$ chmod 600 id_rsa                           
+                                                                                                                    
+┌──(kali㉿kali)-[~/labs/footprinting/hard]
+└─$ 
+                                                                                                                    
+┌──(kali㉿kali)-[~/labs/footprinting/hard]
+└─$ ssh tom@10.129.202.20 -i id_rsa            
+The authenticity of host '10.129.202.20 (10.129.202.20)' can't be established.
+ED25519 key fingerprint is: SHA256:AtNYHXCA7dVpi58LB+uuPe9xvc2lJwA6y7q82kZoBNM
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.129.202.20' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.4.0-90-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Wed 04 Nov 2026 09:26:59 AM UTC
+
+  System load:  0.01              Processes:               183
+  Usage of /:   66.4% of 5.70GB   Users logged in:         0
+  Memory usage: 31%               IPv4 address for ens192: 10.129.202.20
+  Swap usage:   0%
+
+ * Super-optimized for small spaces - read how we shrank the memory
+   footprint of MicroK8s to make it the smallest full K8s around.
+
+   https://ubuntu.com/blog/microk8s-memory-optimisation
+
+0 updates can be applied immediately.
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+
+Last login: Wed Nov 10 02:51:52 2021 from 10.10.14.20
+tom@NIXHARD:~$ ls
+mail  Maildir
+
+```
