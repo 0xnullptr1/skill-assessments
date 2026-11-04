@@ -104,3 +104,55 @@ LIST BAD Error in IMAP command received by server.
 
 
 ```
+
+## snmp enum
+
+```
+nmap -sU 10.129.202.20 -T4                     
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-11-04 03:38 EST
+Warning: 10.129.202.20 giving up on port because retransmission cap hit (6).
+Stats: 0:01:28 elapsed; 0 hosts completed (1 up), 1 undergoing UDP Scan
+UDP Scan Timing: About 11.36% done; ETC: 03:51 (0:11:27 remaining)
+Stats: 0:03:25 elapsed; 0 hosts completed (1 up), 1 undergoing UDP Scan
+UDP Scan Timing: About 22.47% done; ETC: 03:53 (0:11:47 remaining)
+Stats: 0:07:45 elapsed; 0 hosts completed (1 up), 1 undergoing UDP Scan
+UDP Scan Timing: About 47.11% done; ETC: 03:54 (0:08:42 remaining)
+Stats: 0:11:10 elapsed; 0 hosts completed (1 up), 1 undergoing UDP Scan
+UDP Scan Timing: About 66.73% done; ETC: 03:54 (0:05:34 remaining)
+Stats: 0:13:37 elapsed; 0 hosts completed (1 up), 1 undergoing UDP Scan
+UDP Scan Timing: About 80.74% done; ETC: 03:55 (0:03:15 remaining)
+Stats: 0:17:10 elapsed; 0 hosts completed (1 up), 1 undergoing UDP Scan
+UDP Scan Timing: About 99.99% done; ETC: 03:55 (0:00:00 remaining)
+Nmap scan report for 10.129.202.20
+Host is up (0.055s latency).
+Not shown: 991 closed udp ports (port-unreach)
+PORT      STATE         SERVICE
+68/udp    open|filtered dhcpc
+161/udp   open          snmp
+2048/udp  open|filtered dls-monitor
+2343/udp  open|filtered nati-logos
+16832/udp open|filtered unknown
+21131/udp open|filtered unknown
+21207/udp open|filtered unknown
+21609/udp open|filtered unknown
+44185/udp open|filtered unknown
+
+```
+
+```
+nmap -sU 10.129.202.20 -T4 -p 161 --script snmp-info
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-11-04 03:59 EST
+Nmap scan report for 10.129.202.20
+Host is up (0.063s latency).
+
+PORT    STATE SERVICE
+161/udp open  snmp
+| snmp-info: 
+|   enterprise: net-snmp
+|   engineIDFormat: unknown
+|   engineIDData: 5b99e75a10288b6100000000
+|   snmpEngineBoots: 10
+|_  snmpEngineTime: 29m55s
+
+
+```
