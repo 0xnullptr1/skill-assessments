@@ -79,7 +79,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -196,7 +197,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "55ab55394af1c64d",
+  "active": "08e2a9f2faeb393b",
   "lastOpenFiles": [
     "Footprinting/Medium/Footprinting Lab - Medium.md",
     "README.md",
