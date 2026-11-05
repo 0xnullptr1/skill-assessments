@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Footprinting/3-Hard/Footprinting Lab - Hard.md",
+                "file": "AEN/AEN.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Footprinting Lab - Hard"
+              "title": "AEN"
             }
           }
         ]
@@ -79,8 +79,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -197,8 +196,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "08e2a9f2faeb393b",
+  "active": "55ab55394af1c64d",
   "lastOpenFiles": [
+    "Footprinting/3-Hard/Footprinting Lab - Hard.md",
+    "AEN/AEN.md",
+    "AEN/screens",
+    "AEN",
     "Footprinting/Medium/Footprinting Lab - Medium.md",
     "README.md",
     "Footprinting/Easy/Footprinting Lab - Easy.md",
