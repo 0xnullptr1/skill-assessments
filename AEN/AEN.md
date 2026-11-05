@@ -113,3 +113,33 @@ PORT     STATE SERVICE
 Nmap done: 1 IP address (1 host up) scanned in 33.69 seconds
 
 ```
+
+## DNS Zone transfer
+
+```
+dig axfr inlanefreight.local @inlanefreight.local
+
+; <<>> DiG 9.20.29-1-Debian <<>> axfr inlanefreight.local @inlanefreight.local
+; (1 server found)
+;; global options: +cmd
+inlanefreight.local.    86400   IN      SOA     ns1.inlanfreight.local. dnsadmin.inlanefreight.local. 21 604800 86400 2419200 86400
+inlanefreight.local.    86400   IN      NS      inlanefreight.local.
+inlanefreight.local.    86400   IN      A       127.0.0.1
+blog.inlanefreight.local. 86400 IN      A       127.0.0.1
+careers.inlanefreight.local. 86400 IN   A       127.0.0.1
+dev.inlanefreight.local. 86400  IN      A       127.0.0.1
+flag.inlanefreight.local. 86400 IN      TXT     "HTB{DNs_ZOn3_Tr@nsf3r}"
+gitlab.inlanefreight.local. 86400 IN    A       127.0.0.1
+ir.inlanefreight.local. 86400   IN      A       127.0.0.1
+status.inlanefreight.local. 86400 IN    A       127.0.0.1
+support.inlanefreight.local. 86400 IN   A       127.0.0.1
+tracking.inlanefreight.local. 86400 IN  A       127.0.0.1
+vpn.inlanefreight.local. 86400  IN      A       127.0.0.1
+inlanefreight.local.    86400   IN      SOA     ns1.inlanfreight.local. dnsadmin.inlanefreight.local. 21 604800 86400 2419200 86400
+;; Query time: 40 msec
+;; SERVER: 10.129.229.147#53(inlanefreight.local) (TCP)
+;; WHEN: Thu Nov 05 13:12:03 EST 2026
+;; XFR size: 14 records (messages 1, bytes 448)
+
+
+```
