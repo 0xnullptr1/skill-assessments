@@ -486,3 +486,7 @@ HTB{57c7f6d939eeda90aa1488b15617b9fa}
 ## gitlab.inlanefreight.local
 
 HTB{32596e8376077c3ef8d5cf52f15279ba}
+
+## careers.inlanefreight.local
+
+HTB{8f40ecf17f681612246fa5728c159e46}
