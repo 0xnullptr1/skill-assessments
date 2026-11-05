@@ -143,3 +143,41 @@ inlanefreight.local.    86400   IN      SOA     ns1.inlanfreight.local. dnsadmin
 
 
 ```
+
+## Vhost enum
+
+```
+gobuster vhost -u http://inlanefreight.local -w /home/kali/SecLists/Discovery/DNS/subdomains-top1million-20000.txt --append-domain
+===============================================================
+Gobuster v3.8.2
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                       http://inlanefreight.local
+[+] Method:                    GET
+[+] Threads:                   10
+[+] Wordlist:                  /home/kali/SecLists/Discovery/DNS/subdomains-top1million-20000.txt
+[+] User Agent:                gobuster/3.8.2
+[+] Timeout:                   10s
+[+] Append Domain:             true
+[+] Exclude Hostname Length:   false
+===============================================================
+Starting gobuster in VHOST enumeration mode
+===============================================================
+dev.inlanefreight.local Status: 200 [Size: 2048]
+vpn.inlanefreight.local Status: 200 [Size: 1578]
+support.inlanefreight.local Status: 200 [Size: 26635]
+blog.inlanefreight.local Status: 200 [Size: 8708]
+status.inlanefreight.local Status: 200 [Size: 878]
+monitoring.inlanefreight.local Status: 200 [Size: 56]
+careers.inlanefreight.local Status: 200 [Size: 51806]
+tracking.inlanefreight.local Status: 200 [Size: 35211]
+ir.inlanefreight.local Status: 200 [Size: 28548]
+gitlab.inlanefreight.local Status: 302 [Size: 113] [--> http://gitlab.inlanefreight.local/users/sign_in]
+www.monitoring.inlanefreight.local Status: 200 [Size: 56]
+#www.inlanefreight.local Status: 400 [Size: 301]
+#mail.inlanefreight.local Status: 400 [Size: 301]
+Progress: 19966 / 19966 (100.00%)
+===============================================================
+Finished
+==============================================
+```
