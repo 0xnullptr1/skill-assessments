@@ -183,6 +183,268 @@ Finished
 ```
 
 
+## wordpress enum
+
+```
+ wpscan --url http://ir.inlanefreight.local --enumerate
+_______________________________________________________________
+         __          _______   _____
+         \ \        / /  __ \ / ____|
+          \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+           \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+                  WordPress Security Scanner
+                         Version 4.1.0
+                    An Automattic endeavor
+                    https://automattic.com
+_______________________________________________________________
+
+
+Scan Aborted: An API token is required for vulnerable plugin/theme enumeration. You can get a free API token with 25 daily requests by registering at https://wpscan.com/register. Provide it via --api-token TOKEN or the WPSCAN_API_TOKEN environment variable.
+                                                                                                                
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ wpscan --url http://ir.inlanefreight.local --enumerate p,t,u
+_______________________________________________________________
+         __          _______   _____
+         \ \        / /  __ \ / ____|
+          \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+           \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+                  WordPress Security Scanner
+                         Version 4.1.0
+                    An Automattic endeavor
+                    https://automattic.com
+_______________________________________________________________
+
+[+] URL: http://ir.inlanefreight.local/ [10.129.229.147]
+[+] Started: Thu Nov  5 13:20:57 2026
+[+] Command Line: wpscan --url http://ir.inlanefreight.local --enumerate p,t,u
+[+] Hostname: kali
+
+Interesting Finding(s):
+
+[+] Headers
+ | Interesting Entries:
+ |  - Server: Apache/2.4.53 (Debian)
+ |  - X-Powered-By: PHP/7.4.29
+ |  - Via: 1.1 ir.inlanefreight.local
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+[+] robots.txt found: http://ir.inlanefreight.local/robots.txt
+ | Interesting Entries:
+ |  - /wp-admin/
+ |  - /wp-admin/admin-ajax.php
+ | Found By: Robots Txt (Aggressive Detection)
+ | Confidence: 100%
+
+[+] XML-RPC seems to be enabled: http://ir.inlanefreight.local/xmlrpc.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+ | References:
+ |  - http://codex.wordpress.org/XML-RPC_Pingback_API
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner/
+ |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos/
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login/
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access/
+
+[+] WordPress readme found: http://ir.inlanefreight.local/readme.html
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[+] The external WP-Cron seems to be enabled: http://ir.inlanefreight.local/wp-cron.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 60%
+ | References:
+ |  - https://www.iplocation.net/defend-wordpress-from-ddos
+ |  - https://github.com/wpscanteam/wpscan/issues/1299
+
+[+] WordPress version 6.0 identified (Insecure, released on 2022-05-24).
+ | Found By: Rss Generator (Passive Detection)
+ |  - http://ir.inlanefreight.local/feed/, <generator>https://wordpress.org/?v=6.0</generator>
+ | Confirmed By: Rss Generator (Passive Detection)
+ |  - http://ir.inlanefreight.local/comments/feed/, <generator>https://wordpress.org/?v=6.0</generator>
+
+[+] WordPress theme in use: cbusiness-investment
+ | Location: http://ir.inlanefreight.local/wp-content/themes/cbusiness-investment/
+ | Last Updated: 2026-04-11 4:00am GMT (6 months ago, per WordPress.org)
+ | Active Installs: 100 (per WordPress.org)
+ | Readme: http://ir.inlanefreight.local/wp-content/themes/cbusiness-investment/readme.txt
+ | [!] The version is out of date, the latest version is 1.0
+ | Style URL: http://ir.inlanefreight.local/wp-content/themes/cbusiness-investment/style.css?ver=6.0
+ | Style Name: CBusiness Investment
+ | Style URI: https://www.themescave.com/themes/wordpress-theme-finance-free-cbusiness-investment/
+ | Description: CBusiness Investment WordPress theme is used for all type of corporate business. That Multipurpose T...
+ | Author: Themescave
+ | Author URI: http://www.themescave.com/
+ |
+ | Found By: Css Style In Homepage (Passive Detection)
+ | Confirmed By: Css Style In 404 Page (Passive Detection)
+ |
+ | Version: 0.7 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/themes/cbusiness-investment/style.css?ver=6.0, Match: 'Version: 0.7'
+
+[+] Enumerating Most Popular Plugins (via Passive and Aggressive Methods)
+
+[+] b2i-investor-tools
+ | Location: http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/
+ | Last Updated: 2025-05-22 5:29am GMT (1 year ago)
+ | Readme: http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/readme.txt
+ | [!] The version is out of date, the latest version is 1.0.8.2
+ |
+ | Found By: Urls In Homepage (Passive Detection)
+ |
+ | Version: 1.0.5 (100% confidence)
+ | Found By: Query Parameter (Passive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/css/style.css?ver=1.0.5
+ |  - http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/css/export.css?ver=1.0.5
+ |  - http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/js/wb_script.js?ver=1.0.5
+ |  - http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/js/amcharts.js?ver=1.0.5
+ |  - http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/js/serial.js?ver=1.0.5
+ |  - http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/js/amstock.js?ver=1.0.5
+ |  - http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/js/export.js?ver=1.0.5
+ | Confirmed By: Readme - Stable Tag (Aggressive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/plugins/b2i-investor-tools/readme.txt
+
+[+] mail-masta
+ | Location: http://ir.inlanefreight.local/wp-content/plugins/mail-masta/
+ | Latest Version: 1.0 (up to date)
+ | Last Updated: 2014-09-19 7:52am GMT (12 years ago)
+ | Readme: http://ir.inlanefreight.local/wp-content/plugins/mail-masta/readme.txt
+ |
+ | Found By: Urls In Homepage (Passive Detection)
+ |
+ | Version: 1.0 (80% confidence)
+ | Found By: Readme - Stable Tag (Aggressive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/plugins/mail-masta/readme.txt
+
+[+] akismet
+ | Location: http://ir.inlanefreight.local/wp-content/plugins/akismet/
+ | Latest Version: 5.7.2
+ | Last Updated: 2026-08-18 11:42pm GMT (2 months ago, per WordPress.org)
+ | Active Installs: 5,000,000 (per WordPress.org)
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/plugins/akismet/, status: 403
+ |
+ | The version could not be determined.
+ Checking Known Locations - Time: 00:00:52 <==============================> (1500 / 1500) 100.00% Time: 00:00:52
+[i] 3 plugin(s) Identified.
+[+] Enumerating Most Popular Themes (via Passive and Aggressive Methods)
+
+[+] cbusiness-investment
+ | Location: http://ir.inlanefreight.local/wp-content/themes/cbusiness-investment/
+ | Last Updated: 2026-04-11 4:00am GMT (6 months ago, per WordPress.org)
+ | Active Installs: 100 (per WordPress.org)
+ | Readme: http://ir.inlanefreight.local/wp-content/themes/cbusiness-investment/readme.txt
+ | [!] The version is out of date, the latest version is 1.0
+ | Style URL: http://ir.inlanefreight.local/wp-content/themes/cbusiness-investment/style.css
+ | Style Name: CBusiness Investment
+ | Style URI: https://www.themescave.com/themes/wordpress-theme-finance-free-cbusiness-investment/
+ | Description: CBusiness Investment WordPress theme is used for all type of corporate business. That Multipurpose T...
+ | Author: Themescave
+ | Author URI: http://www.themescave.com/
+ |
+ | Found By: Urls In Homepage (Passive Detection)
+ |
+ | Version: 0.7 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/themes/cbusiness-investment/style.css, Match: 'Version: 0.7'
+
+[+] twentytwenty
+ | Location: http://ir.inlanefreight.local/wp-content/themes/twentytwenty/
+ | Last Updated: 2026-10-28 4:00am GMT (8 days ago, per WordPress.org)
+ | Active Installs: 200,000 (per WordPress.org)
+ | Readme: http://ir.inlanefreight.local/wp-content/themes/twentytwenty/readme.txt
+ | [!] The version is out of date, the latest version is 3.3
+ | Style URL: http://ir.inlanefreight.local/wp-content/themes/twentytwenty/style.css
+ | Style Name: Twenty Twenty
+ | Style URI: https://wordpress.org/themes/twentytwenty/
+ | Description: Our default theme for 2020 is designed to take full advantage of the flexibility of the block editor...
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/themes/twentytwenty/, status: 500
+ |
+ | Version: 2.0 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/themes/twentytwenty/style.css, Match: 'Version: 2.0'
+
+[+] twentytwentyone
+ | Location: http://ir.inlanefreight.local/wp-content/themes/twentytwentyone/
+ | Last Updated: 2026-08-19 4:00am GMT (2 months ago, per WordPress.org)
+ | Active Installs: 200,000 (per WordPress.org)
+ | Readme: http://ir.inlanefreight.local/wp-content/themes/twentytwentyone/readme.txt
+ | [!] The version is out of date, the latest version is 2.8
+ | Style URL: http://ir.inlanefreight.local/wp-content/themes/twentytwentyone/style.css
+ | Style Name: Twenty Twenty-One
+ | Style URI: https://wordpress.org/themes/twentytwentyone/
+ | Description: Twenty Twenty-One is a blank canvas for your ideas and it makes the block editor your best brush. Wi...
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/themes/twentytwentyone/, status: 500
+ |
+ | Version: 1.6 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/themes/twentytwentyone/style.css, Match: 'Version: 1.6'
+
+[+] twentytwentytwo
+ | Location: http://ir.inlanefreight.local/wp-content/themes/twentytwentytwo/
+ | Last Updated: 2026-08-19 4:00am GMT (2 months ago, per WordPress.org)
+ | Active Installs: 100,000 (per WordPress.org)
+ | Readme: http://ir.inlanefreight.local/wp-content/themes/twentytwentytwo/readme.txt
+ | [!] The version is out of date, the latest version is 2.1
+ | Style URL: http://ir.inlanefreight.local/wp-content/themes/twentytwentytwo/style.css
+ | Style Name: Twenty Twenty-Two
+ | Style URI: https://wordpress.org/themes/twentytwentytwo/
+ | Description: Built on a solidly designed foundation, Twenty Twenty-Two embraces the idea that everyone deserves a...
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/themes/twentytwentytwo/, status: 200
+ |
+ | Version: 1.2 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://ir.inlanefreight.local/wp-content/themes/twentytwentytwo/style.css, Match: 'Version: 1.2'
+ Checking Known Locations - Time: 00:00:16 <================================> (400 / 400) 100.00% Time: 00:00:16
+[i] 4 theme(s) Identified.
+[+] Enumerating Users (via Passive and Aggressive Methods)
+
+[+] ilfreightwp
+ | Found By: Rss Generator (Passive Detection)
+
+[+] john
+ | Found By: Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+
+[+] tom
+ | Found By: Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+
+[+] james
+ | Found By: Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ Brute Forcing Author IDs - Time: 00:00:00 <==================================> (10 / 10) 100.00% Time: 00:00:00
+[i] 4 user(s) Identified.
+[!] No WPScan API Token given, as a result vulnerability data has not been output.
+[!] You can get a free API token with 25 daily requests by registering at https://wpscan.com/register
+[+] Finished: Thu Nov  5 13:22:15 2026
+[+] Requests Done: 1985
+[+] Cached Requests: 27
+[+] Most response codes received: 404: 1922, 200: 49, 403: 7, 500: 5, 302: 1
+[+] Data Sent: 574.86 KB
+[+] Data Received: 1.324 MB
+[+] Memory used: 318.09 MB
+[+] Elapsed time: 00:01:18
+```
+
+
 ## ir lfi
 
 ```shell
