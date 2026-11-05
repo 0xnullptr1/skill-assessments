@@ -597,3 +597,14 @@ HTB{49f0bad299687c62334182178bfd75d8}
 ```
 
 HTB{dbca4dc5d99cdb3311404ea74921553c}
+
+## support.inlanefreight.local
+
+HTB{1nS3cuR3_c00k135}
+
+|Ticket ID|Ticket Name|Status|
+|---|---|---|
+|9821|Sam|Resolved|
+|9820|Nick|Resolved|
+|9819|Tom|Resolved|
+|9818|John|HTB{1nS3cuR3_c00k135}|
