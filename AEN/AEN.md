@@ -149,6 +149,28 @@ Nmap done: 1 IP address (1 host up) scanned in 33.69 seconds
 
 ```
 
+## FTP enumeration
+
+```
+ ftp -a 10.129.39.98                               
+Connected to 10.129.39.98.
+220 (vsFTPd 3.0.3)
+331 Please specify the password.
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> ls
+229 Entering Extended Passive Mode (|||41074|)
+150 Here comes the directory listing.
+-rw-r--r--    1 0        0              38 May 30  2022 flag.txt
+226 Directory send OK.
+ftp> more flag.txt
+HTB{0eb0ab788df18c3115ac43b1c06ae6c4}
+ftp> 
+
+
+```
+
 ## DNS Zone transfer
 
 ```
@@ -217,6 +239,7 @@ Finished
 ==============================================
 ```
 
+all the vhosts are put into /etc/hosts
 
 ## wordpress enum
 
