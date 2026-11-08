@@ -566,9 +566,21 @@ js                   (Status: 301) [Size: 331] [--> http://dev.inlanefreight.loc
 
 ```
 
+all img
+
 HTB{57c7f6d939eeda90aa1488b15617b9fa}
 
 ## gitlab.inlanefreight.local
+
+creating an account:
+
+img1
+
+navigating to /explore
+
+img2
+
+discovered new vhost shopdev2.inlanefreight.local
 
 HTB{32596e8376077c3ef8d5cf52f15279ba}
 
