@@ -1,3 +1,38 @@
+Our client, Inlanefreight, has contracted our company, Acme Security, Ltd., to perform a full-scope External Penetration Test to assess their perimeter security. The customer has asked us to identify as many vulnerabilities as possible; therefore, evasive testing is not required. They would like to see what sort of access can be achieved by an anonymous user on the Internet. Per the Rules of Engagement (RoE), if we can breach the DMZ and gain a foothold into the internal network, they would like us to see how far we can take that access, up to and including Active Directory domain compromise. The client has not provided web application, VPN, or Active Directory user credentials. The following domain and network ranges are in scope for testing:
+
+|**External Testing**|**Internal Testing**|
+|---|---|
+|10.129.x.x ("external" facing target host)|172.16.8.0/23|
+|*.inlanefreight.local (all subdomains)|172.16.9.0/23|
+||INLANEFREIGHT.LOCAL (Active Directory domain)|
+
+The customer has provided the primary domain and internal networks but has not given specifics on the exact subdomains within this scope nor the "live" hosts we will encounter within the network. They would like us to perform discovery to see what type of visibility an attacker can gain against their external network (and internal if a foothold is achieved).
+
+Automated testing techniques such as enumeration and vulnerability scanning are permitted, but we must work carefully not to cause any service disruptions. The following are out of scope for this assessment:
+
+- Phishing/Social Engineering against any Inlanefreight employees or customers
+- Physical attacks against Inlanefreight facilities
+- Destructive actions or Denial of Service (DoS) testing
+- Modifications to the environment without written consent from authorized Inlanefreight IT staff
+## Task
+
+Here are some spoiler-free steps you can follow instead of referring to the module’s content:
+
+1. Get all seven web flags on `DMZ01`.
+2. Get a foothold on `DMZ01`
+3. Get root access on `DMZ01`
+4. Get a foothold on `DEV01`
+5. Get root access on `DEV01`
+6. Get a foothold on `MS01`
+7. Get root access on `MS01`
+8. Get root access on `DC01`
+9. Get a foothold on `MGMT01`
+10. Get root access on `MGMT01`
+
+
+## Nmap scan
+
+
 ```
 nmap -sC -sV 10.129.34.144 --open 
 Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-05 13:01 -0500
