@@ -244,7 +244,9 @@ all the vhosts are put into /etc/hosts
 
 ## blog.inlanefreight.local
 
+![](./vhosts/blog/blog1.png)
 
+blog hosts a drupal instance
 
 ## ir.inlanefreight.local
 
