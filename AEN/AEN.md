@@ -322,6 +322,17 @@ A new request is made with the discovered string and the ip is set to 127.0.0.1,
 
 ![](./vhosts/dev/dev4.png)
 
+By clicking on "Browse" its possible to upload a file:
+
+![](./vhosts/dev/dev5.png)
+
+file are restricted to images 
+![](./vhosts/dev/dev6.png)
+
+![](./vhosts/dev/dev7.png)
+
+![](./vhosts/dev/dev8.png)
+
 HTB{57c7f6d939eeda90aa1488b15617b9fa}
 
 ## ir.inlanefreight.local
