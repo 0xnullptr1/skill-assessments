@@ -196,10 +196,19 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "55ab55394af1c64d",
+  "active": "b07b77640a52a3c0",
   "lastOpenFiles": [
-    "Footprinting/3-Hard/Footprinting Lab - Hard.md",
+    "AEN/vhosts/Untitled",
+    "AEN/vhosts/status",
+    "AEN/vhosts/ir",
+    "AEN/vhosts/gitlab",
+    "AEN/vhosts/dev",
+    "AEN/vhosts/Untitled.md",
     "AEN/AEN.md",
+    "AEN/vhosts/careers",
+    "AEN/vhosts/blog",
+    "AEN/vhosts",
+    "Footprinting/3-Hard/Footprinting Lab - Hard.md",
     "AEN",
     "Footprinting/Medium/Footprinting Lab - Medium.md",
     "README.md",
@@ -210,9 +219,6 @@
     "Footprinting/Medium/screens/1.png",
     "Footprinting/Medium/screens",
     "Footprinting/Medium",
-    "Footprinting/Easy/Untitled",
-    "Welcome.md",
-    "Footprinting/Easy",
-    "Footprinting"
+    "Welcome.md"
   ]
 }

