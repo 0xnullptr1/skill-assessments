@@ -248,6 +248,22 @@ all the vhosts are put into /etc/hosts
 
 blog hosts a drupal instance
 
+fingerprinting the hosts discloses that the version running is drupal 9 which does not suffer from cves
+
+```
+curl -s http://blog.inlanefreight.local/ | grep Drupal                         
+<meta name="Generator" content="Drupal 9 (https://www.drupal.org)" />
+      <span>Powered by <a href="https://www.drupal.org">Drupal</a></span>
+
+```
+
+## careers.inlanefreight.local
+
+![](./vhosts/careers/careers1.png)
+
+
+HTB{8f40ecf17f681612246fa5728c159e46}
+
 ## ir.inlanefreight.local
 
 img1
@@ -616,11 +632,6 @@ all img
 
 HTB{dbca4dc5d99cdb3311404ea74921553c}
 
-## careers.inlanefreight.local
-
-all img
-
-HTB{8f40ecf17f681612246fa5728c159e46}
 
 ## status.inlanefreight.local
 
