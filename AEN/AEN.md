@@ -358,6 +358,8 @@ HTB{32596e8376077c3ef8d5cf52f15279ba}
 
 ## monitoring.inlanefreight.local
 
+
+
 ![](./vhosts/monitoring/monitoring1.png)
 
 ```
