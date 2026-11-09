@@ -261,8 +261,52 @@ curl -s http://blog.inlanefreight.local/ | grep Drupal
 
 ![](./vhosts/careers/careers1.png)
 
+it's possible to create a new user:
+
+![](./vhosts/careers/careers2.png)
+
+the newly created account disclses in its main page "Jobs applied by user" (the name i chose), and in the url the profile?id=9 hints at a possible idor.
+
+![](./vhosts/careers/careers3.png)
+
+By changing the value 9 to other values, in this case 4, its possible to read the flag:
+
+![](./vhosts/careers/careers4.png)
 
 HTB{8f40ecf17f681612246fa5728c159e46}
+
+## dev.inlanefreight.local
+
+```
+gobuster dir -u http://dev.inlanefreight.local -w  /home/kali/SecLists/Discovery/Web-Content/DirBuster-2007_directory-list-2.3-small.txt -x .php
+
+===============================================================
+Gobuster v3.8.2
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://dev.inlanefreight.local
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /home/kali/SecLists/Discovery/Web-Content/DirBuster-2007_directory-list-2.3-small.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.8.2
+[+] Extensions:              php
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+index.php            (Status: 200) [Size: 2048]
+images               (Status: 301) [Size: 335] [--> http://dev.inlanefreight.local/images/]
+uploads              (Status: 301) [Size: 336] [--> http://dev.inlanefreight.local/uploads/]
+upload.php           (Status: 200) [Size: 14]
+css                  (Status: 301) [Size: 332] [--> http://dev.inlanefreight.local/css/]
+js                   (Status: 301) [Size: 331] [--> http://dev.inlanefreight.local/js/]
+
+```
+
+all img
+
+HTB{57c7f6d939eeda90aa1488b15617b9fa}
 
 ## ir.inlanefreight.local
 
@@ -567,38 +611,7 @@ HTB{e7134abea7438e937b87608eab0d979c}
 ```
 
 
-## dev.inlanefreight.local
 
-```
-gobuster dir -u http://dev.inlanefreight.local -w  /home/kali/SecLists/Discovery/Web-Content/DirBuster-2007_directory-list-2.3-small.txt -x .php
-
-===============================================================
-Gobuster v3.8.2
-by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
-===============================================================
-[+] Url:                     http://dev.inlanefreight.local
-[+] Method:                  GET
-[+] Threads:                 10
-[+] Wordlist:                /home/kali/SecLists/Discovery/Web-Content/DirBuster-2007_directory-list-2.3-small.txt
-[+] Negative Status codes:   404
-[+] User Agent:              gobuster/3.8.2
-[+] Extensions:              php
-[+] Timeout:                 10s
-===============================================================
-Starting gobuster in directory enumeration mode
-===============================================================
-index.php            (Status: 200) [Size: 2048]
-images               (Status: 301) [Size: 335] [--> http://dev.inlanefreight.local/images/]
-uploads              (Status: 301) [Size: 336] [--> http://dev.inlanefreight.local/uploads/]
-upload.php           (Status: 200) [Size: 14]
-css                  (Status: 301) [Size: 332] [--> http://dev.inlanefreight.local/css/]
-js                   (Status: 301) [Size: 331] [--> http://dev.inlanefreight.local/js/]
-
-```
-
-all img
-
-HTB{57c7f6d939eeda90aa1488b15617b9fa}
 
 ## gitlab.inlanefreight.local
 
