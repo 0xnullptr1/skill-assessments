@@ -321,6 +321,7 @@ by doing HTTP verb tampering and changing the request to TRACK a new string (X-C
 A new request is made with the discovered string and the ip is set to 127.0.0.1, tricking the web server to bypass the authorization because the request looks like its done from an internal host:
 
 ![](./vhosts/dev/dev4.png)
+
 HTB{57c7f6d939eeda90aa1488b15617b9fa}
 
 ## ir.inlanefreight.local
