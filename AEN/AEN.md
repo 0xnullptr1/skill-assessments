@@ -277,6 +277,12 @@ HTB{8f40ecf17f681612246fa5728c159e46}
 
 ## dev.inlanefreight.local
 
+a login form is presented:
+
+![](./vhosts/dev/dev1.png)
+
+directory fuzzing discloses upload.php:
+
 ```
 gobuster dir -u http://dev.inlanefreight.local -w  /home/kali/SecLists/Discovery/Web-Content/DirBuster-2007_directory-list-2.3-small.txt -x .php
 
@@ -304,7 +310,7 @@ js                   (Status: 301) [Size: 331] [--> http://dev.inlanefreight.loc
 
 ```
 
-all img
+![](./vhosts/dev/dev2.png)
 
 HTB{57c7f6d939eeda90aa1488b15617b9fa}
 
