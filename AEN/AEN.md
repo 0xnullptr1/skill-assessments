@@ -326,14 +326,36 @@ By clicking on "Browse" its possible to upload a file:
 
 ![](./vhosts/dev/dev5.png)
 
-file are restricted to images 
+file are restricted to images only, so "content type" is set to image/png, and the filter is bypassed, allowing to upload a php webshell on the server:
+
 ![](./vhosts/dev/dev6.png)
 
+enumerating the webserver root directory reveals the flag:
+
 ![](./vhosts/dev/dev7.png)
+
+reading the flag:
 
 ![](./vhosts/dev/dev8.png)
 
 HTB{57c7f6d939eeda90aa1488b15617b9fa}
+
+
+## gitlab.inlanefreight.local
+
+creating an account:
+
+![](./vhosts/gitlab/gitlab1.png)
+
+navigating to /explore:
+
+![](./vhosts/gitlab/gitlab2.png)
+
+
+discovered new vhost shopdev2.inlanefreight.local and the flag:
+
+HTB{32596e8376077c3ef8d5cf52f15279ba}
+
 
 ## ir.inlanefreight.local
 
@@ -640,19 +662,6 @@ HTB{e7134abea7438e937b87608eab0d979c}
 
 
 
-## gitlab.inlanefreight.local
-
-creating an account:
-
-img1
-
-navigating to /explore
-
-img2
-
-discovered new vhost shopdev2.inlanefreight.local
-
-HTB{32596e8376077c3ef8d5cf52f15279ba}
 
 ## shopdev2.inlanefreight.local
 
