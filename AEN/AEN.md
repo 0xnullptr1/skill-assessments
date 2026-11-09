@@ -310,8 +310,17 @@ js                   (Status: 301) [Size: 331] [--> http://dev.inlanefreight.loc
 
 ```
 
+sending a GET request to the endpoint gives back a 403 forbidden error
+
 ![](./vhosts/dev/dev2.png)
 
+by doing HTTP verb tampering and changing the request to TRACK a new string (X-Custom-IP-Authorization: 172.18.0.1) is shown in the response:
+
+![](./vhosts/dev/dev3.png)
+
+A new request is made with the discovered string and the ip is set to 127.0.0.1, tricking the web server to bypass the authorization because the request looks like its done from an internal host:
+
+![](./vhosts/dev/dev4.png)
 HTB{57c7f6d939eeda90aa1488b15617b9fa}
 
 ## ir.inlanefreight.local
