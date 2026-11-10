@@ -1104,3 +1104,11 @@ ligolo-ng » session
 [Agent : root@dmz01] »  
 
 ```
+
+```
+[Agent : root@dmz01] » start --tun tunnel1
+```
+
+```
+sudo ip route add 172.16.8.0/23 dev tunnel1
+```
