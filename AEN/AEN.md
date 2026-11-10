@@ -812,7 +812,20 @@ This shell will be used later for local privilege escalation and pivoting to int
 
 ## shopdev2.inlanefreight.local
 
-all img
+On the host disclosed on gitlab, another login is presented:
+
+![](./vhosts/shopdev2/shopdev1.png)
+
+The page is accessible with admin:admin
+
+![](./vhosts/shopdev2/shopdev2.png)
+
+By selecting a few items and going to the checkout the "complete purchase" button is shown to accept a xml file, as shown in burpsuite below: 
+![](./vhosts/shopdev2/shopdev3.png)
+
+![](./vhosts/shopdev2/shopdev4.png)
+
+a xxe payload is tested to read /etc/passwd, and works:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -825,6 +838,13 @@ all img
 </root>
 
 ```
+
+![](./vhosts/shopdev2/shopdev5.png)
+
+Reading the flag:
+
+![](./vhosts/shopdev2/shopdev6.png)
+
 
 HTB{dbca4dc5d99cdb3311404ea74921553c}
 
