@@ -14,21 +14,6 @@ Automated testing techniques such as enumeration and vulnerability scanning are 
 - Physical attacks against Inlanefreight facilities
 - Destructive actions or Denial of Service (DoS) testing
 - Modifications to the environment without written consent from authorized Inlanefreight IT staff
-## Task
-
-Here are some spoiler-free steps you can follow instead of referring to the module’s content:
-
-1. Get all seven web flags on `DMZ01`.
-2. Get a foothold on `DMZ01`
-3. Get root access on `DMZ01`
-4. Get a foothold on `DEV01`
-5. Get root access on `DEV01`
-6. Get a foothold on `MS01`
-7. Get root access on `MS01`
-8. Get root access on `DC01`
-9. Get a foothold on `MGMT01`
-10. Get root access on `MGMT01`
-
 
 ## Nmap scan
 
@@ -1052,6 +1037,8 @@ its possible to notice that the page executes that javascript instead of renderi
 
 ![](./vhosts/tracking/tracking4.png)
 
+Using a payload to read text works to read /etc/passwd (explain a bit)
+
 ```javascript
 <script>
   var x = new XMLHttpRequest();
@@ -1061,8 +1048,25 @@ its possible to notice that the page executes that javascript instead of renderi
 </script>
 ```
 
+![](./vhosts/tracking/tracking5.png)
+
+Now the content of /etc/passwd are displayed under Tracking #:
+
+![](./vhosts/tracking/tracking6.png)
+
+Reading the flag with the same payload:
+
+![](./vhosts/tracking/tracking7.png)
+
+
 HTB{49f0bad299687c62334182178bfd75d8}
 
+
+## vpn.inlanefreight.local
+
+Another login is displayed, but i was not able to bypass or bruteforce it.
+
+![](./vhosts/vpn/vpn.png)
 
 
 
