@@ -1185,19 +1185,49 @@ Nmap done: 1 IP address (1 host up) scanned in 9.38 seconds
 ```
 
 ```
-sudo nmap -sT -Pn 172.16.8.50
-Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:01 -0500
+ sudo nmap -sT -Pn 172.16.8.50 -sV -sC
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:03 -0500
 Nmap scan report for 172.16.8.50
-Host is up (0.062s latency).
+Host is up (0.043s latency).
 Not shown: 994 closed tcp ports (conn-refused)
-PORT     STATE SERVICE
-135/tcp  open  msrpc
-139/tcp  open  netbios-ssn
-445/tcp  open  microsoft-ds
-3389/tcp open  ms-wbt-server
-5985/tcp open  wsman
-8080/tcp open  http-proxy
+PORT     STATE SERVICE       VERSION
+135/tcp  open  msrpc         Microsoft Windows RPC
+139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp  open  microsoft-ds?
+3389/tcp open  ms-wbt-server Microsoft Terminal Services
+| rdp-ntlm-info: 
+|   Target_Name: INLANEFREIGHT
+|   NetBIOS_Domain_Name: INLANEFREIGHT
+|   NetBIOS_Computer_Name: ACADEMY-AEN-MS0
+|   DNS_Domain_Name: INLANEFREIGHT.LOCAL
+|   DNS_Computer_Name: ACADEMY-AEN-MS01.INLANEFREIGHT.LOCAL
+|   DNS_Tree_Name: INLANEFREIGHT.LOCAL
+|   Product_Version: 10.0.17763
+|_  System_Time: 2026-11-10T23:03:27+00:00
+|_ssl-date: 2026-11-10T23:03:32+00:00; +1h00m00s from scanner time.
+| ssl-cert: Subject: commonName=ACADEMY-AEN-MS01.INLANEFREIGHT.LOCAL
+| Not valid before: 2026-11-09T19:42:07
+|_Not valid after:  2027-05-11T19:42:07
+5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+8080/tcp open  http          Apache Tomcat (language: en)
+|_http-title: Apache Tomcat/10.0.21
+|_http-favicon: Apache Tomcat
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
-Nmap done: 1 IP address (1 host up) scanned in 1.41 seconds
+Host script results:
+|_clock-skew: mean: 59m59s, deviation: 0s, median: 59m59s
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled but not required
+|_nbstat: NetBIOS name: ACADEMY-AEN-MS0, NetBIOS user: <unknown>, NetBIOS MAC: 00:50:56:8a:66:0a (VMware)
+| smb2-time: 
+|   date: 2026-11-10T23:03:27
+|_  start_date: N/A
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 15.51 seconds
+
 
 ```
