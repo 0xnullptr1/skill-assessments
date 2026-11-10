@@ -97,7 +97,7 @@ ftp -a 10.129.39.98
 ftp> ls
 -rw-r--r--    1 0        0              38 May 30  2022 flag.txt
 ftp> more flag.txt
-HTB{REDACTED}
+HTB{0eb0ab788df18c3115ac43b1c06ae6c4}
 ```
 
 Anonymous FTP login is allowed, exposing a flag file directly in the root directory.
@@ -117,7 +117,7 @@ inlanefreight.local.    86400   IN      A       127.0.0.1
 blog.inlanefreight.local. 86400 IN      A       127.0.0.1
 careers.inlanefreight.local. 86400 IN   A       127.0.0.1
 dev.inlanefreight.local. 86400  IN      A       127.0.0.1
-flag.inlanefreight.local. 86400 IN      TXT     "HTB{REDACTED}"
+flag.inlanefreight.local. 86400 IN      TXT     "HTB{DNs_ZOn3_Tr@nsf3r}"
 gitlab.inlanefreight.local. 86400 IN    A       127.0.0.1
 ir.inlanefreight.local. 86400   IN      A       127.0.0.1
 status.inlanefreight.local. 86400 IN    A       127.0.0.1
@@ -188,6 +188,11 @@ Changing the `id` parameter from `9` to `4` discloses another user's data, inclu
 
 ![](./vhosts/careers/careers4.png)
 
+**Flag**:
+
+```
+
+```
 ---
 
 ## dev.inlanefreight.local
