@@ -1053,3 +1053,14 @@ vethf441d90: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 root@dmz01:~# 
 
 ```
+
+>Kali
+
+```bash
+sudo ip tuntap add user root mode tun tunnel1
+sudo ip link set tunnel1 up
+```
+
+```bash
+sudo ligolo-proxy -selfcert                               
+```
