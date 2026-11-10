@@ -156,7 +156,7 @@ All discovered vhosts are added to `/etc/hosts` for further enumeration.
 
 ## blog.inlanefreight.local
 
-./vhosts/blog/blog1.png
+![](./vhosts/blog/blog1.png)
 
 The host runs a Drupal instance.
 
@@ -174,19 +174,19 @@ Fingerprinting confirms Drupal 9, which has no known CVE for this version. No fu
 
 ## careers.inlanefreight.local
 
-./vhosts/careers/careers1.png
+![](./vhosts/careers/careers1.png)
 
 A new user account can be registered:
 
-./vhosts/careers/careers2.png
+![](./vhosts/careers/careers2.png)
 
 The newly created account's profile page discloses "Jobs applied by user", and the URL `profile?id=9` suggests an IDOR:
 
-./vhosts/careers/careers3.png
+![](./vhosts/careers/careers3.png)
 
 Changing the `id` parameter from `9` to `4` discloses another user's data, including the flag:
 
-./vhosts/careers/careers4.png
+![](./vhosts/careers/careers4.png)
 
 **Flag:**
 
