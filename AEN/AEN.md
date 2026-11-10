@@ -1293,3 +1293,53 @@ Nmap done: 1 IP address (1 host up) scanned in 15.51 seconds
 
 
 ```
+
+## DEV01 (172.16.8.20)
+
+```
+sudo mount -t nfs 172.16.8.20:/ ~/labs/aen/ -o nolock 
+```
+
+```
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ ls
+DEV01
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ cd DEV01     
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen/DEV01]
+└─$ ls
+BuildPackages.bat  CKEditorDefaultSettings.xml  CKToolbarButtons.xml  CKToolbarSets.xml  DNN  flag.txt  WatchersNET.CKEditor.sln
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen/DEV01]
+└─$ cd DNN  
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen/DEV01/DNN]
+└─$ ls
+App_LocalResources  CKEditorOptions.ascx              CKEditorOptions.ascx.resx  Constants  Extensions  Objects          Options.aspx.designer.cs  UrlControl.ascx              Web               web.Deploy.config
+Browser             CKEditorOptions.ascx.cs           CKFinder                   Content    Install     Options.aspx     packages.config           Utilities                    web.config        web.Release.config
+bundleconfig.json   CKEditorOptions.ascx.designer.cs  CKHtmlEditorProvider.cs    Controls   Module      Options.aspx.cs  Properties                WatchersNET.CKEditor.csproj  web.Debug.config
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen/DEV01/DNN]
+└─$ cat web.config   
+<?xml version="1.0"?>
+<configuration>
+  <!--
+    For a description of web.config changes see http://go.microsoft.com/fwlink/?LinkId=235367.
+
+    The following attributes can be set on the <httpRuntime> tag.
+      <system.Web>
+        <httpRuntime targetFramework="4.6.2" />
+      </system.Web>
+  -->
+  <username>Administrator</username>
+  <password>
+        <value>D0tn31Nuk3R0ck$$@123</value>
+  </password>
+  <system.web>
+    <compilation debug="true" targetFramework="4.5.2"/>
+    <httpRuntime targetFramework="4.5.2"/>
+  </system.web>
+</configuration>                                                                                                                                                  
+```
