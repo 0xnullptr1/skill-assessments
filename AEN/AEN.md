@@ -594,11 +594,13 @@ The page's only functionality is to track an order by its ID:
 
 Testing a basic XSS payload :
 
-`<script>alert(1)</script>`
+```javascript
+<script>alert(1)</script>
+```
 
 confirms the input is executed as JavaScript rather than rendered as text (the "Tracking #" field becomes empty):
 
-./vhosts/tracking/tracking4.png
+![](./vhosts/tracking/tracking4.png)
 
 A payload using a synchronous XHR request to a `file://` URI is used to read `/etc/passwd`:
 
@@ -613,13 +615,13 @@ A payload using a synchronous XHR request to a `file://` URI is used to read `/e
 
 The browser allows the page's script to read local files via the `file://` scheme, and the content is written into the DOM, where it is then displayed under the "Tracking #" field:
 
-./vhosts/tracking/tracking5.png
+![](./vhosts/tracking/tracking5.png)
 
-./vhosts/tracking/tracking6.png
+![](./vhosts/tracking/tracking6.png)
 
 The same payload is used to read the flag:
 
-./vhosts/tracking/tracking7.png
+![](./vhosts/tracking/tracking7.png)
 
 **Flag:**
 
@@ -631,6 +633,6 @@ HTB{REDACTED}
 
 ## vpn.inlanefreight.local
 
-./vhosts/vpn/vpn.png
+![](./vhosts/vpn/vpn.png)
 
 A login form is presented. No bypass or successful brute force was achieved against this vhost.
