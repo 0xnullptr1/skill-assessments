@@ -664,7 +664,7 @@ A payload using a synchronous XHR request to a `file://` URI is used to read `/e
 </script>
 ```
 
-The browser allows the page's script to read local files via the `file://` scheme, and the content is written into the DOM, where it is then displayed under the "Tracking #" field:
+The browser allows the page's script to read local files via the `file://` scheme, and the content is written into the DOM (Document Object Model), where it is then displayed under the "Tracking #" field:
 
 ![](./vhosts/tracking/tracking5.png)
 
