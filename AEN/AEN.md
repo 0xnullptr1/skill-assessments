@@ -1128,5 +1128,76 @@ INFO[0387] Starting tunnel to root@dmz01 (0050568a405f)
 ```
 
 ```
-sudo ip route add 172.16.8.0/23 dev tunnel1
+sudo ip route add 172.16.8.0/23 dev tunnel
+```
+
+```
+ netexec smb 172.16.8.0/23                 
+SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         172.16.8.20     445    ACADEMY-AEN-DEV  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-DEV) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
+SMB         172.16.8.50     445    ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-MS0) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
+Running nxc against 512 targets ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+```
+
+```
+sudo nmap -sT -Pn 172.16.8.3              
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:00 -0500
+Nmap scan report for 172.16.8.3
+Host is up (0.086s latency).
+Not shown: 988 closed tcp ports (conn-refused)
+PORT     STATE SERVICE
+53/tcp   open  domain
+88/tcp   open  kerberos-sec
+135/tcp  open  msrpc
+139/tcp  open  netbios-ssn
+389/tcp  open  ldap
+445/tcp  open  microsoft-ds
+464/tcp  open  kpasswd5
+593/tcp  open  http-rpc-epmap
+636/tcp  open  ldapssl
+3268/tcp open  globalcatLDAP
+3269/tcp open  globalcatLDAPssl
+5985/tcp open  wsman
+
+Nmap done: 1 IP address (1 host up) scanned in 5.45 seconds
+                                                              
+```
+
+```
+ sudo nmap -sT -Pn 172.16.8.20
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:00 -0500
+Nmap scan report for 172.16.8.20
+Host is up (0.12s latency).
+Not shown: 992 closed tcp ports (conn-refused)
+PORT     STATE SERVICE
+80/tcp   open  http
+111/tcp  open  rpcbind
+135/tcp  open  msrpc
+139/tcp  open  netbios-ssn
+445/tcp  open  microsoft-ds
+2049/tcp open  nfs
+3389/tcp open  ms-wbt-server
+5985/tcp open  wsman
+
+Nmap done: 1 IP address (1 host up) scanned in 9.38 seconds
+
+```
+
+```
+sudo nmap -sT -Pn 172.16.8.50
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:01 -0500
+Nmap scan report for 172.16.8.50
+Host is up (0.062s latency).
+Not shown: 994 closed tcp ports (conn-refused)
+PORT     STATE SERVICE
+135/tcp  open  msrpc
+139/tcp  open  netbios-ssn
+445/tcp  open  microsoft-ds
+3389/tcp open  ms-wbt-server
+5985/tcp open  wsman
+8080/tcp open  http-proxy
+
+Nmap done: 1 IP address (1 host up) scanned in 1.41 seconds
+
 ```
