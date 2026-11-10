@@ -1106,7 +1106,25 @@ ligolo-ng » session
 ```
 
 ```
-[Agent : root@dmz01] » start --tun tunnel1
+[Agent : root@dmz01] » autoroute
+? Select routes to add: 172.16.8.120/16
+? Create a new interface or use an existing one? Create a new interface
+? Enter interface name (leave empty for random name): tunnel
+INFO[0383] Using custom interface name: tunnel          
+INFO[0383] Interface tunnel configured (will be created on tunnel start) 
+INFO[0383] Creating routes for tunnel...                
+? Start the tunnel? Yes
+INFO[0387] Starting tunnel to root@dmz01 (0050568a405f) 
+[Agent : root@dmz01] » session
+? Specify a session : 1 - root@dmz01 - 10.129.229.147:55100 - 0050568a405f
+[Agent : root@dmz01] » tunnel_list
+┌───────────────────────────────────────────────────────────────────────────┐
+│ Active sessions and tunnels                                               │
+├───┬──────────────────────────────────────────────────┬───────────┬────────┤
+│ # │ AGENT                                            │ INTERFACE │ STATUS │
+├───┼──────────────────────────────────────────────────┼───────────┼────────┤
+│ 1 │ root@dmz01 - 10.129.229.147:55100 - 0050568a405f │ tunnel    │ Online │
+└───┴──────────────────────────────────────────────────┴───────────┴────────┘
 ```
 
 ```
