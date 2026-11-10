@@ -1054,6 +1054,15 @@ root@dmz01:~#
 
 ```
 
+```
+root@dmz01:~# for i in {1..254} ;do (ping -c 1 172.16.8.$i | grep "bytes from" &) ;done
+64 bytes from 172.16.8.3: icmp_seq=1 ttl=128 time=1.83 ms
+64 bytes from 172.16.8.20: icmp_seq=1 ttl=128 time=0.828 ms
+64 bytes from 172.16.8.50: icmp_seq=1 ttl=128 time=0.749 ms
+64 bytes from 172.16.8.120: icmp_seq=1 ttl=64 time=0.019 ms
+
+```
+
 >Kali
 
 ```bash
