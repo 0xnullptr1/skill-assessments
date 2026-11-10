@@ -687,3 +687,8 @@ HTB{49f0bad299687c62334182178bfd75d8}
 ![](./vhosts/vpn/vpn.png)
 
 A login form is presented. No bypass or successful brute force was achieved against this vhost.
+
+---
+
+## DMZ01 Lateral movement from webdev to srvadm
+
