@@ -1343,3 +1343,5 @@ bundleconfig.json   CKEditorOptions.ascx.designer.cs  CKHtmlEditorProvider.cs   
   </system.web>
 </configuration>                                                                                                                                                  
 ```
+
+https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/dotnetnuke-dnn.html
