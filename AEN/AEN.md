@@ -1165,22 +1165,84 @@ Nmap done: 1 IP address (1 host up) scanned in 5.45 seconds
 ```
 
 ```
- sudo nmap -sT -Pn 172.16.8.20
-Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:00 -0500
+sudo nmap -sT -Pn 172.16.8.20 -sV -sC
+[sudo] password for kali: 
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:32 -0500
+Stats: 0:00:53 elapsed; 0 hosts completed (1 up), 1 undergoing Service Scan
+Service scan Timing: About 87.50% done; ETC: 17:33 (0:00:04 remaining)
+Stats: 0:01:13 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 99.91% done; ETC: 17:33 (0:00:00 remaining)
 Nmap scan report for 172.16.8.20
-Host is up (0.12s latency).
+Host is up (0.036s latency).
 Not shown: 992 closed tcp ports (conn-refused)
-PORT     STATE SERVICE
-80/tcp   open  http
-111/tcp  open  rpcbind
-135/tcp  open  msrpc
-139/tcp  open  netbios-ssn
-445/tcp  open  microsoft-ds
-2049/tcp open  nfs
-3389/tcp open  ms-wbt-server
-5985/tcp open  wsman
+PORT     STATE SERVICE       VERSION
+80/tcp   open  http          Microsoft IIS httpd 10.0
+| http-robots.txt: 16 disallowed entries (15 shown)
+| /*/ctl/ /admin/ /App_Browsers/ /App_Code/ /App_Data/ 
+| /App_GlobalResources/ /bin/ /Components/ /Config/ /contest/ /controls/ 
+|_/Documentation/ /HttpModules/ /Install/ /Providers/
+| http-methods: 
+|_  Potentially risky methods: TRACE
+|_http-title: Home
+111/tcp  open  rpcbind       2-4 (RPC #100000)
+| rpcinfo: 
+|   program version    port/proto  service
+|   100000  2,3,4        111/tcp   rpcbind
+|   100000  2,3,4        111/tcp6  rpcbind
+|   100000  2,3,4        111/udp   rpcbind
+|   100000  2,3,4        111/udp6  rpcbind
+|   100003  2,3         2049/udp   nfs
+|   100003  2,3         2049/udp6  nfs
+|   100003  2,3,4       2049/tcp   nfs
+|   100003  2,3,4       2049/tcp6  nfs
+|   100005  1,2,3       2049/tcp   mountd
+|   100005  1,2,3       2049/tcp6  mountd
+|   100005  1,2,3       2049/udp   mountd
+|   100005  1,2,3       2049/udp6  mountd
+|   100021  1,2,3,4     2049/tcp   nlockmgr
+|   100021  1,2,3,4     2049/tcp6  nlockmgr
+|   100021  1,2,3,4     2049/udp   nlockmgr
+|   100021  1,2,3,4     2049/udp6  nlockmgr
+|   100024  1           2049/tcp   status
+|   100024  1           2049/tcp6  status
+|   100024  1           2049/udp   status
+|_  100024  1           2049/udp6  status
+135/tcp  open  msrpc         Microsoft Windows RPC
+139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp  open  microsoft-ds?
+2049/tcp open  nlockmgr      1-4 (RPC #100021)
+3389/tcp open  ms-wbt-server Microsoft Terminal Services
+| ssl-cert: Subject: commonName=ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCAL
+| Not valid before: 2026-11-09T19:42:03
+|_Not valid after:  2027-05-11T19:42:03
+| rdp-ntlm-info: 
+|   Target_Name: INLANEFREIGHT
+|   NetBIOS_Domain_Name: INLANEFREIGHT
+|   NetBIOS_Computer_Name: ACADEMY-AEN-DEV
+|   DNS_Domain_Name: INLANEFREIGHT.LOCAL
+|   DNS_Computer_Name: ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCAL
+|   DNS_Tree_Name: INLANEFREIGHT.LOCAL
+|   Product_Version: 10.0.17763
+|_  System_Time: 2026-11-10T23:33:24+00:00
+|_ssl-date: 2026-11-10T23:33:29+00:00; +1h00m00s from scanner time.
+5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
-Nmap done: 1 IP address (1 host up) scanned in 9.38 seconds
+Host script results:
+|_clock-skew: mean: 59m59s, deviation: 0s, median: 59m59s
+|_nbstat: NetBIOS name: ACADEMY-AEN-DEV, NetBIOS user: <unknown>, NetBIOS MAC: 00:50:56:8a:12:09 (VMware)
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2026-11-10T23:33:24
+|_  start_date: N/A
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 98.25 seconds
+
 
 ```
 
