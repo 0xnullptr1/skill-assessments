@@ -451,17 +451,25 @@ uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
 ```
 
 ```bash
-find / -name "flag.txt" 2>/dev/null
-cat /home/srvadm/flag.txt
-cat /srv/ftp/flag.txt
+webdev@dmz01:/var/www/html/monitoring$ find / -name "flag.txt" 2>/dev/null
+
+/home/srvadm/flag.txt
+
+/srv/ftp/flag.txt
 ```
 
 **Flags:**
 
+```bash
+webdev@dmz01:/var/www/html/monitoring$ cat /home/srvadm/flag.txt
+
+b447c27a00e3a348881b0030177000cd
+
+webdev@dmz01:/var/www/html/monitoring$ cat /srv/ftp/flag.txt
+
+HTB{0eb0ab788df18c3115ac43b1c06ae6c4} # same of the ftp server
 ```
-HTB{REDACTED}   (/home/srvadm/flag.txt, shown as a non-HTB formatted hash in the terminal output)
-HTB{REDACTED}   (/srv/ftp/flag.txt)
-```
+
 
 > [!note] This shell is kept for later local privilege escalation and pivoting into the internal networks.
 
@@ -505,7 +513,7 @@ The same technique is used to read the flag:
 **Flag:**
 
 ```
-HTB{REDACTED}
+HTB{dbca4dc5d99cdb3311404ea74921553c}
 ```
 
 ---
