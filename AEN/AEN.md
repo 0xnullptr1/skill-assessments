@@ -188,19 +188,13 @@ Changing the `id` parameter from `9` to `4` discloses another user's data, inclu
 
 ![](./vhosts/careers/careers4.png)
 
-**Flag:**
-
-```
-HTB{REDACTED}
-```
-
 ---
 
 ## dev.inlanefreight.local
 
 A login form is presented:
 
-./vhosts/dev/dev1.png
+![](./vhosts/dev/dev1.png)
 
 Directory fuzzing discloses `upload.php`:
 
@@ -219,31 +213,31 @@ js                    (Status: 301) [Size: 331]
 
 A GET request to `/upload.php` returns a 403 Forbidden:
 
-./vhosts/dev/dev2.png
+![](./vhosts/dev/dev2.png)
 
 HTTP verb tampering (changing the method to `TRACK`) reflects a header `X-Custom-IP-Authorization: 172.18.0.1` in the response:
 
-./vhosts/dev/dev3.png
+![](./vhosts/dev/dev3.png)
 
 Sending a new request with that header set to `127.0.0.1` tricks the web server into treating the request as coming from an internal host, bypassing the authorization check:
 
-./vhosts/dev/dev4.png
+![](./vhosts/dev/dev4.png)
 
 The upload form becomes accessible:
 
-./vhosts/dev/dev5.png
+![](./vhosts/dev/dev5.png)
 
 Uploads are restricted to images; setting the `Content-Type` of the multipart field to `image/png` bypasses the filter, allowing a PHP webshell to be uploaded:
 
-./vhosts/dev/dev6.png
+![](./vhosts/dev/dev6.png)
 
 Browsing the web root through the webshell discloses the flag file:
 
-./vhosts/dev/dev7.png
+![](./vhosts/dev/dev7.png)
 
 Reading the flag:
 
-./vhosts/dev/dev8.png
+![](./vhosts/dev/dev8.png)
 
 **Flag:**
 
@@ -257,11 +251,11 @@ HTB{REDACTED}
 
 An account is registered:
 
-./vhosts/gitlab/gitlab1.png
+![](./vhosts/gitlab/gitlab1.png)
 
 Navigating to `/explore`:
 
-./vhosts/gitlab/gitlab2.png
+![](./vhosts/gitlab/gitlab2.png)
 
 This discloses a new vhost, `shopdev2.inlanefreight.local`, and a flag:
 
@@ -275,7 +269,7 @@ HTB{REDACTED}
 
 ## ir.inlanefreight.local
 
-./vhosts/ir/ir1.png
+![](./vhosts/ir/ir1.png
 
 ```bash
 curl -s http://ir.inlanefreight.local | grep WordPress
