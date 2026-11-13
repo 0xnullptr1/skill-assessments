@@ -1355,6 +1355,14 @@ RECONFIGURE;
 GO
 ```
 
-```
+running:
+
+```sql
 xp_cmdshell 'whoami /priv';
 ```
+
+reveals seimpersonateprivilege:
+
+adding the .exe estensions
+
+img
