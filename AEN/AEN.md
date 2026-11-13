@@ -1608,3 +1608,14 @@ SMB         172.16.8.3      445    DC01             IPC$            READ        
 SMB         172.16.8.3      445    DC01             NETLOGON        READ            Logon server share 
 SMB         172.16.8.3      445    DC01             SYSVOL          READ            Logon server share
 ```
+
+## Bloodhound enumeration
+
+```bash
+sudo bloodhound-python -u 'hporter' -p 'Gr8hambino!' -ns 172.16.8.3 -d INLANEFREIGHT.LOCAL -c all --zip
+```
+
+```
+INFO: Done in 03M 05S
+INFO: Compressing output into 20261113132230_bloodhound.zip
+```
