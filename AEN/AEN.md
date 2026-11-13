@@ -1141,26 +1141,40 @@ Running nxc against 512 targets ━━━━━━━━━━━━━━━━
 ```
 
 ```
-sudo nmap -sT -Pn 172.16.8.3              
-Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:00 -0500
-Nmap scan report for 172.16.8.3
-Host is up (0.086s latency).
-Not shown: 988 closed tcp ports (conn-refused)
-PORT     STATE SERVICE
-53/tcp   open  domain
-88/tcp   open  kerberos-sec
-135/tcp  open  msrpc
-139/tcp  open  netbios-ssn
-389/tcp  open  ldap
-445/tcp  open  microsoft-ds
-464/tcp  open  kpasswd5
-593/tcp  open  http-rpc-epmap
-636/tcp  open  ldapssl
-3268/tcp open  globalcatLDAP
-3269/tcp open  globalcatLDAPssl
-5985/tcp open  wsman
+nmap -sC -sV 172.16.8.3 --open                                                                     
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-13 15:57 -0500
+Nmap scan report for DC01 (172.16.8.3)
+Host is up (0.092s latency).
+Not shown: 988 closed tcp ports (reset)
+PORT     STATE SERVICE       VERSION
+53/tcp   open  domain        Simple DNS Plus
+88/tcp   open  kerberos-sec  Microsoft Windows Kerberos (server time: 2026-11-13 20:57:55Z)
+135/tcp  open  msrpc         Microsoft Windows RPC
+139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
+389/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: INLANEFREIGHT.LOCAL, Site: Default-First-Site-Name)
+445/tcp  open  microsoft-ds?
+464/tcp  open  kpasswd5?
+593/tcp  open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+636/tcp  open  tcpwrapped
+3268/tcp open  ldap          Microsoft Windows Active Directory LDAP (Domain: INLANEFREIGHT.LOCAL, Site: Default-First-Site-Name)
+3269/tcp open  tcpwrapped
+5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
-Nmap done: 1 IP address (1 host up) scanned in 5.45 seconds
+Host script results:
+|_nbstat: NetBIOS name: DC01, NetBIOS user: <unknown>, NetBIOS MAC: 00:50:56:8a:bc:3a (VMware)
+| smb2-time: 
+|   date: 2026-11-13T20:57:57
+|_  start_date: N/A
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled and required
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 20.49 seconds
+
                                                               
 ```
 
