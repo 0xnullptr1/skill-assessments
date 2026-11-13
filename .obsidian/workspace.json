@@ -20,21 +20,8 @@
               "icon": "lucide-file",
               "title": "AEN"
             }
-          },
-          {
-            "id": "cbe24e34499bdd12",
-            "type": "leaf",
-            "state": {
-              "type": "release-notes",
-              "state": {
-                "currentVersion": "1.15.1"
-              },
-              "icon": "lucide-book-up",
-              "title": "Release Notes 1.15.1"
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -210,7 +197,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "cbe24e34499bdd12",
+  "active": "55ab55394af1c64d",
   "lastOpenFiles": [
     "monitoring8.png",
     "AEN/vhosts/monitoring/monitoring8.png",
