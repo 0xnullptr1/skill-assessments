@@ -1308,6 +1308,10 @@ Nmap done: 1 IP address (1 host up) scanned in 15.51 seconds
 
 ```
 
+```
+echo "172.16.8.3 DC01.INLANEFREIGHT.LOCAL DC01" | sudo tee -a /etc/hosts
+```
+
 ## DEV01 (172.16.8.20)
 
 ```
