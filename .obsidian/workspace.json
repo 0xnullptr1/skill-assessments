@@ -55,7 +55,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "Ru",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
