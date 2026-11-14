@@ -1780,3 +1780,106 @@ getting file \IT\Private\Development\SQL Express Backup.ps1 of size 4001 as SQL 
 smb: \IT\Private\Development\> 
 
 ```
+
+```bash
+cat 'SQL Express Backup.ps1'
+$serverName = ".\SQLExpress"
+$backupDirectory = "D:\backupSQL"
+$daysToStoreDailyBackups = 7
+$daysToStoreWeeklyBackups = 28
+$monthsToStoreMonthlyBackups = 3
+
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SMO") | Out-Null
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SmoExtended") | Out-Null
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.ConnectionInfo") | Out-Null
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SmoEnum") | Out-Null
+ 
+$mySrvConn = new-object Microsoft.SqlServer.Management.Common.ServerConnection
+$mySrvConn.ServerInstance=$serverName
+$mySrvConn.LoginSecure = $false
+$mySrvConn.Login = "backupadm"
+$mySrvConn.Password = "!qazXSW@"
+
+$server = new-object Microsoft.SqlServer.Management.SMO.Server($mySrvConn)
+
+$dbs = $server.Databases
+$startDate = (Get-Date)
+"$startDate"
+
+Get-ChildItem "$backupDirectory\*_daily.bak" |? { $_.lastwritetime -le (Get-Date).AddDays(-$daysToStoreDailyBackups)} |% {Remove-Item $_ -force }
+"removed all previous daily backups older than $daysToStoreDailyBackups days"
+
+foreach ($database in $dbs | where { $_.IsSystemObject -eq $False})
+{
+    $dbName = $database.Name      
+
+    $timestamp = Get-Date -format yyyy-MM-dd-HHmmss
+    $targetPath = $backupDirectory + "\" + $dbName + "_" + $timestamp + "_daily.bak"
+
+    $smoBackup = New-Object ("Microsoft.SqlServer.Management.Smo.Backup")
+    $smoBackup.Action = "Database"
+    $smoBackup.BackupSetDescription = "Full Backup of " + $dbName
+    $smoBackup.BackupSetName = $dbName + " Backup"
+    $smoBackup.Database = $dbName
+    $smoBackup.MediaDescription = "Disk"
+    $smoBackup.Devices.AddDevice($targetPath, "File")
+    $smoBackup.SqlBackup($server) 
+    "backed up $dbName ($serverName) to $targetPath"               
+}
+
+if([Int] (Get-Date).DayOfWeek -eq 0)
+{
+    Get-ChildItem "$backupDirectory\*_weekly.bak" |? { $_.lastwritetime -le (Get-Date).AddDays(-$daysToStoreWeeklyBackups)} |% {Remove-Item $_ -force }
+    "removed all previous daily backups older than $daysToStoreWeeklyBackups days"
+
+    foreach ($database in $dbs | where { $_.IsSystemObject -eq $False})
+    {
+        $dbName = $database.Name      
+
+        $timestamp = Get-Date -format yyyy-MM-dd-HHmmss
+        $targetPath = $backupDirectory + "\" + $dbName + "_" + $timestamp + "_weekly.bak"
+
+        $smoBackup = New-Object ("Microsoft.SqlServer.Management.Smo.Backup")
+        $smoBackup.Action = "Database"
+        $smoBackup.BackupSetDescription = "Full Backup of " + $dbName
+        $smoBackup.BackupSetName = $dbName + " Backup"
+        $smoBackup.Database = $dbName
+        $smoBackup.MediaDescription = "Disk"
+        $smoBackup.Devices.AddDevice($targetPath, "File")
+        $smoBackup.SqlBackup($server) 
+        "backed up $dbName ($serverName) to $targetPath"                 
+    }
+}
+
+if([Int] (Get-Date).Day -eq 1)
+{
+    Get-ChildItem "$backupDirectory\*_monthly.bak" |? { $_.lastwritetime -le (Get-Date).AddMonths(-$monthsToStoreMonthlyBackups)} |% {Remove-Item $_ -force }
+    "removed all previous monthly backups older than $monthsToStoreMonthlyBackups days"
+
+    foreach ($database in $dbs | where { $_.IsSystemObject -eq $False})
+    {
+        $dbName = $database.Name      
+
+        $timestamp = Get-Date -format yyyy-MM-dd-HHmmss
+        $targetPath = $backupDirectory + "\" + $dbName + "_" + $timestamp + "_monthly.bak"
+
+        $smoBackup = New-Object ("Microsoft.SqlServer.Management.Smo.Backup")
+        $smoBackup.Action = "Database"
+        $smoBackup.BackupSetDescription = "Full Backup of " + $dbName
+        $smoBackup.BackupSetName = $dbName + " Backup"
+        $smoBackup.Database = $dbName
+        $smoBackup.MediaDescription = "Disk"
+        $smoBackup.Devices.AddDevice($targetPath, "File")
+        $smoBackup.SqlBackup($server) 
+        "backed up $dbName ($serverName) to $targetPath"                 
+    }
+}                                                                                                                                                                                                                                    
+
+```
+
+```
+nxc smb 172.16.8.3 -u backupadm -p '!qazXSW@'         
+SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
+
+```
