@@ -2409,3 +2409,25 @@ Secret  : NL$KM
 cur/hex : a2 52 9d 31 0b b7 1c 75 45 d6 4b 76 41 2d d3 21 c6 5c dd 04 24 d3 07 ff ca 5c f4 e5 a0 38 94 14 91 64 fa c7 91 d2 0e 02 7a d6 52 53 b4 f4 a9 6f 58 ca 76 00 dd 39 01 7d c5 f7 8f 4b ab 1e dc 63
 old/hex : a2 52 9d 31 0b b7 1c 75 45 d6 4b 76 41 2d d3 21 c6 5c dd 04 24 d3 07 ff ca 5c f4 e5 a0 38 94 14 91 64 fa c7 91 d2 0e 02 7a d6 52 53 b4 f4 a9 6f 58 ca 76 00 dd 39 01 7d c5 f7 8f 4b ab 1e dc 63
 ```
+
+```
+c:\Users>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is B8B3-0D72
+
+ Directory of c:\Users
+
+11/14/2026  11:54 AM    <DIR>          .
+11/14/2026  11:54 AM    <DIR>          ..
+06/01/2022  02:52 PM    <DIR>          Administrator
+11/14/2026  11:54 AM    <DIR>          backupadm
+11/14/2026  12:49 PM    <DIR>          ilfserveradm
+10/06/2021  11:31 AM    <DIR>          lab_adm
+06/01/2022  01:52 PM    <DIR>          mssqladm
+10/06/2021  02:46 PM    <DIR>          Public
+               0 File(s)              0 bytes
+               8 Dir(s)  17,653,334,016 bytes free
+
+c:\Users>
+```
