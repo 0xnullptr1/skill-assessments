@@ -1662,3 +1662,121 @@ SMB         172.16.8.3      445    DC01             NETLOGON        READ        
 SMB         172.16.8.3      445    DC01             SYSVOL          READ            Logon server share 
 
 ```
+
+```bash
+smbmap -u ssmalls -p Password123! -H 172.16.8.3 -r 'Department Shares' --depth 5
+
+    ________  ___      ___  _______   ___      ___       __         _______
+   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
+  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
+   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
+    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
+   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
+  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
+-----------------------------------------------------------------------------
+SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
+                     https://github.com/ShawnDEvans/smbmap
+
+[*] Detected 1 hosts serving SMB                                                                                                  
+[*] Established 1 SMB connections(s) and 1 authenticated session(s)                                                          
+                                                                                                                             
+[+] IP: 172.16.8.3:445  Name: DC01.INLANEFREIGHT.LOCAL  Status: Authenticated
+        Disk                                                    Permissions     Comment
+        ----                                                    -----------     -------
+        ADMIN$                                                  NO ACCESS       Remote Admin
+        C$                                                      NO ACCESS       Default share
+        Department Shares                                       READ ONLY       Share for department users
+        ./Department Shares
+        dr--r--r--                0 Wed Jun  1 14:34:56 2022    .
+        dr--r--r--                0 Wed Jun  1 14:34:56 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:36:07 2022    Accounting
+        dr--r--r--                0 Wed Jun  1 14:36:00 2022    Executives
+        dr--r--r--                0 Wed Jun  1 14:35:53 2022    Finance
+        dr--r--r--                0 Wed Jun  1 14:35:29 2022    HR
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    IT
+        dr--r--r--                0 Wed Jun  1 14:35:45 2022    Marketing
+        dr--r--r--                0 Wed Jun  1 14:35:37 2022    R&D
+        ./Department Shares//Accounting
+        dr--r--r--                0 Wed Jun  1 14:36:07 2022    .
+        dr--r--r--                0 Wed Jun  1 14:36:07 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:36:12 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:36:10 2022    Public
+        ./Department Shares//Executives
+        dr--r--r--                0 Wed Jun  1 14:36:00 2022    .
+        dr--r--r--                0 Wed Jun  1 14:36:00 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:36:05 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:36:02 2022    Public
+        ./Department Shares//Finance
+        dr--r--r--                0 Wed Jun  1 14:35:53 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:53 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:57 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:55 2022    Public
+        ./Department Shares//HR
+        dr--r--r--                0 Wed Jun  1 14:35:29 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:29 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:32 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:34 2022    Public
+        ./Department Shares//IT
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    Public
+        ./Department Shares//IT/Private
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    Development
+        ./Department Shares//IT/Private/Development
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    ..
+        fr--r--r--             4001 Wed Jun  1 14:35:16 2022    SQL Express Backup.ps1
+        ./Department Shares//Marketing
+        dr--r--r--                0 Wed Jun  1 14:35:45 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:45 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:50 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:48 2022    Public
+        ./Department Shares//R&D
+        dr--r--r--                0 Wed Jun  1 14:35:37 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:37 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:43 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:40 2022    Public
+        IPC$                                                    READ ONLY       Remote IPC
+        NETLOGON                                                READ ONLY       Logon server share 
+        SYSVOL                                                  READ ONLY       Logon server share 
+[*] Closed 1 connections                                                                             
+```
+
+```bash
+smbclient -U ssmalls "//172.16.8.3/Department Shares" --password='Password123!'
+
+Try "help" to get a list of possible commands.
+smb: \> cd IT
+smb: \IT\> ls
+  .                                   D        0  Wed Jun  1 14:33:42 2022
+  ..                                  D        0  Wed Jun  1 14:33:42 2022
+  Private                             D        0  Wed Jun  1 14:33:44 2022
+  Public                              D        0  Wed Jun  1 14:33:41 2022
+
+                10328063 blocks of size 4096. 8187746 blocks available
+smb: \IT\> cd Privaye
+cd \IT\Privaye\: NT_STATUS_OBJECT_NAME_NOT_FOUND
+smb: \IT\> cd Privaye
+cd \IT\Privaye\: NT_STATUS_OBJECT_NAME_NOT_FOUND
+smb: \IT\> cd Private
+smb: \IT\Private\> ls
+  .                                   D        0  Wed Jun  1 14:33:44 2022
+  ..                                  D        0  Wed Jun  1 14:33:44 2022
+  Development                         D        0  Wed Jun  1 14:34:17 2022
+
+                10328063 blocks of size 4096. 8187746 blocks available
+smb: \IT\Private\> cd Development
+smb: \IT\Private\Development\> ls
+  .                                   D        0  Wed Jun  1 14:34:17 2022
+  ..                                  D        0  Wed Jun  1 14:34:17 2022
+  SQL Express Backup.ps1              A     4001  Wed Jun  1 14:34:15 2022
+
+                10328063 blocks of size 4096. 8187746 blocks available
+smb: \IT\Private\Development\> get "SQL Express Backup.ps1"
+getting file \IT\Private\Development\SQL Express Backup.ps1 of size 4001 as SQL Express Backup.ps1 (23.3 KiloBytes/sec) (average 23.3 KiloBytes/sec)
+smb: \IT\Private\Development\> 
+
+```
