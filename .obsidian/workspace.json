@@ -55,7 +55,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "sam",
+                "query": "kerbero",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -197,7 +197,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "55ab55394af1c64d",
+  "active": "08e2a9f2faeb393b",
   "lastOpenFiles": [
     "monitoring8.png",
     "AEN/vhosts/monitoring/monitoring8.png",
