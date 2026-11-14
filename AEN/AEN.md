@@ -2155,4 +2155,26 @@ Session completed.
 
 ```
 
+```
+file budget_data.xlsx                   
+budget_data.xlsx: CDFV2 Encrypted
+                                                                                                                
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ office2john budget_data.xlsx > budget_data.hash  
+                                                                                                                
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ john budget_data.hash --wordlist=/usr/share/wordlists/rockyou.txt  
+Using default input encoding: UTF-8
+Loaded 1 password hash (Office, 2007/2010/2013 [SHA1 256/256 AVX2 8x / SHA512 256/256 AVX2 4x AES])
+Cost 1 (MS Office version) is 2013 for all loaded hashes
+Cost 2 (iteration count) is 100000 for all loaded hashes
+Will run 4 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+lucky7           (budget_data.xlsx)     
+1g 0:00:00:01 DONE (2026-11-14 13:27) 0.5050g/s 436.3p/s 436.3c/s 436.3C/s michelle1..felipe
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed. 
+
+```
+
 
