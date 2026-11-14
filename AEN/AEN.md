@@ -2211,3 +2211,8 @@ The command completed successfully.
 ```
 
 
+searching sysaxautomation privesc
+
+
+
+
