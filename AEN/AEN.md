@@ -2177,4 +2177,37 @@ Session completed.
 
 ```
 
+## RDP access
+
+```
+*Evil-WinRM* PS C:\Users\backupadm\Documents> net user ilfserveradm
+User name                    ilfserveradm
+Full Name                    ilfserveradm
+Comment
+User's comment
+Country/region code          000 (System Default)
+Account active               Yes
+Account expires              Never
+
+Password last set            6/1/2022 1:17:17 PM
+Password expires             Never
+Password changeable          6/1/2022 1:17:17 PM
+Password required            Yes
+User may change password     Yes
+
+Workstations allowed         All
+Logon script
+User profile
+Home directory
+Last logon                   6/1/2022 1:17:17 PM
+
+Logon hours allowed          All
+
+Local Group Memberships      *Remote Desktop Users
+Global Group memberships     *None
+The command completed successfully.
+
+
+```
+
 
