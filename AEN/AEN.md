@@ -692,11 +692,14 @@ A login form is presented. No bypass or successful brute force was achieved agai
 
 ## DMZ01 Lateral movement from webdev to srvadm
 
+webdev is group adm, which can read /var/log files:
 
 ```bash
 webdev@dmz01:/home/webdev$ id
 uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
 ```
+
+New users are disclosed:
 
 ```bash
 webdev@dmz01:/home/webdev$ ls /home
@@ -755,6 +758,7 @@ webdev@dmz01:/home/webdev$
 
 ```
 
+by reading recent logs (?) with aureport its shows that the password for ilfserveradm 
 ```
 webdev@dmz01:/home/webdev$ aureport --tty | less
 Error opening config file (Permission denied)
