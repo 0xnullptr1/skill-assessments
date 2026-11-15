@@ -55,7 +55,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "ntds",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
