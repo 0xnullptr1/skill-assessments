@@ -1331,16 +1331,24 @@ Nmap done: 1 IP address (1 host up) scanned in 15.51 seconds
 
 ```
 
+Adding the dc to the etc hosts file:
+
 ```
 echo "172.16.8.3 DC01.INLANEFREIGHT.LOCAL DC01" | sudo tee -a /etc/hosts
 ```
 
 ## DEV01 (172.16.8.20)
 
+Web enum:
+
+![](./dev01/dev)
+mounting the nfsshare:
+
 ```
 sudo mount -t nfs 172.16.8.20:/ ~/labs/aen/ -o nolock 
 ```
 
+Enumerating the share reveals the credentials to access dotnetnuke as Admin in the `web.config` file:
 ```
 ┌──(kali㉿kali)-[~/labs/aen]
 └─$ ls
@@ -1385,7 +1393,9 @@ bundleconfig.json   CKEditorOptions.ascx.designer.cs  CKHtmlEditorProvider.cs   
 </configuration>                                                                                                                                                  
 ```
 
+Reference used to enumerate dotnetnuke:
 https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/dotnetnuke-dnn.html
+
 
 
 ```sql
