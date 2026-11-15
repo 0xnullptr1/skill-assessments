@@ -2828,43 +2828,6 @@ Nmap done: 1 IP address (1 host up) scanned in 15.66 seconds
                                                                        
 ```
 
-```
-nmap -sC -sV 172.16.9.3 
-Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-15 12:55 -0500
-Nmap scan report for 172.16.9.3
-Host is up (0.098s latency).
-Not shown: 988 filtered tcp ports (no-response)
-PORT     STATE SERVICE       VERSION
-53/tcp   open  domain        Simple DNS Plus
-88/tcp   open  kerberos-sec  Microsoft Windows Kerberos (server time: 2026-11-15 17:57:14Z)
-135/tcp  open  msrpc         Microsoft Windows RPC
-139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
-389/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: INLANEFREIGHT.LOCAL, Site: Default-First-Site-Name)
-445/tcp  open  microsoft-ds?
-464/tcp  open  kpasswd5?
-593/tcp  open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
-636/tcp  open  tcpwrapped
-3268/tcp open  ldap          Microsoft Windows Active Directory LDAP (Domain: INLANEFREIGHT.LOCAL, Site: Default-First-Site-Name)
-3269/tcp open  tcpwrapped
-5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-|_http-title: Not Found
-|_http-server-header: Microsoft-HTTPAPI/2.0
-Service Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows
-
-Host script results:
-| smb2-security-mode: 
-|   3.1.1: 
-|_    Message signing enabled and required
-| smb2-time: 
-|   date: 2026-11-15T17:57:25
-|_  start_date: N/A
-|_clock-skew: 1s
-
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 109.49 seconds
-                                                                                    
-```
-
 I dumped ntds.dit but it did not revealed to be very useful in this case.
 
 SMB again
