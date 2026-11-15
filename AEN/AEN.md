@@ -2879,3 +2879,10 @@ uid=1001(ssmallsadm) gid=1001(ssmallsadm) groups=1001(ssmallsadm)
 ssmallsadm@MGMT01:~$ ls -la
 
 ```
+
+```
+ssmallsadm@MGMT01:~$ uname -a
+Linux MGMT01 5.10.0-051000-generic #202012132330 SMP Sun Dec 13 23:33:36 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+ssmallsadm@MGMT01:~$ 
+
+```
