@@ -42,7 +42,7 @@
               "state": {
                 "sortOrder": "alphabetical",
                 "autoReveal": false,
-                "showSearch": false,
+                "showSearch": true,
                 "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
@@ -196,7 +196,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "55ab55394af1c64d",
+  "active": "b07b77640a52a3c0",
   "lastOpenFiles": [
     "AEN/ms01/9.png",
     "AEN/ms01/8.png",
