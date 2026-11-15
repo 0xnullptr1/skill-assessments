@@ -2734,3 +2734,9 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 109.49 seconds
                                                                                     
 ```
+
+SMB again
+
+```bash
+smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 -r "Department Shares" --depth 5
+```
