@@ -2656,3 +2656,25 @@ INFO[0707] Creating routes for gameleatherhead...
 INFO[0711] Starting tunnel to INLANEFREIGHT\Administrator@DC01 (0050568a9bb0) 
 
 ```
+
+```
+ fping -asgq 172.16.9.0/24
+172.16.9.3
+172.16.9.25
+
+     254 targets
+       2 alive
+     252 unreachable
+       0 unknown addresses
+
+    1008 timeouts (waiting for response)
+    1010 ICMP Echos sent
+       2 ICMP Echo Replies received
+       0 other ICMP received
+
+ 48.9 ms (min round trip time)
+ 59.4 ms (avg round trip time)
+ 69.9 ms (max round trip time)
+       10.494 sec (elapsed real time)
+
+```
