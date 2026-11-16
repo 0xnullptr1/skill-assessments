@@ -42,7 +42,7 @@
               "state": {
                 "sortOrder": "alphabetical",
                 "autoReveal": false,
-                "showSearch": true,
+                "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
@@ -55,7 +55,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "sam",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -79,7 +79,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -182,7 +183,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 303.5
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -196,22 +197,23 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "b07b77640a52a3c0",
+  "active": "08e2a9f2faeb393b",
   "lastOpenFiles": [
     "AEN/ms01/9.png",
     "AEN/ms01/8.png",
-    "AEN/AEN.md",
+    "AEN/ms01/7.png",
+    "AEN/ms01/6.png",
+    "AEN/ms01/5.png",
+    "AEN/ms01/4.png",
     "AEN/ms01/3.png",
     "AEN/ms01/2.png",
-    "AEN/ms01/4.png",
-    "AEN/dev01/1.png",
-    "AEN/dev01/2.png",
-    "AEN/dev01/3.png",
-    "AEN/ms01/7.png",
-    "AEN/ms01/5.png",
+    "AEN/ms01/1.png",
     "AEN/ms01",
+    "AEN/dev01/7.png",
+    "AEN/dev01/6.png",
     "AEN/dev01",
     "AEN/bh",
+    "AEN/AEN.md",
     "AEN/vhosts/vpn",
     "AEN/vhosts/zzz",
     "AEN/vhosts/shopdev2",

