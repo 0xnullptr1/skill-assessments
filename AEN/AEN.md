@@ -349,7 +349,7 @@ Enumerating the source code of the page:
 
 `main.js` discloses an endpoint that runs a `ping` command server-side, and a function that calls it with a user-controllable IP, suggesting a possible command injection:
 
-![](./vhosts/monitoring/monitoring4.png)
+![](./vhosts/monitoring/monitoring3.png)
 
 Testing the endpoint confirms the ping functionality works as expected:
 
