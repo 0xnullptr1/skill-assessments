@@ -672,8 +672,6 @@ A login form is presented. No bypass or successful brute force was achieved agai
 
 ## DMZ01 Lateral Movement from webdev to srvadm
 
-> [!note] The lab environment was restarted several times over the course of this engagement, so IP addresses for the same host (e.g. `dmz01`, `DC01`, `MS01`) differ between sections below. Hostnames and the attack chain itself are unaffected.
-
 The `webdev` user is a member of the `adm` group, which grants read access to files under `/var/log`:
 
 ```bash
