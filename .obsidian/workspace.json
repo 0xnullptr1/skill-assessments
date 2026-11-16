@@ -79,8 +79,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -197,7 +196,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "08e2a9f2faeb393b",
+  "active": "b07b77640a52a3c0",
   "lastOpenFiles": [
     "AEN/ms01/9.png",
     "AEN/ms01/8.png",
